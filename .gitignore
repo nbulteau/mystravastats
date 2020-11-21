@@ -9,3 +9,6 @@ build
 
 # Ignore Strava json files
 strava*.json
+
+# Ignore mac files
+.DS_Store
