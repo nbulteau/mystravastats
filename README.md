@@ -1,5 +1,7 @@
 = Strava Stats
 
+
+
 == Get a Strava API access token with read permission
 
 === Get authorization code
@@ -13,12 +15,14 @@
 
 http://www.strava.com/api/v3/oauth/authorize?client_id=[YOUR_CLIENT_ID]&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=read_all,profile:read_all,activity:read_all
 
-==== Go to above URL in a browser. (HTTP GET)
+==== Go to above URL in a browser.
+
 Login to Strava then click 'Authorize' and tick the required permissions if needed.
 Browser should go to 404 as http://localhost/exchange_token doesn't exist.
 Copy the authorization code from URL. 
 
 For example : http://localhost/exchange_token?state=&code=d4ebd5ee7f512523d49fcb66d6eda207e46fcb8c&scope=read_all,profile:read_all,activity:read_all
+
 The authorization code for next step is d4ebd5ee7f512523d49fcb66d6eda207e46fcb8c.
 
 
