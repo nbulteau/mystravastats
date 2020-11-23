@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectWriter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import me.nicolas.stravastats.StravaStatsProperties
 import me.nicolas.stravastats.infrastructure.StravaApi
 import me.nicolas.stravastats.infrastructure.dao.Activity
 import org.slf4j.Logger
@@ -14,6 +15,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 internal class ActivityLoader(
+    private val stravaStatsProperties: StravaStatsProperties,
     private val stravaApi: StravaApi
 ) {
 
@@ -59,24 +61,31 @@ internal class ActivityLoader(
             after = LocalDateTime.of(year, 1, 1, 0, 0)
         )
 
-        saveToFile(clientId, year, activities)
+        if (stravaStatsProperties.saveActivitiesOnDisk) {
+            // create a File object for the parent directory
+            val activitiesDirectory = File("strava-$clientId-$year-${LocalDate.now()}")
+            // have the object build the directory structure, if needed.
+            activitiesDirectory.mkdirs()
+            val writer: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
+
+            writer.writeValue(File(activitiesDirectory, "activities-$clientId-$year.json"), activities)
+        }
+
+        activities.forEach { activity ->
+            val stream = stravaApi.getActivityStream(accessToken, activity)
+            activity.stream = stream
+        }
+
+        if (stravaStatsProperties.saveActivitiesOnDisk) {
+            // create a File object for the parent directory
+            val activitiesDirectory = File("strava-$clientId-$year-${LocalDate.now()}")
+            // have the object build the directory structure, if needed.
+            activitiesDirectory.mkdirs()
+            val writer: ObjectWriter = objectMapper.writer()
+
+            writer.writeValue(File(activitiesDirectory, "activities-$clientId-$year-with-stream.json"), activities)
+        }
 
         return activities
     }
-
-    /**
-     * Save activities to file.
-     * @param clientId
-     * @param year
-     * @param activities
-     */
-    private fun saveToFile(
-        clientId: String,
-        year: Int,
-        activities: List<Activity>
-    ) {
-        val writer: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
-        writer.writeValue(File("strava-$clientId-$year-${LocalDate.now()}.json"), activities)
-    }
-
 }

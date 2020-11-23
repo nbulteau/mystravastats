@@ -1,8 +1,10 @@
 package me.nicolas.stravastats.infrastructure.dao
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class Athlete(
     @JsonProperty("badge_type_id")
     val badgeTypeId: Int,

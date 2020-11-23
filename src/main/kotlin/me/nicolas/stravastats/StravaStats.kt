@@ -3,19 +3,23 @@ package me.nicolas.stravastats
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.ParameterException
 import me.nicolas.stravastats.core.ActivityLoader
+import me.nicolas.stravastats.core.StatsBuilder
 import me.nicolas.stravastats.core.StravaService
-import me.nicolas.stravastats.core.business.StravaStats
+import me.nicolas.stravastats.core.business.statistics.StravaStats
 import me.nicolas.stravastats.infrastructure.StravaApi
 import me.nicolas.stravastats.infrastructure.dao.Activity
 
-class StravaStats(incomingArgs: Array<String>) {
+internal class StravaStats(incomingArgs: Array<String>) {
 
+    private val stravaStatsProperties = StravaStatsProperties()
 
     private val stravaApi = StravaApi()
 
-    private val activityLoader = ActivityLoader(stravaApi)
+    private val statsBuilder = StatsBuilder()
 
-    private val stravaService = StravaService(stravaApi)
+    private val activityLoader = ActivityLoader(stravaStatsProperties, stravaApi)
+
+    private val stravaService = StravaService(statsBuilder)
 
     private val parameters = Parameters()
 
@@ -30,31 +34,37 @@ class StravaStats(incomingArgs: Array<String>) {
 
     val stavaStats: StravaStats
         get() {
-            val statistics = loadActivities(parameters)
+            val activities = loadActivities(parameters)
 
-            return stravaService.computeStatistics(statistics)
+            if (stravaStatsProperties.removingNonMovingSections) {
+                activities.forEach { it.removeNonMoving() }
+            }
+
+            return stravaService.computeStatistics(activities)
         }
 
     private fun loadActivities(parameters: Parameters): List<Activity> {
 
-        return if (// from file
-            parameters.file != null) activityLoader.getActivitiesFromFile(
-            parameters.file!!
-        )
-        // with access token
-        else if (parameters.accessToken != null) activityLoader.getActivitiesWithAccessToken(
-            parameters.clientId,
-            parameters.year,
-            parameters.accessToken!!
-        )
-        // with access authorization code
-        else if (parameters.code != null) activityLoader.getActivitiesWithAuthorizationCode(
-            parameters.clientId,
-            parameters.year,
-            parameters.clientSecret,
-            parameters.code!!
-        )
-        else throw ParameterException("-file, -code or -accessToken must be provided")
+        return when {
+            // from file
+            parameters.file != null -> activityLoader.getActivitiesFromFile(
+                parameters.file!!
+            )
+            // with access token
+            parameters.accessToken != null -> activityLoader.getActivitiesWithAccessToken(
+                parameters.clientId,
+                parameters.year,
+                parameters.accessToken!!
+            )
+            // with access authorization code
+            parameters.code != null -> activityLoader.getActivitiesWithAuthorizationCode(
+                parameters.clientId,
+                parameters.year,
+                parameters.clientSecret,
+                parameters.code!!
+            )
+            else -> throw ParameterException("-file, -code or -accessToken must be provided")
+        }
     }
 }
 

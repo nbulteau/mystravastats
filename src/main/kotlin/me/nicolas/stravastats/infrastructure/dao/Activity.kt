@@ -1,8 +1,10 @@
 package me.nicolas.stravastats.infrastructure.dao
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class Activity(
     @JsonProperty("achievement_count")
     val achievementCount: Int,
@@ -29,9 +31,9 @@ data class Activity(
     @JsonProperty("display_hide_heartrate_option")
     val displayHideHeartrateOption: Boolean,
     @JsonProperty("distance")
-    val distance: Double,
+    var distance: Double,
     @JsonProperty("elapsed_time")
-    val elapsedTime: Int,
+    var elapsedTime: Int,
     @JsonProperty("elev_high")
     val elevHigh: Double,
     @JsonProperty("elev_low")
@@ -112,7 +114,44 @@ data class Activity(
     val visibility: String,
     @JsonProperty("workout_type")
     val workoutType: Int
-)
+) {
+
+    var stream: Stream? = null
+
+    /**
+     * Remove non-moving sections of the activity.
+     */
+    fun removeNonMoving() {
+
+        if (stream == null) {
+            return
+        }
+
+        var totDistance = 0.0
+        var totSeconds = 0
+        val streamWithoutNonMovingData = Stream(
+            Distance(mutableListOf(), 0, "high", "distance"),
+            Time(mutableListOf(), 0, "high", "distance"),
+            Moving(mutableListOf(), 0, "high", "distance")
+        )
+        streamWithoutNonMovingData.append(0.0, 0)
+
+        for (index in stream!!.distance.data.indices) {
+            if (stream?.moving?.data?.get(index) == true) {
+                val prevDist: Double = if (index == 0) 0.0 else stream?.distance?.data?.get(index - 1)!!
+                val prevSeconds: Int = if (index == 0) 0 else stream?.time?.data?.get(index - 1)!!
+
+                totDistance += stream?.distance?.data?.get(index)!! - prevDist
+                totSeconds += stream?.time?.data?.get(index)!! - prevSeconds
+                streamWithoutNonMovingData.append(totDistance, totSeconds)
+            }
+        }
+
+        distance = totDistance
+        elapsedTime = totSeconds
+        stream = streamWithoutNonMovingData
+    }
+}
 
 data class AthleteRef(
     @JsonProperty("id")

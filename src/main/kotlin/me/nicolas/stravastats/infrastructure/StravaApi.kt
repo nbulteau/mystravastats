@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import khttp.get
 import khttp.post
 import me.nicolas.stravastats.infrastructure.dao.Activity
+import me.nicolas.stravastats.infrastructure.dao.Stream
 import me.nicolas.stravastats.infrastructure.dao.Token
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,7 +24,7 @@ internal class StravaApi {
 
     fun getActivities(accessToken: String, before: LocalDateTime, after: LocalDateTime): List<Activity> {
 
-        logger.info("Get activities before $before and after  $after")
+        logger.info("Get activities before : $before and after : $after")
 
         val activities = mutableListOf<Activity>()
         var page = 1
@@ -40,6 +41,21 @@ internal class StravaApi {
         } while (result.isNotEmpty())
 
         return activities
+    }
+
+    fun getActivityStream(accessToken: String, activity: Activity): Stream {
+
+        logger.info("Get streams for ${activity.name}")
+
+        val url = "$stravaUrl/api/v3/activities/${activity.id}/streams?keys=time,distance,moving&key_by_type=true"
+
+        val requestHeaders = buildRequestHeaders(accessToken)
+        val response = get(url, requestHeaders)
+        if (response.statusCode == 200) {
+            return mapper.readValue(response.content)
+        } else {
+            throw RuntimeException("Something was wrong with Strava API ${response.text}")
+        }
     }
 
     fun getToken(clientId: String, clientSecret: String, authorizationCode: String): Token {
