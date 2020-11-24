@@ -29,7 +29,6 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
-
 }
 
 application {

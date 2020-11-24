@@ -9,5 +9,5 @@ data class Map(
     @JsonProperty("resource_state")
     val resourceState: Int,
     @JsonProperty("summary_polyline")
-    val summaryPolyline: String
+    val summaryPolyline: String?
 )

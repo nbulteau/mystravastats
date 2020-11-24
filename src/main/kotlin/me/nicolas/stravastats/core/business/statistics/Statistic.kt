@@ -29,12 +29,6 @@ internal abstract class ActivityStatistic(
 ) : Statistic(name, activities) {
 
     protected var activity: Activity? = null
-
-    override fun toString() = super.toString() + if (activity == null) {
-        ""
-    } else {
-        " - ${activity?.name} - ${activity?.startDateLocal}"
-    }
 }
 
 

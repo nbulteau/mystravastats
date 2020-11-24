@@ -39,7 +39,7 @@ data class Activity(
     @JsonProperty("elev_low")
     val elevLow: Double,
     @JsonProperty("end_latlng")
-    val endLatlng: List<Double>,
+    val endLatlng: List<Double>?,
     @JsonProperty("external_id")
     val externalId: String,
     @JsonProperty("flagged")
@@ -63,7 +63,7 @@ data class Activity(
     @JsonProperty("location_city")
     val locationCity: Any?,
     @JsonProperty("location_country")
-    val locationCountry: String,
+    val locationCountry: String?,
     @JsonProperty("location_state")
     val locationState: Any?,
     @JsonProperty("manual")
@@ -91,7 +91,7 @@ data class Activity(
     @JsonProperty("start_latitude")
     val startLatitude: Double,
     @JsonProperty("start_latlng")
-    val startLatlng: List<Double>,
+    val startLatlng: List<Double>?,
     @JsonProperty("start_longitude")
     val startLongitude: Double,
     @JsonProperty("timezone")

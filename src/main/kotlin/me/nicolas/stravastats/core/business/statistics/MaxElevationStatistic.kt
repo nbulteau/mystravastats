@@ -13,6 +13,8 @@ internal class MaxElevationStatistic(
     override fun toString(): String {
         return super.toString() + if (activity != null) {
             " : %.2f m".format(activity?.totalElevationGain)
-        } else ""
+        } else {
+            " Not available"
+        }
     }
 }

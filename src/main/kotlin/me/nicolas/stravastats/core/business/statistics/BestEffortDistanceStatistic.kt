@@ -1,6 +1,8 @@
 package me.nicolas.stravastats.core.business.statistics
 
 import me.nicolas.stravastats.core.business.ActivityEffort
+import me.nicolas.stravastats.core.business.formatDate
+import me.nicolas.stravastats.core.business.formatSeconds
 import me.nicolas.stravastats.infrastructure.dao.Activity
 
 
@@ -55,5 +57,14 @@ internal open class BestEffortDistanceStatistic(
         return bestEffort
     }
 
-    override fun toString() = super.toString() + (bestActivityEffort ?: " : Not available")
+    override fun toString() =
+        super.toString() + if (bestActivityEffort != null) {
+            " : %s".format(bestActivityEffort.seconds.formatSeconds()) + bestActivityEffort
+        } else {
+            " : Not available"
+        } + if (activity != null) {
+            " - ${activity?.name} (${activity?.startDateLocal?.formatDate()})"
+        } else {
+            ""
+        }
 }

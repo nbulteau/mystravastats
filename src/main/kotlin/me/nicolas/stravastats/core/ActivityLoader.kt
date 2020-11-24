@@ -7,11 +7,11 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import me.nicolas.stravastats.StravaStatsProperties
 import me.nicolas.stravastats.infrastructure.StravaApi
 import me.nicolas.stravastats.infrastructure.dao.Activity
+import me.nicolas.stravastats.infrastructure.dao.Stream
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Paths
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 internal class ActivityLoader(
@@ -62,28 +62,36 @@ internal class ActivityLoader(
         )
 
         if (stravaStatsProperties.saveActivitiesOnDisk) {
+            val activitiesDirectoryName = "strava-$clientId-$year"
             // create a File object for the parent directory
-            val activitiesDirectory = File("strava-$clientId-$year-${LocalDate.now()}")
+            val activitiesDirectory = File(activitiesDirectoryName)
             // have the object build the directory structure, if needed.
             activitiesDirectory.mkdirs()
-            val writer: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
 
-            writer.writeValue(File(activitiesDirectory, "activities-$clientId-$year.json"), activities)
-        }
-
-        activities.forEach { activity ->
-            val stream = stravaApi.getActivityStream(accessToken, activity)
-            activity.stream = stream
-        }
-
-        if (stravaStatsProperties.saveActivitiesOnDisk) {
-            // create a File object for the parent directory
-            val activitiesDirectory = File("strava-$clientId-$year-${LocalDate.now()}")
-            // have the object build the directory structure, if needed.
-            activitiesDirectory.mkdirs()
+            val prettyWriter: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
             val writer: ObjectWriter = objectMapper.writer()
 
+            prettyWriter.writeValue(File(activitiesDirectory, "activities-$clientId-$year.json"), activities)
+
+            // Load all activities streams
+            activities.forEach { activity ->
+                val streamFile = File(activitiesDirectory, "stream-${activity.id}")
+                val stream: Stream
+                if (streamFile.exists()) {
+                    stream = objectMapper.readValue(streamFile, Stream::class.java)
+                } else {
+                    stream = stravaApi.getActivityStream(accessToken, activity)
+                    writer.writeValue(File(activitiesDirectory, "stream-${activity.id}"), stream)
+                }
+
+                activity.stream = stream
+            }
             writer.writeValue(File(activitiesDirectory, "activities-$clientId-$year-with-stream.json"), activities)
+        } else {
+            // Load all activities streams
+            activities.forEach { activity ->
+                activity.stream = stravaApi.getActivityStream(accessToken, activity)
+            }
         }
 
         return activities

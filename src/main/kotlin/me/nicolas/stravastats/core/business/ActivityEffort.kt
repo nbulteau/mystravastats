@@ -14,9 +14,9 @@ internal data class ActivityEffort(
     override fun toString(): String {
 
         return if (activity.type == "Run") {
-            " : %s/km".format((seconds * 1000 / distance).formatHundredths())
+            " => %s/km".format((seconds * 1000 / distance).formatSeconds())
         } else {
-            " : %.02f km/h".format(distance / seconds * 3600 / 1000)
+            " => %.02f km/h".format(distance / seconds * 3600 / 1000)
         }
     }
 }
