@@ -34,13 +34,23 @@ internal class StravaStats(incomingArgs: Array<String>) {
 
     val stavaStats: StravaStats
         get() {
+            val start = System.currentTimeMillis()
+
             val activities = loadActivities(parameters)
+
+            val loadTime = System.currentTimeMillis()
 
             if (stravaStatsProperties.removingNonMovingSections) {
                 activities.forEach { it.removeNonMoving() }
             }
 
-            return stravaService.computeStatistics(activities)
+            val stravaStats = stravaService.computeStatistics(activities)
+
+            println("Load time = ${loadTime - start} ms")
+
+            println("Compute stats time = ${System.currentTimeMillis() - loadTime} ms")
+
+            return stravaStats
         }
 
     private fun loadActivities(parameters: Parameters): List<Activity> {
@@ -69,9 +79,7 @@ internal class StravaStats(incomingArgs: Array<String>) {
 }
 
 fun main(incomingArgs: Array<String>) {
-
     val stavaStats = StravaStats(incomingArgs).stavaStats
-
     stavaStats.displayStatistics()
 }
 

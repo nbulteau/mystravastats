@@ -22,7 +22,8 @@ internal class StatsBuilder {
             { activityList: List<Activity> -> activityList.sumByDouble { it.totalElevationGain } },
 
             MaxDistanceStatistic(activities),
-            MaxElevationStatistic(activities)
+            MaxElevationStatistic(activities),
+            MostActiveMonthStatistic(activities),
         )
     }
 

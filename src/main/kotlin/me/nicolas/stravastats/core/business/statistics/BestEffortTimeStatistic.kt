@@ -11,7 +11,9 @@ internal open class BestEffortTimeStatistic(
     private val seconds: Int
 ) : ActivityStatistic(name, activities) {
 
-    protected val bestActivityEffort = activities.mapNotNull { calculateBestEffort(it) }.maxByOrNull { it.distance }
+    private val bestActivityEffort = activities
+        .mapNotNull { calculateBestEffort(it) }
+        .maxByOrNull { it.distance }
 
     init {
         activity = bestActivityEffort?.activity

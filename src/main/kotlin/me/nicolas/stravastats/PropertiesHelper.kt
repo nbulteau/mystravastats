@@ -16,12 +16,12 @@ internal class PropertiesHelper {
 
         val file = getFileFromResource(fileName)
 
-        return Files.newBufferedReader(file?.toPath()).use {
+        return Files.newBufferedReader(file.toPath()).use {
             mapper.readValue(it, StravaStatsProperties::class.java)
         }
     }
 
-    private fun getFileFromResource(fileName: String): File? {
+    private fun getFileFromResource(fileName: String): File {
 
         val classLoader: ClassLoader = javaClass.classLoader
         val resource: URL? = classLoader.getResource(fileName)

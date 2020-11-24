@@ -29,5 +29,6 @@ internal data class StravaStats(
         hikesStats.forEach {
             println(it)
         }
+        println()
     }
 }

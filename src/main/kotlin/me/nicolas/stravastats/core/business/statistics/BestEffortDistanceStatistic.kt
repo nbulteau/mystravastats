@@ -12,7 +12,9 @@ internal open class BestEffortDistanceStatistic(
     private val distance: Double
 ) : ActivityStatistic(name, activities) {
 
-    private val bestActivityEffort = activities.mapNotNull { calculateBestEffort(it) }.minByOrNull { it.seconds }
+    private val bestActivityEffort = activities
+        .mapNotNull { calculateBestEffort(it) }
+        .minByOrNull { it.seconds }
 
     init {
         activity = bestActivityEffort?.activity
