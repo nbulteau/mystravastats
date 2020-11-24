@@ -1,5 +1,6 @@
 package me.nicolas.stravastats.core.business.statistics
 
+import me.nicolas.stravastats.core.business.formatDate
 import me.nicolas.stravastats.infrastructure.dao.Activity
 
 internal class MaxElevationStatistic(
@@ -15,6 +16,10 @@ internal class MaxElevationStatistic(
             " : %.2f m".format(activity?.totalElevationGain)
         } else {
             " Not available"
+        } + if (activity != null) {
+            " - ${activity?.name} (${activity?.startDateLocal?.formatDate()})"
+        } else {
+            ""
         }
     }
 }
