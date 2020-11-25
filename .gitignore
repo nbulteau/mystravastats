@@ -7,8 +7,14 @@ build
 # Ignore IntelliJ directory
 .idea
 
+# Ignore strava dowload directory
+strava-*/
+
 # Ignore Strava json files
-strava*.json
+activities-*.json
+stream-*.json
 
 # Ignore mac files
 .DS_Store
+
+
