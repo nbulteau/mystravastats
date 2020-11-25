@@ -1,5 +1,3 @@
-
-
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.4.20"
@@ -10,6 +8,7 @@ plugins {
 
 repositories {
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -33,7 +32,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClassName = "me.nicolas.stravastats.StravaStatsKt"
+    mainClass.set("me.nicolas.stravastats.StravaStatsKt")
 }
 
 tasks.withType<Test> {
@@ -47,3 +46,4 @@ tasks.withType<Jar> {
 
     from(configurations.compileClasspath.map { config -> config.map { if (it.isDirectory) it else zipTree(it) } })
 }
+

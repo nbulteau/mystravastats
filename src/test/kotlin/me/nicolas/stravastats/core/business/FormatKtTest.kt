@@ -6,25 +6,26 @@ import org.junit.jupiter.api.Test
 internal class FormatKtTest {
 
     @Test
-    fun formatSeconds() {
+    fun `Int formatSeconds`() {
 
-        assertEquals("00:00", 0.formatSeconds())
-        assertEquals("00:59", 59.formatSeconds())
-        assertEquals("01:00", 60.formatSeconds())
-        assertEquals("02:00", 120.formatSeconds())
-        assertEquals("59:59", 3599.formatSeconds())
+        assertEquals("00m 00s", 0.formatSeconds())
+        assertEquals("00m 59s", 59.formatSeconds())
+        assertEquals("01m 00s", 60.formatSeconds())
+        assertEquals("02m 00s", 120.formatSeconds())
+        assertEquals("59m 59s", 3599.formatSeconds())
     }
 
     @Test
-    fun formatHundredths() {
+    fun `Double formatSeconds`() {
 
-        assertEquals("0:00.00", 0.0.formatSeconds())
-        assertEquals("0:59.00", 59.0.formatSeconds())
-        assertEquals("1:00.00", 60.0.formatSeconds())
-        assertEquals("2:00.00", 120.0.formatSeconds())
-        assertEquals("59:59.00", 3599.0.formatSeconds())
-        assertEquals("2:00.99", 120.99.formatSeconds())
-        assertEquals("2:00.99", 120.994.formatSeconds())
-        assertEquals("2:01.00", 120.995.formatSeconds())
+        assertEquals("0:00", 0.0.formatSeconds())
+        assertEquals("0:59", 59.0.formatSeconds())
+        assertEquals("1:00", 60.0.formatSeconds())
+        assertEquals("2:00", 120.0.formatSeconds())
+        assertEquals("59:59", 3599.0.formatSeconds())
+        assertEquals("2:00", 120.99.formatSeconds())
+        assertEquals("2:00", 120.994.formatSeconds())
+        assertEquals("2:01", 120.995.formatSeconds())
+        assertEquals("59:59", 3599.994.formatSeconds())
     }
 }
