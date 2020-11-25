@@ -18,7 +18,7 @@ internal class MostActiveMonthStatistic(
     private fun getMonth(startDateLocal: String) = LocalDateTime.parse(startDateLocal, inFormatter).month
 
     override fun toString(): String {
-        return super.toString() + " : %s with %.2f km".format(
+        return super.toString() + "%s with %.2f km".format(
             mostActiveMonth?.key?.getDisplayName(TextStyle.FULL, Locale.ENGLISH), mostActiveMonth?.value?.div(1000)
         )
     }

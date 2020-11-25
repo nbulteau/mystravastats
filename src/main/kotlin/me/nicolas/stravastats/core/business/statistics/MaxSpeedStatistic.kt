@@ -15,9 +15,9 @@ internal class MaxSpeedStatistic(
 
         return super.toString() + if (activity != null) {
             if (activity?.type == "Run") {
-                activity?.maxSpeed?.times(1000)?.let { " : %s/km".format(it.formatSeconds()) }
+                activity?.maxSpeed?.times(1000)?.let { "%s/km".format(it.formatSeconds()) }
             } else {
-                " : %.02f km/h".format(activity?.maxSpeed?.times(3600)?.div(1000))
+                "%.02f km/h".format(activity?.maxSpeed?.times(3600)?.div(1000))
             }
         } else {
             " Not available"

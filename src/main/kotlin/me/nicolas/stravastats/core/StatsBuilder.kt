@@ -13,12 +13,12 @@ internal class StatsBuilder {
     fun computeStats(activities: List<Activity>): List<Statistic> {
 
         return listOf(
-            GlobalStatistic("Nb activities", activities, " : %d", List<Activity>::size),
+            GlobalStatistic("Nb activities", activities, "%d", List<Activity>::size),
 
-            GlobalStatistic("Total distance", activities, " : %.2f km")
+            GlobalStatistic("Total distance", activities, "%.2f km")
             { activityList: List<Activity> -> activityList.sumByDouble { it.distance } / 1000 },
 
-            GlobalStatistic("Total elevation", activities, " : %.2f m")
+            GlobalStatistic("Total elevation", activities, "%.2f m")
             { activityList: List<Activity> -> activityList.sumByDouble { it.totalElevationGain } },
 
             MaxDistanceStatistic(activities),

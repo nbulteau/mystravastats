@@ -5,14 +5,19 @@ import java.time.format.DateTimeFormatter
 
 var inFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
-var outFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE dd MMMM yyyy - HH:mm:ss")
+var outFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE dd MMMM yyyy - HH:mm")
 
 fun Int.formatSeconds(): String {
     val hours = (this - (this % 3600)) / 3600
-    if (hours != 0) {
-        return String.format("%02dh %02dm %02ds", hours, (this % 3600) / 60, this % 60)
+    val min = ((this % 3600) / 60)
+
+    if (hours == 0) {
+        if (min == 0) {
+            return String.format("%02ds", this % 60)
+        }
+        return String.format("%02dm %02ds", min, this % 60)
     }
-    return String.format("%02dm %02ds", (this % 3600) / 60, this % 60)
+    return String.format("%02dh %02dm %02ds", hours, min, this % 60)
 }
 
 fun Double.formatSeconds(): String {

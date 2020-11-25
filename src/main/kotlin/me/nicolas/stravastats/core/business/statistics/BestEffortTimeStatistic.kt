@@ -67,8 +67,8 @@ internal open class BestEffortTimeStatistic(
 
     protected open fun result(bestActivityEffort: ActivityEffort?) =
         if (bestActivityEffort != null) {
-            " : %.0f m".format(bestActivityEffort.distance) + bestActivityEffort
+            "%.0f m".format(bestActivityEffort.distance) + bestActivityEffort
         } else {
-            " : Not available"
+            "Not available"
         }
 }

@@ -61,9 +61,9 @@ internal open class BestEffortDistanceStatistic(
 
     override fun toString() =
         super.toString() + if (bestActivityEffort != null) {
-            " : %s".format(bestActivityEffort.seconds.formatSeconds()) + bestActivityEffort
+            "%s".format(bestActivityEffort.seconds.formatSeconds()) + bestActivityEffort
         } else {
-            " : Not available"
+            "Not available"
         } + if (activity != null) {
             " - ${activity?.name} (${activity?.startDateLocal?.formatDate()})"
         } else {
