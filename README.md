@@ -39,6 +39,7 @@ My Strava Stats needs several parameters :
 * -year: the year you request (default value is 2020).
 * -file: use locally download activities.
 
+Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava.
 For people with a huge amount of long activities, I recommend to increase memory for example : -Xmx2048m (Set the maximum memory size to 2048 megabytes).
 
 ```
