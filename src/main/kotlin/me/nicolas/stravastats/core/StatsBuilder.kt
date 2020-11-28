@@ -45,7 +45,10 @@ internal class StatsBuilder {
                 BestEffortDistanceStatistic("Best 1000 m", activities, 1000.0),
                 BestEffortDistanceStatistic("Best 10000 m", activities, 10000.0),
                 BestEffortDistanceStatistic("Best half Marathon", activities, 21097.0),
-                BestEffortDistanceStatistic("Best Marathon", activities, 42195.0)
+                BestEffortDistanceStatistic("Best Marathon", activities, 42195.0),
+                BestEffortTimeStatistic("Best 1 h", activities, 60 * 60),
+                BestEffortTimeStatistic("Best 2 h", activities, 2 * 60 * 60),
+                BestEffortTimeStatistic("Best 3 h", activities, 3 * 60 * 60),
             )
         )
 
