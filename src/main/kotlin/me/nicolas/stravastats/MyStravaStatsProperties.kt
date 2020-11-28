@@ -1,6 +1,6 @@
 package me.nicolas.stravastats
 
-class StravaStatsProperties {
+class MyStravaStatsProperties {
 
     val strava = Strava()
 
@@ -9,6 +9,7 @@ class StravaStatsProperties {
          * Activities page size
          */
         var pagesize: Int = 100
+        lateinit var url: String
     }
 
     /**

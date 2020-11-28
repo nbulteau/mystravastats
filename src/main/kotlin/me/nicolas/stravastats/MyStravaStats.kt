@@ -2,6 +2,9 @@ package me.nicolas.stravastats
 
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.ParameterException
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import me.nicolas.stravastats.core.ActivityLoader
 import me.nicolas.stravastats.core.StatsBuilder
 import me.nicolas.stravastats.core.StravaService
@@ -12,9 +15,9 @@ import me.nicolas.stravastats.infrastructure.dao.Activity
 
 internal class MyStravaStats(incomingArgs: Array<String>) {
 
-    private val stravaStatsProperties = StravaStatsProperties()
+    private val stravaStatsProperties = loadPropertiesFromFile()
 
-    private val stravaApi = StravaApi()
+    private val stravaApi = StravaApi(stravaStatsProperties)
 
     private val statsBuilder = StatsBuilder()
 
@@ -36,7 +39,7 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
     fun run() {
         val startTime = System.currentTimeMillis()
 
-        val activities = loadActivities(parameters)
+        val activities = loadActivities()
 
         if (stravaStatsProperties.removingNonMovingSections) {
             activities.forEach { it.removeNonMoving() }
@@ -51,22 +54,21 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         println("Execution time = ${System.currentTimeMillis() - startTime} ms")
     }
 
+    /**
+     * Display statistics
+     */
     private fun displayStatistics(activities: List<Activity>) {
         val stravaStats = stravaService.computeStatistics(activities)
         stravaStats.displayStatistics()
     }
 
+    /**
+     * Display activities
+     */
     private fun displayActivities(activities: List<Activity>) {
         println("* Activities")
-        // apply filter if exist
-        val filteredActivities = if (parameters.filter != null) {
-            val lowBoundary = parameters.filter!! - (5 * parameters.filter!! / 100)
-            val highBoundary = parameters.filter!! + (5 * parameters.filter!! / 100)
+        val filteredActivities = filterActivities(activities)
 
-            activities.filter { activity -> activity.distance > lowBoundary && activity.distance < highBoundary }
-        } else {
-            activities
-        }
         println("** Rides")
         doDisplayActivities(filteredActivities.filter { it.type == "Ride" })
         println("** Run")
@@ -75,6 +77,25 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         doDisplayActivities(filteredActivities.filter { it.type == "Hike" })
     }
 
+    /**
+     * Apply filter if exist.
+     * @param activities activities to filter.
+     */
+    private fun filterActivities(activities: List<Activity>): List<Activity> {
+        return if (parameters.filter != null) {
+            val lowBoundary = parameters.filter!! - (5 * parameters.filter!! / 100)
+            val highBoundary = parameters.filter!! + (5 * parameters.filter!! / 100)
+
+            activities.filter { activity -> activity.distance > lowBoundary && activity.distance < highBoundary }
+        } else {
+            activities
+        }
+    }
+
+    /**
+     * Display activities.
+     * @param activities activities to display.
+     */
     private fun doDisplayActivities(activities: List<Activity>) {
 
         // if no activities : nothing to do
@@ -108,7 +129,10 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         }
     }
 
-    private fun loadActivities(parameters: Parameters): List<Activity> = when {
+    /**
+     * LoadActivities
+     */
+    private fun loadActivities(): List<Activity> = when {
         // from file
         parameters.file != null -> activityLoader.getActivitiesFromFile(
             parameters.file!!
@@ -127,6 +151,18 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
             parameters.code!!
         )
         else -> throw ParameterException("-file, -code or -accessToken must be provided")
+    }
+
+    /**
+     * Load properties from application.yml
+     */
+    private fun loadPropertiesFromFile(): MyStravaStatsProperties {
+
+        val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
+        mapper.registerModule(KotlinModule()) // Enable Kotlin support
+
+        val inputStream = javaClass.getResourceAsStream("/application.yml")
+        return mapper.readValue(inputStream, MyStravaStatsProperties::class.java)
     }
 }
 

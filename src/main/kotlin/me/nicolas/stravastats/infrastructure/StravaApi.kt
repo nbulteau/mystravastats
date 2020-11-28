@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import khttp.get
 import khttp.post
+import me.nicolas.stravastats.MyStravaStatsProperties
 import me.nicolas.stravastats.infrastructure.dao.Activity
 import me.nicolas.stravastats.infrastructure.dao.Stream
 import me.nicolas.stravastats.infrastructure.dao.Token
@@ -13,10 +14,9 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 
-internal class StravaApi {
-    companion object {
-        const val stravaUrl = "https://www.strava.com"
-    }
+internal class StravaApi(
+    private val properties: MyStravaStatsProperties
+) {
 
     private val logger: Logger = LoggerFactory.getLogger(StravaApi::class.java)
 
@@ -28,7 +28,7 @@ internal class StravaApi {
 
         val activities = mutableListOf<Activity>()
         var page = 1
-        var url = "$stravaUrl/api/v3/athlete/activities?per_page=100"
+        var url = "${properties.strava.url}/api/v3/athlete/activities?per_page=${properties.strava.pagesize}"
         url += "&before=${before.atZone(ZoneId.of("Europe/Paris")).toEpochSecond()}"
         url += "&after=${after.atZone(ZoneId.of("Europe/Paris")).toEpochSecond()}"
 
@@ -48,7 +48,7 @@ internal class StravaApi {
         logger.info("Get streams for ${activity.name}")
 
         val url =
-            "$stravaUrl/api/v3/activities/${activity.id}/streams?keys=time,distance,altitude,moving&key_by_type=true"
+            "${properties.strava.url}/api/v3/activities/${activity.id}/streams?keys=time,distance,altitude,moving&key_by_type=true"
 
         val requestHeaders = buildRequestHeaders(accessToken)
         val response = get(url, requestHeaders)
@@ -63,7 +63,7 @@ internal class StravaApi {
 
         logger.info("Get token")
 
-        val url = "$stravaUrl/api/v3/oauth/token"
+        val url = "${properties.strava.url}/api/v3/oauth/token"
 
         val payload = mapOf(
             "client_id" to clientId,

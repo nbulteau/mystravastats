@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectWriter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import me.nicolas.stravastats.StravaStatsProperties
+import me.nicolas.stravastats.MyStravaStatsProperties
 import me.nicolas.stravastats.infrastructure.StravaApi
 import me.nicolas.stravastats.infrastructure.dao.Activity
 import me.nicolas.stravastats.infrastructure.dao.Stream
@@ -15,7 +15,7 @@ import java.nio.file.Paths
 import java.time.LocalDateTime
 
 internal class ActivityLoader(
-    private val stravaStatsProperties: StravaStatsProperties,
+    private val myStravaStatsProperties: MyStravaStatsProperties,
     private val stravaApi: StravaApi
 ) {
 
@@ -61,7 +61,7 @@ internal class ActivityLoader(
             after = LocalDateTime.of(year, 1, 1, 0, 0)
         )
 
-        if (stravaStatsProperties.saveActivitiesOnDisk) {
+        if (myStravaStatsProperties.saveActivitiesOnDisk) {
             val activitiesDirectoryName = "strava-$clientId-$year"
             // create a File object for the parent directory
             val activitiesDirectory = File(activitiesDirectoryName)
