@@ -47,7 +47,8 @@ internal class StravaApi {
 
         logger.info("Get streams for ${activity.name}")
 
-        val url = "$stravaUrl/api/v3/activities/${activity.id}/streams?keys=time,distance,moving&key_by_type=true"
+        val url =
+            "$stravaUrl/api/v3/activities/${activity.id}/streams?keys=time,distance,altitude,moving&key_by_type=true"
 
         val requestHeaders = buildRequestHeaders(accessToken)
         val response = get(url, requestHeaders)

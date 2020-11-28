@@ -9,7 +9,8 @@ import me.nicolas.stravastats.infrastructure.dao.Activity
 internal data class ActivityEffort(
     val activity: Activity,
     val distance: Double,
-    val seconds: Int
+    val seconds: Int,
+    val altitude: Double,
 ) {
     override fun toString(): String {
 

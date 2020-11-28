@@ -31,12 +31,19 @@ internal open class BestEffortTimeStatistic(
 
         val distance = activity.stream?.distance?.data!!
         val time = activity.stream?.time?.data!!
+        val altitudes = activity.stream?.altitude?.data!!
+
         val streamDataSize = distance.size
 
         do {
             val distStart: Double = distance[idxStart]
             val distEnd: Double = distance[idxEnd]
             val totalDistance = distEnd - distStart
+
+            val altitudeStart: Double = altitudes[idxStart]
+            val altitudeEnd: Double = altitudes[idxEnd]
+            val totalAltitude = altitudeEnd - altitudeStart
+
             val timeStart: Int = time[idxStart]
             val timeEnd: Int = time[idxEnd]
             val totalTime = timeEnd - timeStart
@@ -48,8 +55,7 @@ internal open class BestEffortTimeStatistic(
 
                 if (estimatedDistanceForTime > maxDist) {
                     maxDist = estimatedDistanceForTime
-                    bestEffort =
-                        ActivityEffort(activity, maxDist, seconds)
+                    bestEffort = ActivityEffort(activity, maxDist, seconds, totalAltitude)
                 }
                 ++idxStart
             }

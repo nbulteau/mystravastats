@@ -129,26 +129,33 @@ data class Activity(
 
         var totDistance = 0.0
         var totSeconds = 0
+        var totAltitude = 0.0
+
         val streamWithoutNonMovingData = Stream(
             Distance(mutableListOf(), 0, "high", "distance"),
             Time(mutableListOf(), 0, "high", "distance"),
-            Moving(mutableListOf(), 0, "high", "distance")
+            Moving(mutableListOf(), 0, "high", "distance"),
+            Altitude(mutableListOf(), 0, "high", "distance")
         )
-        streamWithoutNonMovingData.append(0.0, 0)
+        streamWithoutNonMovingData.append(0.0, 0, 0.0)
 
         for (index in stream!!.distance.data.indices) {
             if (stream?.moving?.data?.get(index) == true) {
                 val prevDist: Double = if (index == 0) 0.0 else stream?.distance?.data?.get(index - 1)!!
                 val prevSeconds: Int = if (index == 0) 0 else stream?.time?.data?.get(index - 1)!!
+                val prevAltitude: Double = if (index == 0) 0.0 else stream?.altitude?.data?.get(index - 1)!!
 
                 totDistance += stream?.distance?.data?.get(index)!! - prevDist
                 totSeconds += stream?.time?.data?.get(index)!! - prevSeconds
-                streamWithoutNonMovingData.append(totDistance, totSeconds)
+                totAltitude += stream?.altitude?.data?.get(index)!! - prevAltitude
+
+                streamWithoutNonMovingData.append(totDistance, totSeconds, totAltitude)
             }
         }
 
         distance = totDistance
         elapsedTime = totSeconds
+
         stream = streamWithoutNonMovingData
     }
 }

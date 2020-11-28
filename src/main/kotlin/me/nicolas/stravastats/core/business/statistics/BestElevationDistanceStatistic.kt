@@ -6,7 +6,7 @@ import me.nicolas.stravastats.core.business.formatSeconds
 import me.nicolas.stravastats.infrastructure.dao.Activity
 
 
-internal open class BestEffortDistanceStatistic(
+internal open class BestElevationDistanceStatistic(
     name: String,
     activities: List<Activity>,
     private val distance: Double
@@ -21,14 +21,14 @@ internal open class BestEffortDistanceStatistic(
     }
 
     /**
-     * Sliding window best effort for a given distance.
+     * Sliding window best elevation gain for a given distance.
      * @param activity Activity to scan.
      */
     private fun calculateBestEffort(activity: Activity): ActivityEffort? {
 
         var idxStart = 0
         var idxEnd = 0
-        var bestTime = Double.MAX_VALUE
+        var bestElevation = Double.MIN_VALUE
         var bestEffort: ActivityEffort? = null
 
         val distances = activity.stream?.distance?.data!!
@@ -53,10 +53,9 @@ internal open class BestEffortDistanceStatistic(
             if (totalDistance < distance - 0.5) { // 999.6 m would count towards 1 km
                 ++idxEnd
             } else {
-                val estimatedTimeForDistance = totalTime / totalDistance * distance
-                if (estimatedTimeForDistance < bestTime) {
-                    bestTime = estimatedTimeForDistance
-                    bestEffort = ActivityEffort(activity, distance, bestTime.toInt(), totalAltitude)
+                if (totalAltitude > bestElevation) {
+                    bestElevation = totalAltitude
+                    bestEffort = ActivityEffort(activity, distance, totalTime, bestElevation)
                 }
                 ++idxStart
             }
