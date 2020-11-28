@@ -9,23 +9,25 @@ internal data class StravaStats(
 
     fun displayStatistics() {
 
+        println("* Statistics")
+
         println()
-        println("* Rides (commute)")
+        println("** Rides (commute)")
         commuteRideStats.forEach {
             println(it)
         }
         println()
-        println("* Rides (sport)")
+        println("** Rides (sport)")
         sportRideStats.forEach {
             println(it)
         }
         println()
-        println("* Runs")
+        println("** Runs")
         runsStats.forEach {
             println(it)
         }
         println()
-        println("* Hikes")
+        println("** Hikes")
         hikesStats.forEach {
             println(it)
         }

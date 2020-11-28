@@ -32,7 +32,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass.set("me.nicolas.stravastats.StravaStatsKt")
+    mainClass.set("me.nicolas.stravastats.MyStravaStatsKt")
 }
 
 tasks.withType<Test> {
@@ -41,7 +41,7 @@ tasks.withType<Test> {
 
 tasks.withType<Jar> {
     manifest {
-        attributes("Main-Class" to "me.nicolas.stravastats.StravaStatsKt")
+        attributes("Main-Class" to "me.nicolas.stravastats.MyStravaStatsKt")
     }
 
     from(configurations.compileClasspath.map { config -> config.map { if (it.isDirectory) it else zipTree(it) } })

@@ -7,6 +7,8 @@ var inFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'H
 
 var outFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE dd MMMM yyyy - HH:mm")
 
+fun String.formatDate(): String = LocalDateTime.parse(this, inFormatter).format(outFormatter)
+
 fun Int.formatSeconds(): String {
     val hours = (this - (this % 3600)) / 3600
     val min = ((this % 3600) / 60)
@@ -34,4 +36,3 @@ fun Double.formatSeconds(): String {
     return String.format("%d:%02d", min, sec)
 }
 
-fun String.formatDate(): String = LocalDateTime.parse(this, inFormatter).format(outFormatter)
