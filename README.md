@@ -39,7 +39,7 @@ My Strava Stats needs several parameters :
 * -year: the year you request (default value is 2020).
 * -file: use locally download activities.
 * -filter: to filter activities on a specific distance in meters. For example : -filter 10000 will keep all the activities around 10000 m (+/- 5 %)
-
+* -displayActivities : to display all activities. 
 
 Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava.
 For people with a huge amount of long activities, I recommend to increase memory for example : -Xmx2048m (Set the maximum memory size to 2048 megabytes).
@@ -56,9 +56,16 @@ You can use locally download activities :
  java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json
 ```
 
-Display statistics with a filter :
+Display activities :
 
 ```
  ./gradlew jar
- java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json -filter 10000
+ java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json --displayActivities 
+```
+
+Display activities with a filter :
+
+```
+ ./gradlew jar
+ java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json --displayActivities -filter 10000
 ```
