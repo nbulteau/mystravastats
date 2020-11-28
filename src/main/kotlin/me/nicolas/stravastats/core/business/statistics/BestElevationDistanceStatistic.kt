@@ -49,7 +49,7 @@ internal open class BestElevationDistanceStatistic(
             val timeEnd: Int = times[idxEnd]
             val totalTime = timeEnd - timeStart
 
-            if (totalDistance < distance - 0.5) { // 999.6 m would count towards 1 km
+            if (totalDistance < distance - 0.5) { // 999.6 m will count towards 1 km
                 ++idxEnd
             } else {
                 if (totalAltitude > bestElevation) {
@@ -67,12 +67,12 @@ internal open class BestElevationDistanceStatistic(
         val slope = bestActivityEffort?.getSlope()
 
         return super.toString() +
-                (if (slope != null) {
+                if (slope != null) {
                     slope + if (activity != null) {
                         " - ${activity?.name} (${activity?.startDateLocal?.formatDate()})"
                     } else {
                         ""
                     }
-                } else "Not available")
+                } else "Not available"
     }
 }
