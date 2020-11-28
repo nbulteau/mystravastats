@@ -23,6 +23,9 @@ class Parameters {
     @Parameter(names = ["-year"], required = false, description = "year")
     var year: Int = 2020
 
+    @Parameter(names = ["-displayActivities"], required = false, description = "Display all activities")
+    var displayActivities: Boolean = false
+
     @Parameter(names = ["-filter"], required = false, description = "Distance filter")
     var filter: Double? = null
 }

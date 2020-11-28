@@ -2,7 +2,6 @@ package me.nicolas.stravastats.core.business.statistics
 
 import me.nicolas.stravastats.core.business.ActivityEffort
 import me.nicolas.stravastats.core.business.formatDate
-import me.nicolas.stravastats.core.business.formatSeconds
 import me.nicolas.stravastats.infrastructure.dao.Activity
 
 
@@ -14,7 +13,7 @@ internal open class BestElevationDistanceStatistic(
 
     private val bestActivityEffort = activities
         .mapNotNull { calculateBestEffort(it) }
-        .minByOrNull { it.seconds }
+        .maxByOrNull { it.altitude }
 
     init {
         activity = bestActivityEffort?.activity
@@ -64,14 +63,16 @@ internal open class BestElevationDistanceStatistic(
         return bestEffort
     }
 
-    override fun toString() =
-        super.toString() + if (bestActivityEffort != null) {
-            "%s".format(bestActivityEffort.seconds.formatSeconds()) + bestActivityEffort
-        } else {
-            "Not available"
-        } + if (activity != null) {
-            " - ${activity?.name} (${activity?.startDateLocal?.formatDate()})"
-        } else {
-            ""
-        }
+    override fun toString(): String {
+        val slope = bestActivityEffort?.getSlope()
+
+        return super.toString() +
+                (if (slope != null) {
+                    slope + if (activity != null) {
+                        " - ${activity?.name} (${activity?.startDateLocal?.formatDate()})"
+                    } else {
+                        ""
+                    }
+                } else "Not available")
+    }
 }

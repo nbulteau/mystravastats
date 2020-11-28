@@ -67,7 +67,7 @@ internal open class BestEffortDistanceStatistic(
 
     override fun toString() =
         super.toString() + if (bestActivityEffort != null) {
-            "%s".format(bestActivityEffort.seconds.formatSeconds()) + bestActivityEffort
+            bestActivityEffort.seconds.formatSeconds() + bestActivityEffort.getSpeed()
         } else {
             "Not available"
         } + if (activity != null) {

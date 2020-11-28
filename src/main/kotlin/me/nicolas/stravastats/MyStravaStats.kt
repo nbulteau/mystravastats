@@ -43,8 +43,9 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         }
 
         displayStatistics(activities)
-
-        displayActivities(activities)
+        if (parameters.displayActivities) {
+            displayActivities(activities)
+        }
 
         println()
         println("Execution time = ${System.currentTimeMillis() - startTime} ms")
@@ -87,7 +88,7 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         println(
             "Date".padEnd(32)
                     + "Description".padEnd(maxActivityNameLength + 1)
-                    + "Dist (km)".padEnd(10)
+                    + "Distance".padEnd(10)
                     + "Time".padEnd(14)
                     + "Speed"
         )
@@ -95,7 +96,7 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
             println(
                 activity.startDateLocal.formatDate().padEnd(32)
                         + activity.name.padEnd(maxActivityNameLength + 1) +
-                        "%.02f".format(activity.distance / 1000).padEnd(10)
+                        "%.02f km".format(activity.distance / 1000).padEnd(10)
                         + activity.elapsedTime.formatSeconds().padEnd(14)
                         +
                         if (activity.type == "Run") {

@@ -33,6 +33,6 @@ fun Double.formatSeconds(): String {
             ++min
         }
     }
-    return String.format("%d:%02d", min, sec)
+    return String.format("%d'%02d", min, sec)
 }
 
