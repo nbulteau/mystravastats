@@ -14,12 +14,9 @@ internal class CooperStatistic(
 ) : BestEffortTimeStatistic("Best Cooper (12 min)", activities, 12 * 60) {
 
 
-    override fun result(bestActivityEffort: ActivityEffort?) =
-        super.result(bestActivityEffort) + if (bestActivityEffort != null) {
-            " -- VO2 max = %.2f ml/kg/min".format(calculateVo2max(bestActivityEffort.distance))
-        } else {
-            " Not available"
-        }
+    override fun result(bestActivityEffort: ActivityEffort) =
+        super.result(bestActivityEffort) +
+                " -- VO2 max = %.2f ml/kg/min".format(calculateVo2max(bestActivityEffort.distance))
 
     private fun calculateVo2max(distanceIn12Min: Double): Double {
         return (distanceIn12Min - 504.9) / 44.73

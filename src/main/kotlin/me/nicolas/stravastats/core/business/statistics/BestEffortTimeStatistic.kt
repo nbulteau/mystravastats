@@ -56,12 +56,17 @@ internal open class BestEffortTimeStatistic(
     }
 
     override fun toString(): String =
-        super.toString() + result(bestActivityEffort) + if (activity != null) activity else ""
-
-    protected open fun result(bestActivityEffort: ActivityEffort?) =
-        if (bestActivityEffort != null) {
-            "%.0f m".format(bestActivityEffort.distance) + bestActivityEffort.getSpeed()
+        super.toString() + if (bestActivityEffort != null) {
+            result(bestActivityEffort) + bestActivityEffort.activity
         } else {
             "Not available"
         }
+
+    protected open fun result(bestActivityEffort: ActivityEffort) =
+        if (bestActivityEffort.distance > 1000) {
+            "%.2f km => %s".format(bestActivityEffort.distance / 1000, bestActivityEffort.activity.speed())
+        } else {
+            "%.0f m => %s".format(bestActivityEffort.distance, bestActivityEffort.activity.speed())
+        }
+
 }

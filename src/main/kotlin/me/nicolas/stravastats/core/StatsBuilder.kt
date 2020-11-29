@@ -89,4 +89,36 @@ internal class StatsBuilder {
         )
         return statistics
     }
+
+    /**
+     * Compute Hike statistics.
+     * @param activities
+     */
+    fun computeHikeStats(activities: List<Activity>): List<Statistic> {
+
+        val statistics = computeStats(activities).toMutableList()
+
+        statistics.addAll(
+            listOf(
+                BestDayStatistic("Max distance in a day", activities, "%s => %.02f km")
+                {
+                    activities
+                        .groupBy { it.startDateLocal.substringBefore('T') }
+                        .mapValues { it.value.sumByDouble { activity -> activity.distance / 1000 } }
+                        .maxByOrNull { it.value }
+                        ?.toPair()
+                },
+                BestDayStatistic("Max elevation in a day", activities, "%s => %.02f m")
+                {
+                    activities
+                        .groupBy { it.startDateLocal.substringBefore('T') }
+                        .mapValues { it.value.sumByDouble { activity -> activity.totalElevationGain } }
+                        .maxByOrNull { it.value }
+                        ?.toPair()
+                }
+            )
+        )
+
+        return statistics
+    }
 }

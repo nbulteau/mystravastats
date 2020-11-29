@@ -15,6 +15,12 @@ import me.nicolas.stravastats.infrastructure.dao.Activity
 
 internal class MyStravaStats(incomingArgs: Array<String>) {
 
+    companion object {
+        const val DATE_PAD = 34
+        const val DISTANCE_PAD = 10
+        const val TIME_PAD = 14
+    }
+
     private val stravaStatsProperties = loadPropertiesFromFile()
 
     private val stravaApi = StravaApi(stravaStatsProperties)
@@ -107,24 +113,19 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         val maxActivityNameLength = activities.maxByOrNull { it.name.length }?.name?.length!!
 
         println(
-            "Date".padEnd(32)
+            "Date".padEnd(DATE_PAD)
                     + "Description".padEnd(maxActivityNameLength + 1)
-                    + "Distance".padEnd(10)
-                    + "Time".padEnd(14)
+                    + "Distance".padEnd(DISTANCE_PAD)
+                    + "Time".padEnd(TIME_PAD)
                     + "Speed"
         )
         activities.forEach { activity ->
             println(
-                activity.startDateLocal.formatDate().padEnd(32)
+                activity.startDateLocal.formatDate().padEnd(DATE_PAD)
                         + activity.name.padEnd(maxActivityNameLength + 1) +
-                        "%.02f km".format(activity.distance / 1000).padEnd(10)
-                        + activity.elapsedTime.formatSeconds().padEnd(14)
-                        +
-                        if (activity.type == "Run") {
-                            "${(activity.elapsedTime * 1000 / activity.distance).formatSeconds()}/km"
-                        } else {
-                            "%.02f km/h".format(activity.distance / activity.elapsedTime * 3600 / 1000)
-                        }
+                        "%.02f km".format(activity.distance / 1000).padEnd(DISTANCE_PAD)
+                        + activity.elapsedTime.formatSeconds().padEnd(TIME_PAD)
+                        + activity.speed()
             )
         }
     }

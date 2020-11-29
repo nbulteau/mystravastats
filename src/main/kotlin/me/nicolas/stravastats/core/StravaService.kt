@@ -14,7 +14,7 @@ internal class StravaService(
         val commuteRideStats = statsBuilder.computeStats(activities.filter { it.type == "Ride" && it.commute })
         val sportRideStats = statsBuilder.computeBikeStats(activities.filter { it.type == "Ride" && !it.commute })
         val runsStats = statsBuilder.computeRunStats(activities.filter { it.type == "Run" })
-        val hikesStats = statsBuilder.computeStats(activities.filter { it.type == "Hike" })
+        val hikesStats = statsBuilder.computeHikeStats(activities.filter { it.type == "Hike" })
 
         return StravaStats(commuteRideStats, sportRideStats, runsStats, hikesStats)
     }

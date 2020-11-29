@@ -12,12 +12,7 @@ internal data class ActivityEffort(
     val seconds: Int,
     val altitude: Double,
 ) {
-    fun getSpeed() = if (activity.type == "Run") {
-        " => %s/km".format((seconds * 1000 / distance).formatSeconds())
-    } else {
-        " => %.02f km/h".format(distance / seconds * 3600 / 1000)
-    }
-
+    fun getSpeed() = activity.speed()
 
     fun getSlope() = "%.02f %%".format(100 * altitude / distance)
 }

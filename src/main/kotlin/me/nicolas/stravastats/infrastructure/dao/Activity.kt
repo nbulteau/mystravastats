@@ -4,6 +4,7 @@ package me.nicolas.stravastats.infrastructure.dao
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import me.nicolas.stravastats.core.business.formatDate
+import me.nicolas.stravastats.core.business.formatSeconds
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Activity(
@@ -160,9 +161,14 @@ data class Activity(
         stream = streamWithoutNonMovingData
     }
 
-    override fun toString(): String {
-        return " - $name (${startDateLocal.formatDate()})"
+    override fun toString() = " - $name (${startDateLocal.formatDate()})"
 
+    fun speed(): String {
+        return if (type == "Run") {
+            "${(elapsedTime * 1000 / distance).formatSeconds()}/km"
+        } else {
+            "%.02f km/h".format(distance / elapsedTime * 3600 / 1000)
+        }
     }
 }
 

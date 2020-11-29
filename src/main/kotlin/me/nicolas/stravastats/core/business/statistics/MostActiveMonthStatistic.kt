@@ -1,6 +1,6 @@
 package me.nicolas.stravastats.core.business.statistics
 
-import me.nicolas.stravastats.core.business.inFormatter
+import me.nicolas.stravastats.core.business.inDateTimeFormatter
 import me.nicolas.stravastats.infrastructure.dao.Activity
 import java.time.LocalDateTime
 import java.time.format.TextStyle
@@ -15,7 +15,7 @@ internal class MostActiveMonthStatistic(
             .mapValues { (_, activities) -> activities.sumByDouble { it.distance } }
             .maxByOrNull { it.value }
 
-    private fun getMonth(startDateLocal: String) = LocalDateTime.parse(startDateLocal, inFormatter).month
+    private fun getMonth(startDateLocal: String) = LocalDateTime.parse(startDateLocal, inDateTimeFormatter).month
 
     override fun toString(): String {
         return super.toString() + "%s with %.2f km".format(

@@ -3,11 +3,13 @@ package me.nicolas.stravastats.core.business
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-var inFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+var inDateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
-var outFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE dd MMMM yyyy - HH:mm")
+var outDateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE dd MMMM yyyy - HH:mm")
 
-fun String.formatDate(): String = LocalDateTime.parse(this, inFormatter).format(outFormatter)
+var dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE dd MMMM yyyy")
+
+fun String.formatDate(): String = LocalDateTime.parse(this, inDateTimeFormatter).format(outDateTimeFormatter)
 
 fun Int.formatSeconds(): String {
     val hours = (this - (this % 3600)) / 3600

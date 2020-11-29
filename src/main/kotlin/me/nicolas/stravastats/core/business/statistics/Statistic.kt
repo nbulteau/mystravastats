@@ -7,7 +7,7 @@ abstract class Statistic(
     protected val activities: List<Activity>
 ) {
     override fun toString(): String {
-        return "${name.padEnd(20)} : "
+        return "${name.padEnd(22)} : "
     }
 }
 
@@ -23,7 +23,7 @@ internal class GlobalStatistic(
     }
 }
 
-internal abstract class ActivityStatistic(
+abstract class ActivityStatistic(
     name: String,
     activities: List<Activity>
 ) : Statistic(name, activities) {
