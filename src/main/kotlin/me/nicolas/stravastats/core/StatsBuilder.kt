@@ -39,7 +39,6 @@ internal class StatsBuilder {
             listOf(
                 CooperStatistic(activities),
                 VVO2maxStatistic(activities),
-                BestEffortDistanceStatistic("Best 100 m", activities, 100.0),
                 BestEffortDistanceStatistic("Best 200 m", activities, 200.0),
                 BestEffortDistanceStatistic("Best 400 m", activities, 400.0),
                 BestEffortDistanceStatistic("Best 1000 m", activities, 1000.0),

@@ -46,7 +46,8 @@ internal open class BestEffortDistanceStatistic(
                 ++idxEnd
             } else {
                 val estimatedTimeForDistance = distance / totalDistance * totalTime
-                if (estimatedTimeForDistance < bestTime && totalTime > 0) {
+                // estimatedTimeForDistance > 1 to prevent corrupted data
+                if (estimatedTimeForDistance < bestTime && estimatedTimeForDistance > 1) {
                     bestTime = estimatedTimeForDistance
                     bestEffort = ActivityEffort(activity, distance, bestTime.toInt(), totalAltitude)
                 }
