@@ -65,8 +65,9 @@ internal class StatsBuilder {
         statistics.addAll(
             listOf(
                 MaxSpeedStatistic(activities),
+                BestEffortDistanceStatistic("Best 250 m", activities, 250.0),
                 BestEffortDistanceStatistic("Best 500 m", activities, 500.0),
-                BestEffortDistanceStatistic("Best 1 km", activities, 1000.0),
+                BestEffortDistanceStatistic("Best 1000 m", activities, 1000.0),
                 BestEffortDistanceStatistic("Best 5 km", activities, 5000.0),
                 BestEffortDistanceStatistic("Best 10 km", activities, 10000.0),
                 BestEffortDistanceStatistic("Best 20 km", activities, 20000.0),
@@ -81,8 +82,9 @@ internal class StatsBuilder {
                 BestElevationDistanceStatistic("Max slope for 250 m", activities, 250.0),
                 BestElevationDistanceStatistic("Max slope for 500 m", activities, 500.0),
                 BestElevationDistanceStatistic("Max slope for 1000 m", activities, 1000.0),
-                BestElevationDistanceStatistic("Max slope for 10000 m", activities, 10000.0),
-                BestElevationDistanceStatistic("Max slope for 20000 m", activities, 20000.0),
+                BestElevationDistanceStatistic("Max slope for 5 km", activities, 5000.0),
+                BestElevationDistanceStatistic("Max slope for 10 km", activities, 10000.0),
+                BestElevationDistanceStatistic("Max slope for 20 km", activities, 20000.0),
             )
         )
         return statistics
