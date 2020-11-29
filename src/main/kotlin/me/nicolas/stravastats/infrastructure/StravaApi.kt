@@ -10,6 +10,7 @@ import me.nicolas.stravastats.infrastructure.dao.Stream
 import me.nicolas.stravastats.infrastructure.dao.Token
 import java.time.LocalDateTime
 import java.time.ZoneId
+import kotlin.system.exitProcess
 
 
 internal class StravaApi(
@@ -29,6 +30,10 @@ internal class StravaApi(
         val requestHeaders = buildRequestHeaders(accessToken)
         do {
             val response = get("$url&page=${page++}", requestHeaders)
+            if (response.statusCode == 401) {
+                println("Invalid accessToken : $accessToken")
+                exitProcess(-1)
+            }
             val result: List<Activity> = mapper.readValue(response.content)
 
             activities.addAll(result)

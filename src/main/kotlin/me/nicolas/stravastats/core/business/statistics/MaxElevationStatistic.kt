@@ -14,7 +14,7 @@ internal class MaxElevationStatistic(
         return super.toString() + if (activity != null) {
             "%.2f m".format(activity?.totalElevationGain) + activity
         } else {
-            " Not available"
+            "Not available"
         }
     }
 }

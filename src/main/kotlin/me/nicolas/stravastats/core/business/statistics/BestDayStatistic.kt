@@ -13,8 +13,11 @@ class BestDayStatistic(
 
     override fun toString(): String {
         val pair = function(activities)
-        val date = LocalDate.parse(pair?.first)
-
-        return super.toString() + formatString.format(date.format(dateFormatter), pair?.second)
+        return super.toString() + if (pair != null) {
+            val date = LocalDate.parse(pair.first)
+            formatString.format(date.format(dateFormatter), pair.second)
+        } else {
+            "Not available"
+        }
     }
 }
