@@ -3,6 +3,7 @@ package me.nicolas.stravastats.infrastructure.dao
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import me.nicolas.stravastats.core.business.formatDate
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Activity(
@@ -157,6 +158,11 @@ data class Activity(
         elapsedTime = totSeconds
 
         stream = streamWithoutNonMovingData
+    }
+
+    override fun toString(): String {
+        return " - $name (${startDateLocal.formatDate()})"
+
     }
 }
 

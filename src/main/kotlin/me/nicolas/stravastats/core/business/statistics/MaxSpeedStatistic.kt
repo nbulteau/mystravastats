@@ -18,7 +18,7 @@ internal class MaxSpeedStatistic(
                 activity?.maxSpeed?.times(1000)?.let { "%s/km".format(it.formatSeconds()) }
             } else {
                 "%.02f km/h".format(activity?.maxSpeed?.times(3600)?.div(1000))
-            }
+            } + activity
         } else {
             " Not available"
         }

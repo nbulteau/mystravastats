@@ -1,7 +1,6 @@
 package me.nicolas.stravastats.core.business.statistics
 
 import me.nicolas.stravastats.core.business.ActivityEffort
-import me.nicolas.stravastats.core.business.formatDate
 import me.nicolas.stravastats.core.business.formatSeconds
 import me.nicolas.stravastats.infrastructure.dao.Activity
 
@@ -38,17 +37,9 @@ internal open class BestEffortDistanceStatistic(
         val streamDataSize = activity.stream?.distance?.originalSize!!
 
         do {
-            val distStart: Double = distances[idxStart]
-            val distEnd: Double = distances[idxEnd]
-            val totalDistance = distEnd - distStart
-
-            val altitudeStart: Double = altitudes[idxStart]
-            val altitudeEnd: Double = altitudes[idxEnd]
-            val totalAltitude = altitudeEnd - altitudeStart
-
-            val timeStart: Int = times[idxStart]
-            val timeEnd: Int = times[idxEnd]
-            val totalTime = timeEnd - timeStart
+            val totalDistance = distances[idxEnd] - distances[idxStart]
+            val totalAltitude = altitudes[idxEnd] - altitudes[idxStart]
+            val totalTime = times[idxEnd] - times[idxStart]
 
             if (totalDistance < distance - 0.5) { // 999.6 m would count towards 1 km
                 ++idxEnd
@@ -67,12 +58,8 @@ internal open class BestEffortDistanceStatistic(
 
     override fun toString() =
         super.toString() + if (bestActivityEffort != null) {
-            bestActivityEffort.seconds.formatSeconds() + bestActivityEffort.getSpeed()
+            bestActivityEffort.seconds.formatSeconds() + bestActivityEffort.getSpeed() + if (activity != null) activity else ""
         } else {
             "Not available"
-        } + if (activity != null) {
-            " - ${activity?.name} (${activity?.startDateLocal?.formatDate()})"
-        } else {
-            ""
         }
 }

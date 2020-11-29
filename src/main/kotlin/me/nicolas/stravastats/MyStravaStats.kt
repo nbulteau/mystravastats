@@ -121,7 +121,7 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
                         + activity.elapsedTime.formatSeconds().padEnd(14)
                         +
                         if (activity.type == "Run") {
-                            "%s/km".format((activity.elapsedTime * 1000 / activity.distance).formatSeconds())
+                            "${(activity.elapsedTime * 1000 / activity.distance).formatSeconds()}/km"
                         } else {
                             "%.02f km/h".format(activity.distance / activity.elapsedTime * 3600 / 1000)
                         }

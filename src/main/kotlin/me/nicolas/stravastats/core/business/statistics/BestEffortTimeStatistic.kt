@@ -1,7 +1,6 @@
 package me.nicolas.stravastats.core.business.statistics
 
 import me.nicolas.stravastats.core.business.ActivityEffort
-import me.nicolas.stravastats.core.business.formatDate
 import me.nicolas.stravastats.infrastructure.dao.Activity
 
 
@@ -29,24 +28,16 @@ internal open class BestEffortTimeStatistic(
         var maxDist = 0.0
         var bestEffort: ActivityEffort? = null
 
-        val distance = activity.stream?.distance?.data!!
-        val time = activity.stream?.time?.data!!
+        val distances = activity.stream?.distance?.data!!
+        val times = activity.stream?.time?.data!!
         val altitudes = activity.stream?.altitude?.data!!
 
-        val streamDataSize = distance.size
+        val streamDataSize = distances.size
 
         do {
-            val distStart: Double = distance[idxStart]
-            val distEnd: Double = distance[idxEnd]
-            val totalDistance = distEnd - distStart
-
-            val altitudeStart: Double = altitudes[idxStart]
-            val altitudeEnd: Double = altitudes[idxEnd]
-            val totalAltitude = altitudeEnd - altitudeStart
-
-            val timeStart: Int = time[idxStart]
-            val timeEnd: Int = time[idxEnd]
-            val totalTime = timeEnd - timeStart
+            val totalDistance = distances[idxEnd] - distances[idxStart]
+            val totalAltitude = altitudes[idxEnd] - altitudes[idxStart]
+            val totalTime = times[idxEnd] - times[idxStart]
 
             if (totalTime < seconds) {
                 ++idxEnd
@@ -64,12 +55,8 @@ internal open class BestEffortTimeStatistic(
         return bestEffort
     }
 
-    override fun toString() =
-        super.toString() + result(bestActivityEffort) + if (activity != null) {
-            " - ${activity?.name} (${activity?.startDateLocal?.formatDate()})"
-        } else {
-            ""
-        }
+    override fun toString(): String =
+        super.toString() + result(bestActivityEffort) + if (activity != null) activity else ""
 
     protected open fun result(bestActivityEffort: ActivityEffort?) =
         if (bestActivityEffort != null) {

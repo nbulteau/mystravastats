@@ -78,6 +78,7 @@ internal class StatsBuilder {
                 BestEffortTimeStatistic("Best 3 h", activities, 3 * 60 * 60),
                 BestEffortTimeStatistic("Best 4 h", activities, 4 * 60 * 60),
                 BestEffortTimeStatistic("Best 5 h", activities, 5 * 60 * 60),
+                BestElevationDistanceStatistic("Max slope for 250 m", activities, 250.0),
                 BestElevationDistanceStatistic("Max slope for 500 m", activities, 500.0),
                 BestElevationDistanceStatistic("Max slope for 1000 m", activities, 1000.0),
                 BestElevationDistanceStatistic("Max slope for 10000 m", activities, 10000.0),
