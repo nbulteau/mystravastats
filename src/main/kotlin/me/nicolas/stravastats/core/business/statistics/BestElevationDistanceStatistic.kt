@@ -15,6 +15,7 @@ internal open class BestElevationDistanceStatistic(
         .maxByOrNull { it.altitude }
 
     init {
+        require(distance > 100) { "Distance must be > 100 meters" }
         activity = bestActivityEffort?.activity
     }
 
@@ -55,13 +56,11 @@ internal open class BestElevationDistanceStatistic(
     }
 
     override fun toString(): String {
-        val slope = bestActivityEffort?.getSlope()
 
-        return super.toString() +
-                if (slope != null) {
-                    slope + if (activity != null) activity else ""
-                } else {
-                    "Not available"
-                }
+        return super.toString() + if (bestActivityEffort != null) {
+            bestActivityEffort.getSlope() + bestActivityEffort.activity
+        } else {
+            "Not available"
+        }
     }
 }

@@ -16,6 +16,7 @@ internal open class BestEffortDistanceStatistic(
         .minByOrNull { it.seconds }
 
     init {
+        require(distance > 100) { "Distance must be > 100 meters" }
         activity = bestActivityEffort?.activity
     }
 
@@ -44,8 +45,8 @@ internal open class BestEffortDistanceStatistic(
             if (totalDistance < distance - 0.5) { // 999.6 m would count towards 1 km
                 ++idxEnd
             } else {
-                val estimatedTimeForDistance = totalTime / totalDistance * distance
-                if (estimatedTimeForDistance < bestTime) {
+                val estimatedTimeForDistance = distance / totalDistance * totalTime
+                if (estimatedTimeForDistance < bestTime && totalTime > 0) {
                     bestTime = estimatedTimeForDistance
                     bestEffort = ActivityEffort(activity, distance, bestTime.toInt(), totalAltitude)
                 }
@@ -58,7 +59,11 @@ internal open class BestEffortDistanceStatistic(
 
     override fun toString() =
         super.toString() + if (bestActivityEffort != null) {
-            "%s m => %s%s".format(bestActivityEffort.seconds.formatSeconds(), activity?.speed(), activity ?: "")
+            "%s => %s%s".format(
+                bestActivityEffort.seconds.formatSeconds(),
+                bestActivityEffort.getSpeed(),
+                bestActivityEffort.activity
+            )
         } else {
             "Not available"
         }

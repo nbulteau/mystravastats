@@ -15,6 +15,7 @@ internal open class BestEffortTimeStatistic(
         .maxByOrNull { it.distance }
 
     init {
+        require(seconds > 10) { "Distance must be > 10 seconds" }
         activity = bestActivityEffort?.activity
     }
 
@@ -64,9 +65,9 @@ internal open class BestEffortTimeStatistic(
 
     protected open fun result(bestActivityEffort: ActivityEffort) =
         if (bestActivityEffort.distance > 1000) {
-            "%.2f km => %s".format(bestActivityEffort.distance / 1000, bestActivityEffort.activity.speed())
+            "%.2f km => %s".format(bestActivityEffort.distance / 1000, bestActivityEffort.getSpeed())
         } else {
-            "%.0f m => %s".format(bestActivityEffort.distance, bestActivityEffort.activity.speed())
+            "%.0f m => %s".format(bestActivityEffort.distance, bestActivityEffort.getSpeed())
         }
 
 }
