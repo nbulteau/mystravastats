@@ -14,7 +14,7 @@ internal data class ActivityEffort(
 ) {
     fun getSpeed(): String {
         return if (activity.type == "Run") {
-            "${(seconds * 1000 / distance).formatSeconds()}/km"
+            "%s/km".format((seconds * 1000 / distance).formatSeconds())
         } else {
             "%.02f km/h".format(distance / seconds * 3600 / 1000)
         }
