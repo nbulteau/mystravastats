@@ -17,10 +17,6 @@ dependencies {
     // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    implementation("org.slf4j:slf4j-api:1.7.30")
-    implementation("ch.qos.logback:logback-classic:1.2.3")
-    implementation("ch.qos.logback:logback-core:1.2.3")
-
     implementation("com.beust:jcommander:1.78")
     implementation("org.danilopianini:khttp:0.1.0-dev1u+b23a8f7")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.11.3")

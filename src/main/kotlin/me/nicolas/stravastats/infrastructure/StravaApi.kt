@@ -8,8 +8,6 @@ import me.nicolas.stravastats.MyStravaStatsProperties
 import me.nicolas.stravastats.infrastructure.dao.Activity
 import me.nicolas.stravastats.infrastructure.dao.Stream
 import me.nicolas.stravastats.infrastructure.dao.Token
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.time.ZoneId
 
@@ -18,13 +16,9 @@ internal class StravaApi(
     private val properties: MyStravaStatsProperties
 ) {
 
-    private val logger: Logger = LoggerFactory.getLogger(StravaApi::class.java)
-
     private val mapper = jacksonObjectMapper()
 
     fun getActivities(accessToken: String, before: LocalDateTime, after: LocalDateTime): List<Activity> {
-
-        logger.info("Get activities before : $before and after : $after")
 
         val activities = mutableListOf<Activity>()
         var page = 1
@@ -45,8 +39,6 @@ internal class StravaApi(
 
     fun getActivityStream(accessToken: String, activity: Activity): Stream {
 
-        logger.info("Get streams for ${activity.name}")
-
         val url =
             "${properties.strava.url}/api/v3/activities/${activity.id}/streams?keys=time,distance,altitude,moving&key_by_type=true"
 
@@ -60,8 +52,6 @@ internal class StravaApi(
     }
 
     fun getToken(clientId: String, clientSecret: String, authorizationCode: String): Token {
-
-        logger.info("Get token")
 
         val url = "${properties.strava.url}/api/v3/oauth/token"
 
