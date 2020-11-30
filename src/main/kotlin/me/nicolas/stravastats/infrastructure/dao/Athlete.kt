@@ -9,13 +9,13 @@ data class Athlete(
     @JsonProperty("badge_type_id")
     val badgeTypeId: Int,
     @JsonProperty("city")
-    val city: String,
+    val city: String?,
     @JsonProperty("country")
-    val country: String,
+    val country: String?,
     @JsonProperty("created_at")
-    val createdAt: String,
+    val createdAt: String?,
     @JsonProperty("firstname")
-    val firstname: String,
+    val firstname: String?,
     @JsonProperty("follower")
     val follower: Any?,
     @JsonProperty("friend")
@@ -23,23 +23,23 @@ data class Athlete(
     @JsonProperty("id")
     val id: Int,
     @JsonProperty("lastname")
-    val lastname: String,
+    val lastname: String?,
     @JsonProperty("premium")
     val premium: Boolean,
     @JsonProperty("profile")
-    val profile: String,
+    val profile: String?,
     @JsonProperty("profile_medium")
-    val profileMedium: String,
+    val profileMedium: String?,
     @JsonProperty("resource_state")
-    val resourceState: Int,
+    val resourceState: Int?,
     @JsonProperty("sex")
-    val sex: String,
+    val sex: String?,
     @JsonProperty("state")
-    val state: String,
+    val state: String?,
     @JsonProperty("summit")
     val summit: Boolean,
     @JsonProperty("updated_at")
-    val updatedAt: String,
+    val updatedAt: String?,
     @JsonProperty("username")
-    val username: String
+    val username: String?
 )
