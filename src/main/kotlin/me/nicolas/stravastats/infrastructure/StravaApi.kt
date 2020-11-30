@@ -1,5 +1,6 @@
 package me.nicolas.stravastats.infrastructure
 
+import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import khttp.get
@@ -42,7 +43,7 @@ internal class StravaApi(
         return activities
     }
 
-    fun getActivityStream(accessToken: String, activity: Activity): Stream {
+    fun getActivityStream(accessToken: String, activity: Activity): Stream? {
 
         val url =
             "${properties.strava.url}/api/v3/activities/${activity.id}/streams?keys=time,distance,altitude,moving&key_by_type=true"
@@ -50,7 +51,12 @@ internal class StravaApi(
         val requestHeaders = buildRequestHeaders(accessToken)
         val response = get(url, requestHeaders)
         if (response.statusCode == 200) {
-            return mapper.readValue(response.content)
+            return try {
+                mapper.readValue<Stream>(response.content)
+            } catch (jsonProcessingException: JsonProcessingException) {
+                println("Unable to load streams for activity : $activity")
+                null
+            }
         } else {
             throw RuntimeException("Something was wrong with Strava API ${response.text}")
         }

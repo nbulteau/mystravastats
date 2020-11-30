@@ -47,11 +47,12 @@ internal class ActivityLoader(
 
     fun getActivitiesWithAccessToken(clientId: String, year: Int, accessToken: String): List<Activity> {
 
+        // only get activities of type (Run, Bike and Hike)
         val activities = stravaApi.getActivities(
             accessToken = accessToken,
             before = LocalDateTime.of(year, 12, 31, 23, 59),
             after = LocalDateTime.of(year, 1, 1, 0, 0)
-        )
+        ).filter { activity -> activity.type == "Run" || activity.type == "Ride" || activity.type == "Hike" }
 
         if (myStravaStatsProperties.saveActivitiesOnDisk) {
             val activitiesDirectoryName = "strava-$clientId-$year"
@@ -65,19 +66,22 @@ internal class ActivityLoader(
 
             prettyWriter.writeValue(File(activitiesDirectory, "activities-$clientId-$year.json"), activities)
 
-            // Load all activities streams
-            activities.forEach { activity ->
-                val streamFile = File(activitiesDirectory, "stream-${activity.id}")
-                val stream: Stream
-                if (streamFile.exists()) {
-                    stream = objectMapper.readValue(streamFile, Stream::class.java)
-                } else {
-                    stream = stravaApi.getActivityStream(accessToken, activity)
-                    writer.writeValue(File(activitiesDirectory, "stream-${activity.id}"), stream)
-                }
+            // Load activities streams
+            activities
+                .forEach { activity ->
+                    val streamFile = File(activitiesDirectory, "stream-${activity.id}")
+                    val stream: Stream?
+                    if (streamFile.exists()) {
+                        stream = objectMapper.readValue(streamFile, Stream::class.java)
+                    } else {
+                        stream = stravaApi.getActivityStream(accessToken, activity)
+                        if (stream != null) {
+                            writer.writeValue(File(activitiesDirectory, "stream-${activity.id}"), stream)
+                        }
+                    }
 
-                activity.stream = stream
-            }
+                    activity.stream = stream
+                }
             writer.writeValue(File(activitiesDirectory, "activities-$clientId-$year-with-stream.json"), activities)
         } else {
             // Load all activities streams
