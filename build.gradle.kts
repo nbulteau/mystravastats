@@ -1,5 +1,13 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+
+buildscript {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.4.20"
