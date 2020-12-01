@@ -41,7 +41,7 @@ internal class TokenTest {
         """.trimIndent()
 
         val token = mapper.readValue(json, Token::class.java)
-        Assertions.assertNotNull(token.athlete.username)
+        Assertions.assertNull(token.athlete.username)
     }
 
     fun `read Token`() {
