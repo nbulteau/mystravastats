@@ -33,13 +33,16 @@ My Strava Stats needs several parameters :
 *Mandatory parameters*
 * -clientId: your application’s ID. You can your find your client id on this page : https://www.strava.com/settings/api
 * -clientSecret: your client secret. You can your find client secret on this page : https://www.strava.com/settings/api
-* -code: the authorization code you get above.
+with :
+* -code: the authorization code you get above. This code can be used only once.
+or
+* -accessToken: Your access token is print when you use -code.
 
 *Optional parameters*
 * -year: the year you request (default value is 2020).
 * -file: use locally download activities.
-* -filter: to filter activities on a specific distance in meters. For example : -filter 10000 will keep all the activities around 10000 m (+/- 5 %)
 * -displayActivities : to display all activities. 
+* -filter: to filter activities on a specific distance in meters. For example : -displayActivities -filter 10000 will display all the activities around 10000 m (+/- 5 %)
 
 Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava.
 For people with a huge amount of long activities, I recommend to increase memory for example : -Xmx2048m (Set the maximum memory size to 2048 megabytes).
