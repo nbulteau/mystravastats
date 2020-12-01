@@ -48,6 +48,9 @@ internal class StatsBuilder {
                 BestEffortTimeStatistic("Best 1 h", activities, 60 * 60),
                 BestEffortTimeStatistic("Best 2 h", activities, 2 * 60 * 60),
                 BestEffortTimeStatistic("Best 3 h", activities, 3 * 60 * 60),
+                BestEffortTimeStatistic("Best 4 h", activities, 4 * 60 * 60),
+                BestEffortTimeStatistic("Best 5 h", activities, 5 * 60 * 60),
+                BestEffortTimeStatistic("Best 6 h", activities, 6 * 60 * 60),
             )
         )
 
