@@ -1,16 +1,22 @@
 package me.nicolas.stravastats.core.business.statistics
 
 internal data class StravaStats(
+    val globalStatistic: List<Statistic>,
     val commuteRideStats: List<Statistic>,
     val sportRideStats: List<Statistic>,
     val runsStats: List<Statistic>,
-    val hikesStats: List<Statistic>
+    val hikesStats: List<Statistic>,
 ) {
 
     fun displayStatistics() {
 
         println("* Statistics")
 
+        println()
+        println("** Overview")
+        globalStatistic.forEach {
+            println(it)
+        }
         println()
         println("** Rides (commute)")
         commuteRideStats.forEach {

@@ -52,7 +52,7 @@ internal class ActivityLoader(
             accessToken = accessToken,
             before = LocalDateTime.of(year, 12, 31, 23, 59),
             after = LocalDateTime.of(year, 1, 1, 0, 0)
-        ).filter { activity -> activity.type == "Run" || activity.type == "Ride" || activity.type == "Hike" }
+        )
 
         if (myStravaStatsProperties.saveActivitiesOnDisk) {
             val activitiesDirectoryName = "strava-$clientId-$year"

@@ -155,8 +155,10 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
             )
             else -> throw ParameterException("-file, -code or -accessToken must be provided")
         }
-        // filter activities without streams
-        return activities.filter { it.stream != null && it.stream?.time != null && it.stream?.distance != null && it.stream?.altitude != null }
+
+        println("Nb activities loaded : ${activities.size}")
+
+        return activities
     }
 
     /**

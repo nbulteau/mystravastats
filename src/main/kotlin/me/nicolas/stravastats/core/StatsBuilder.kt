@@ -10,6 +10,26 @@ internal class StatsBuilder {
      * Compute statistics.
      * @param activities
      */
+    fun computeGlobalStats(activities: List<Activity>): List<Statistic> {
+
+        return listOf(
+            GlobalStatistic("Nb activities", activities, "%d", List<Activity>::size),
+            GlobalStatistic("Nb actives days", activities, "%d")
+            { activityList: List<Activity> ->
+                activityList
+                    .map { it.startDateLocal.substringBefore('T') }
+                    .toSet()
+                    .size
+            },
+            MaxStreakStatistic(activities),
+            MostActiveMonthStatistic(activities),
+        )
+    }
+
+    /**
+     * Compute statistics.
+     * @param activities
+     */
     fun computeStats(activities: List<Activity>): List<Statistic> {
 
         return listOf(
@@ -21,6 +41,7 @@ internal class StatsBuilder {
                     .groupBy { it.startDateLocal.substringBefore('T') }
                     .count()
             },
+            MaxStreakStatistic(activities),
 
             GlobalStatistic("Total distance", activities, "%.2f km")
             { activityList: List<Activity> -> activityList.sumByDouble { it.distance } / 1000 },
