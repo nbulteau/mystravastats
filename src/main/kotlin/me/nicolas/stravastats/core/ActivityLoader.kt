@@ -90,6 +90,6 @@ internal class ActivityLoader(
             }
         }
 
-        return activities.filter { it.stream != null && it.stream?.time != null && it.stream?.distance != null && it.stream?.altitude != null }
+        return activities
     }
 }

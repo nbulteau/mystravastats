@@ -133,25 +133,30 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
     /**
      * LoadActivities
      */
-    private fun loadActivities(): List<Activity> = when {
-        // from file
-        parameters.file != null -> activityLoader.getActivitiesFromFile(
-            parameters.file!!
-        )
-        // with access token
-        parameters.accessToken != null -> activityLoader.getActivitiesWithAccessToken(
-            parameters.clientId,
-            parameters.year,
-            parameters.accessToken!!
-        )
-        // with access authorization code
-        parameters.code != null -> activityLoader.getActivitiesWithAuthorizationCode(
-            parameters.clientId,
-            parameters.year,
-            parameters.clientSecret,
-            parameters.code!!
-        )
-        else -> throw ParameterException("-file, -code or -accessToken must be provided")
+    private fun loadActivities(): List<Activity> {
+
+        val activities = when {
+            // from file
+            parameters.file != null -> activityLoader.getActivitiesFromFile(
+                parameters.file!!
+            )
+            // with access token
+            parameters.accessToken != null -> activityLoader.getActivitiesWithAccessToken(
+                parameters.clientId,
+                parameters.year,
+                parameters.accessToken!!
+            )
+            // with access authorization code
+            parameters.code != null -> activityLoader.getActivitiesWithAuthorizationCode(
+                parameters.clientId,
+                parameters.year,
+                parameters.clientSecret,
+                parameters.code!!
+            )
+            else -> throw ParameterException("-file, -code or -accessToken must be provided")
+        }
+        // filter activities without streams
+        return activities.filter { it.stream != null && it.stream?.time != null && it.stream?.distance != null && it.stream?.altitude != null }
     }
 
     /**
