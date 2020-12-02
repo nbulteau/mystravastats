@@ -15,6 +15,13 @@ internal class StatsBuilder {
         return listOf(
             GlobalStatistic("Nb activities", activities, "%d", List<Activity>::size),
 
+            GlobalStatistic("Nb actives days", activities, "%d")
+            { activityList: List<Activity> ->
+                activityList
+                    .groupBy { it.startDateLocal.substringBefore('T') }
+                    .count()
+            },
+
             GlobalStatistic("Total distance", activities, "%.2f km")
             { activityList: List<Activity> -> activityList.sumByDouble { it.distance } / 1000 },
 
@@ -23,6 +30,7 @@ internal class StatsBuilder {
 
             MaxDistanceStatistic(activities),
             MaxElevationStatistic(activities),
+            MaxMovingTimeStatistic(activities),
             MostActiveMonthStatistic(activities),
         )
     }
@@ -67,6 +75,7 @@ internal class StatsBuilder {
         statistics.addAll(
             listOf(
                 MaxSpeedStatistic(activities),
+                MaxMovingTimeStatistic(activities),
                 BestEffortDistanceStatistic("Best 250 m", activities, 250.0),
                 BestEffortDistanceStatistic("Best 500 m", activities, 500.0),
                 BestEffortDistanceStatistic("Best 1000 m", activities, 1000.0),
