@@ -4,114 +4,122 @@ A tool to calculates and displays many statistics about your Strava activities.
 
 This tool scans through activities and looks for the best effort for distance or time span during the examined year. For
 example, it finds for the fastest consecutive 1 km, 5 km, 10 km you've run, or the fastest 2 hours, 3 hours you ride.
-Eddington number etc ..
+
+Eddington number is the largest number, E, such that you have ridden at least E km on at least E days. MyStravaStats calculate Eddington number for rides, runs and hikes.
+https://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling
+
+Best Cooper (12 min) : In the original form, the point of the test is to run as far as possible within 12 minutes. MyStravaStats look for with a 'sliding window' the best effort for the given time (12 minutes) on running activities. 
+https://fr.wikipedia.org/wiki/Test_de_Cooper
+
+Best vVO2max (6 min) : This is the smallest speed that requires VO2 max in an accelerated speed test. MyStravaStats look for with a 'sliding window' the best effort for the given time (6 minutes) on running activities.
+https://en.wikipedia.org/wiki/VVO2max 
 
 ## Global Statistics
 
-| Global Statistics      |     |    
-| ---------------------- | --- |
-| Nb activities          |     | 
-| Nb actives days        |     | 
-| Max streak             |     |
-| Most active month.     | The most active month of the year. |
+| Global Statistics |  |    
+| --- | --- |
+| Nb activities | Total of all commute activities. | 
+| Nb actives days | Number of active days for all activities. | 
+| Max streak | Max streak of activities for consecutive days. |
+| Most active month. | The most active month of the year. |
 
 ## Rides (commute)
 
-| Rides (commute)        |     |    
-| ---------------------- | --- | 
-| Nb activities | | 
-| Nb actives days | | 
-| Max streak | | 
-| Total distance | | 
-| Total elevation | | 
-| Max distance | | 
-| Max elevation | | 
-| Max moving time | |
-| Most active month | | 
-| Eddington number | |
+| Rides (commute) |     |    
+| --- | --- | 
+| Nb activities | Total of all commute rides. | 
+| Nb actives days | Number of active days for all commute rides.| 
+| Max streak | Max streak of commute rides for consecutive days. | 
+| Total distance | Total elevation accumulated on all commute rides. | 
+| Total elevation | Total elevation accumulated on all commute rides. | 
+| Max distance | Max distance calculated by Strava for commute rides.| 
+| Max elevation | Max elevation calculated by Strava for commute rides.| 
+| Max moving time | Max moving time for commute rides. Moving time, is a measure of how long you were active. Strava attempt to calculate this based on the GPS locations, distance, and speed of your activity.|
+| Most active month | The most active month of the year for commute rides. | 
+| Eddington number | The Eddington number in the context of cycling is defined as the maximum number E such that the cyclist has cycled E km on E days.|
 
 ## Rides (sport)
 
-| Rides (sport)          |     | 
-| ---------------------- | --- | 
-| Nb activities | | 
-| Nb actives days | | 
-| Max streak | | 
-| Total distance | | 
-| Total elevation | | 
-| Max distance | | 
-| Max elevation | | 
-| Max moving time | | 
-| Most active month | | 
-| Eddington number | | 
-| Max speed | | 
-| Max moving time | | 
-| Best 250 m | | 
-| Best 500 m | | 
-| Best 1000 m || 
-| Best 5 km | | 
-| Best 10 km | | 
-| Best 20 km | | 
-| Best 50 km | | 
-| Best 100 km | | 
-| Best 30 min | | 
-| Best 1 h | |
-| Best 2 h | | 
-| Best 3 h | | 
-| Best 4 h | | 
-| Best 5 h | | 
-| Max slope for 250 m | | 
-| Max slope for 500 m | | 
-| Max slope for 1000 m | | 
-| Max slope for 5 km | | 
-| Max slope for 10 km | | 
-| Max slope for 20 km | |
+| Rides (sport) |  | 
+| --- | --- | 
+| Nb activities | Total of all bike rides.| 
+| Nb actives days | Number of active days for all bike rides.| 
+| Max streak | Max streak of bike rides for a consecutive days. | 
+| Total distance | Total elevation accumulated on all bike rides. | 
+| Total elevation | Total elevation accumulated on all bike rides. | 
+| Max distance | Max distance calculated by Strava for bike rides.| 
+| Max elevation | Max elevation calculated by Strava for bike rides.| 
+| Max moving time | Max moving time for bike rides. Moving time, is a measure of how long you were active. Strava attempt to calculate this based on the GPS locations, distance, and speed of your activity.|
+| Most active month | The most active month of the year for bike rides. | 
+| Eddington number | The Eddington number in the context of cycling is defined as the maximum number E such that the cyclist has cycled E km on E days.|
+| Max speed | Max speed calculated by Strava for bike rides.| 
+| Max moving time | Max moving time calculated by Strava for bike rides| 
+| Best 250 m | Sliding window best effort for a given distance.| 
+| Best 500 m | Sliding window best effort for a given distance.| 
+| Best 1000 m | Sliding window best effort for a given distance.| 
+| Best 5 km | Sliding window best effort for a given distance.| 
+| Best 10 km | Sliding window best effort for a given distance.| 
+| Best 20 km | Sliding window best effort for a given distance.|  
+| Best 50 km | Sliding window best effort for a given distance.|  
+| Best 100 km | Sliding window best effort for a given distance.|  
+| Best 30 min | Sliding window best effort for a given time.| 
+| Best 1 h | Sliding window best effort for a given time.| 
+| Best 2 h | Sliding window best effort for a given time.|  
+| Best 3 h | Sliding window best effort for a given time.| 
+| Best 4 h | Sliding window best effort for a given time.|  
+| Best 5 h | Sliding window best effort for a given time.|  
+| Max slope for 250 m | Sliding window max slope for a given distance.| 
+| Max slope for 500 m | Sliding window max slope for a given distance.| 
+| Max slope for 1000 m | Sliding window max slope for a given distance.| 
+| Max slope for 5 km | Sliding window max slope for a given distance.| 
+| Max slope for 10 km | Sliding window max slope for a given distance.|
+| Max slope for 20 km | Sliding window max slope for a given distance.|
 
 ## Runs
 
 | Runs | | 
-| ---------------------- | --- | 
-| Nb activities | | 
-| Nb actives days | | 
-| Max streak | | 
-| Total distance | |
-| Total elevation | | 
-| Max distance | | 
-| Max elevation | | 
-| Max moving time | | 
-| Most active month | | 
-| Eddington number | | 
+| --- | --- | 
+| Nb activities | Total of all bike rides.| 
+| Nb actives days | Number of active days for all running.| 
+| Max streak | Max streak of bike rides for a running days. | 
+| Total distance | Total elevation accumulated on all running. | 
+| Total elevation | Total elevation accumulated on all running. | 
+| Max distance | Max distance calculated by Strava for running.| 
+| Max elevation | Max elevation calculated by Strava for running.| 
+| Max moving time | Max moving time for running. Moving time, is a measure of how long you were active. Strava attempt to calculate this based on the GPS locations, distance, and speed of your activity.|
+| Most active month | The most active month of the year for running. | 
+| Eddington number | The Eddington number in the context of running is defined as the maximum number E such that the runner has run E km on E days.|
 | Best Cooper (12 min)   | | 
 | Best vVO2max (6 min)   | | 
-| Best 200 m | | 
-| Best 400 m | | 
-| Best 1000 m | |
-| Best 10000 m | | 
-| Best half Marathon | | 
-| Best Marathon | | 
-| Best 1 h | | 
-| Best 2 h | | 
-| Best 3 h | | 
-| Best 4 h | | 
-| Best 5 h | | 
-| Best 6 h | |
+| Best 200 m | Sliding window best effort for a given distance.| 
+| Best 400 m | Sliding window best effort for a given distance.| 
+| Best 1000 m | Sliding window best effort for a given distance.| 
+| Best 10000 m | Sliding window best effort for a given distance.| 
+| Best half Marathon | Sliding window best effort for a given distance.|  
+| Best Marathon | Sliding window best effort for a given distance.|  
+| Best 1 h | Sliding window best effort for a given time.|  
+| Best 2 h | Sliding window best effort for a given time.| 
+| Best 3 h | Sliding window best effort for a given time.|  
+| Best 4 h | Sliding window best effort for a given time.|  
+| Best 5 h | Sliding window best effort for a given time.|  
+| Best 6 h | Sliding window best effort for a given time.| 
 
 ## Hikes
 
-| Hikes |-| 
-| ---------------------- | --- | 
-| Nb activities | | 
-| Nb actives days | | 
-| Max streak | | 
-| Total distance | |
-| Total elevation | | 
-| Max distance | | 
-| Max elevation | | 
-| Max moving time | | 
-| Most active month | | 
-| Eddington number | | 
-| Max distance in a day | | 
-| Max elevation in a day | |
+| Hikes | | 
+| --- | --- | 
+| Nb activities | Total of all hikes.| 
+| Nb actives days | Number of active days for all hikes.| 
+| Max streak | Max streak of hikes for consecutive days. | 
+| Total distance | Total elevation accumulated on all hikes. | 
+| Total elevation | Total elevation accumulated on all hikes. | 
+| Max distance | Max distance calculated by Strava for hikes.| 
+| Max elevation | Max elevation calculated by Strava for hikes.| 
+| Max moving time | Max moving time for hikes. Moving time, is a measure of how long you were active. Strava attempt to calculate this based on the GPS locations, distance, and speed of your activity.|
+| Most active month | The most active month of the year for hikes. | 
+| Eddington number | The Eddington number in the context of cycling is defined as the maximum number E such that the cyclist has cycled E km on E days.|
+| Max distance in a day | Max walked distance in a day for hikes.| 
+| Max elevation in a day | Max elevation in a day for hikes.|
 
 ## Get authorization code
 
@@ -139,6 +147,11 @@ The authorization code for next step is d4ebd5ee7f512523d49fcb66d6eda207e46fcb8c
 
 My Strava Stats needs several parameters : 
 
+Build the jar :
+```
+./gradlew jar
+```
+
 *Mandatory parameters*
 * -clientId: your application’s ID. You can your find your client id on this page : https://www.strava.com/settings/api
 * -clientSecret: your client secret. You can your find client secret on this page : https://www.strava.com/settings/api
@@ -157,27 +170,23 @@ Activities are download in a local directory, in that way only new and missing o
 For people with a huge amount of long activities, I recommend to increase memory for example : -Xmx2048m (Set the maximum memory size to 2048 megabytes).
 
 ```
- ./gradlew jar
  java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -clientSecret [clientSecret] -code d4ebd5ee7f512523d49fcb66d6eda207e46fcb8c
 ```
 
 You can use locally download activities :
 
 ```
- ./gradlew jar
  java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json
 ```
 
 Display activities :
 
 ```
- ./gradlew jar
  java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json --displayActivities 
 ```
 
 Display activities with a filter :
 
 ```
- ./gradlew jar
  java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json --displayActivities -filter 10000
 ```
