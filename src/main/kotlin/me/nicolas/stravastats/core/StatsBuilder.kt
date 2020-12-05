@@ -53,6 +53,7 @@ internal class StatsBuilder {
             MaxElevationStatistic(activities),
             MaxMovingTimeStatistic(activities),
             MostActiveMonthStatistic(activities),
+            Eddington(activities),
         )
     }
 

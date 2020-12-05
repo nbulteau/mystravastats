@@ -16,7 +16,7 @@ internal class MaxMovingTimeStatistic(
         return super.toString() + if (activity != null) {
             "%s%s".format(activity?.movingTime?.formatSeconds(), activity)
         } else {
-            " Not available"
+            "Not available"
         }
     }
 }
