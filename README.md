@@ -26,7 +26,7 @@ https://en.wikipedia.org/wiki/VVO2max
 ## Rides (commute)
 
 | Rides (commute) |     |    
-| --- | --- | 
+| ------------- | --- | 
 | Nb activities | Total of all commute rides. | 
 | Nb actives days | Number of active days for all commute rides.| 
 | Max streak | Max streak of commute rides for consecutive days. | 
