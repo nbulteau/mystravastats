@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectWriter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import me.nicolas.stravastats.MyStravaStatsProperties
-import me.nicolas.stravastats.core.business.updateProgress
-import me.nicolas.stravastats.infrastructure.StravaApi
-import me.nicolas.stravastats.infrastructure.dao.Activity
-import me.nicolas.stravastats.infrastructure.dao.Stream
+import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.Stream
+import me.nicolas.stravastats.business.displayProgressBar
+import me.nicolas.stravastats.strava.StravaApi
 import java.io.File
 import java.nio.file.Paths
 import java.time.LocalDateTime
@@ -65,7 +65,7 @@ internal class ActivityLoader(
             val yearActivitiesDirectoryName = "strava-$clientId-$year"
             // create a File object for the parent directory
             val activitiesDirectory = File(activitiesDirectoryName, yearActivitiesDirectoryName)
-            // have the object build the directory structure, if needed.
+            // build the directory structure, if needed.
             activitiesDirectory.mkdirs()
 
             val prettyWriter: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
@@ -75,7 +75,7 @@ internal class ActivityLoader(
 
             // Load activities streams
             activities.forEach { activity ->
-                updateProgress(index++ / (activities.size))
+                displayProgressBar(index++ / (activities.size))
 
                 val streamFile = File(activitiesDirectory, "stream-${activity.id}")
                 val stream: Stream?

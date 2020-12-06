@@ -5,6 +5,9 @@ buildscript {
     repositories {
         gradlePluginPortal()
         mavenCentral()
+        maven("https://dl.bintray.com/mipt-npm/dataforge")
+        maven("https://dl.bintray.com/mipt-npm/kscience")
+        maven("https://dl.bintray.com/mipt-npm/dev")
     }
 }
 
@@ -19,6 +22,7 @@ plugins {
 repositories {
     jcenter()
     mavenCentral()
+
 }
 
 dependencies {
@@ -33,6 +37,12 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.0")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.0")
 
+    implementation("kscience.plotlykt:plotlykt-server:0.3.0")
+    implementation(kotlin("script-runtime"))
+    implementation("de.mpicbg.scicomp:krangl:0.13")
+    implementation("io.github.microutils:kotlin-logging:2.0.3")
+
+
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
 }
 
@@ -46,7 +56,7 @@ tasks.withType<Test> {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "11"
 }
 
 tasks.withType<Jar> {

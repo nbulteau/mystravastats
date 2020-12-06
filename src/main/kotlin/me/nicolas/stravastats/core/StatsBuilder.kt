@@ -1,7 +1,7 @@
 package me.nicolas.stravastats.core
 
-import me.nicolas.stravastats.core.business.statistics.*
-import me.nicolas.stravastats.infrastructure.dao.Activity
+import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.core.statistics.*
 
 
 internal class StatsBuilder {
@@ -53,7 +53,7 @@ internal class StatsBuilder {
             MaxElevationStatistic(activities),
             MaxMovingTimeStatistic(activities),
             MostActiveMonthStatistic(activities),
-            Eddington(activities),
+            EddingtonStatistic(activities),
         )
     }
 

@@ -1,15 +1,15 @@
 package me.nicolas.stravastats.core
 
 
-import me.nicolas.stravastats.core.business.statistics.StravaStats
-import me.nicolas.stravastats.infrastructure.dao.Activity
+import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.core.statistics.StravaStatistics
 
 
 internal class StravaService(
     private val statsBuilder: StatsBuilder
 ) {
 
-    fun computeStatistics(activities: List<Activity>): StravaStats {
+    fun computeStatistics(activities: List<Activity>): StravaStatistics {
 
         val globalStatistics = statsBuilder.computeGlobalStats(activities)
 
@@ -24,7 +24,7 @@ internal class StravaService(
         val runsStats = statsBuilder.computeRunStats(filteredActivities.filter { it.type == "Run" })
         val hikesStats = statsBuilder.computeHikeStats(filteredActivities.filter { it.type == "Hike" })
 
-        return StravaStats(globalStatistics, commuteRideStats, sportRideStats, runsStats, hikesStats)
+        return StravaStatistics(globalStatistics, commuteRideStats, sportRideStats, runsStats, hikesStats)
     }
 
 }
