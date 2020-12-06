@@ -7,7 +7,7 @@ internal class MaxSpeedStatistic(
 ) : ActivityStatistic("Max speed", activities) {
 
     init {
-        activity = activities.maxByOrNull { it.maxSpeed }
+        activity = activities.maxByOrNull { activity -> activity.maxSpeed }
     }
 
     override fun toString(): String {

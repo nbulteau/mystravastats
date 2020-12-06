@@ -11,7 +11,7 @@ internal class MaxStreakStatistic(
 
     init {
         val activeDaysSet = activities
-            .map { LocalDate.parse(it.startDateLocal.substringBefore('T')).dayOfYear }
+            .map { activity -> LocalDate.parse(activity.startDateLocal.substringBefore('T')).dayOfYear }
             .toSet()
 
         val activeDays = Array<Boolean>(365) { activeDaysSet.contains(it) }

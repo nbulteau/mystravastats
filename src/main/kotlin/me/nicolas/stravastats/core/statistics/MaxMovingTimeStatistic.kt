@@ -8,7 +8,7 @@ internal class MaxMovingTimeStatistic(
 ) : ActivityStatistic("Max moving time", activities) {
 
     init {
-        activity = activities.maxByOrNull { it.movingTime }
+        activity = activities.maxByOrNull { activity -> activity.movingTime }
     }
 
     override fun toString(): String {

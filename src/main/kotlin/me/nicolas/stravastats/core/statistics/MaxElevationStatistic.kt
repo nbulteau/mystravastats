@@ -7,7 +7,7 @@ internal class MaxElevationStatistic(
 ) : ActivityStatistic("Max elevation", activities) {
 
     init {
-        activity = activities.maxByOrNull { it.totalElevationGain }
+        activity = activities.maxByOrNull { activity -> activity.totalElevationGain }
     }
 
     override fun toString(): String {

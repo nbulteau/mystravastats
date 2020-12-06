@@ -11,8 +11,8 @@ internal class MostActiveMonthStatistic(
 ) : Statistic("Most active month", activities) {
 
     private val mostActiveMonth =
-        activities.groupBy { getMonth(it.startDateLocal) }
-            .mapValues { (_, activities) -> activities.sumByDouble { it.distance } }
+        activities.groupBy { activity -> getMonth(activity.startDateLocal) }
+            .mapValues { (_, activities) -> activities.sumByDouble { activity -> activity.distance } }
             .maxByOrNull { it.value }
 
     private fun getMonth(startDateLocal: String) = LocalDateTime.parse(startDateLocal, inDateTimeFormatter).month

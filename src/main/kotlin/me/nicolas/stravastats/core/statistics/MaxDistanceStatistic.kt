@@ -7,7 +7,7 @@ internal class MaxDistanceStatistic(
 ) : ActivityStatistic("Max distance", activities) {
 
     init {
-        activity = activities.maxByOrNull { it.distance }
+        activity = activities.maxByOrNull { activity -> activity.distance }
     }
 
     override fun toString(): String {

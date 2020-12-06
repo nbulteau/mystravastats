@@ -23,7 +23,7 @@ internal class EddingtonStatistic(
         if (activities.isNotEmpty()) {
 
             val activeDaysList = activities
-                .groupBy { LocalDate.parse(it.startDateLocal.substringBefore('T')).dayOfYear }
+                .groupBy { activity -> LocalDate.parse(activity.startDateLocal.substringBefore('T')).dayOfYear }
                 .mapValues { (_, activities) -> activities.sumByDouble { it.distance / 1000 } }
                 .mapValues { it.value.toInt() }
                 .toMap()
