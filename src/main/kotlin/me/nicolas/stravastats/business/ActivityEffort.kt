@@ -6,7 +6,7 @@ import me.nicolas.stravastats.helpers.formatSeconds
 /**
  * An effort within an activity.
  */
-internal data class ActivityEffort(
+data class ActivityEffort(
     val activity: Activity,
     val distance: Double,
     val seconds: Int,

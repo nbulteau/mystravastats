@@ -11,10 +11,7 @@ import me.nicolas.stravastats.core.StatsBuilder
 import me.nicolas.stravastats.core.StravaService
 import me.nicolas.stravastats.helpers.formatDate
 import me.nicolas.stravastats.helpers.formatSeconds
-import me.nicolas.stravastats.helpers.writeCSVLine
 import me.nicolas.stravastats.strava.StravaApi
-import java.io.File
-import java.io.FileWriter
 
 
 internal class MyStravaStats(incomingArgs: Array<String>) {
@@ -56,9 +53,9 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         }
 
         displayStatistics(activities)
+
         if (parameters.displayActivities) {
             displayActivities(activities)
-            exportCSV(activities)
         }
 
         println()
@@ -81,50 +78,19 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         val filteredActivities = filterActivities(activities)
 
         println("** Rides")
-        doDisplayActivities(filteredActivities.filter { it.type == "Ride" })
+        doDisplayActivities(filteredActivities.filter { activity -> activity.type == "Ride" })
         println("** Run")
-        doDisplayActivities(filteredActivities.filter { it.type == "Run" })
+        doDisplayActivities(filteredActivities.filter { activity -> activity.type == "Run" })
         println("** Hike")
-        doDisplayActivities(filteredActivities.filter { it.type == "Hike" })
+        doDisplayActivities(filteredActivities.filter { activity -> activity.type == "Hike" })
+
+        exportCSV(filteredActivities)
     }
 
-
-    /**
-     * Export to CSV file.
-     * @param activities activities to export.
-     */
     private fun exportCSV(activities: List<Activity>) {
-        // if no activities : nothing to do
-        if (activities.isEmpty()) {
-            return
-        }
-
-        val filteredActivities = filterActivities(activities)
-
-        val activitiesDirectoryName = "strava-${parameters.clientId}"
-        // create a File object for the parent directory
-        val activitiesDirectory = File(activitiesDirectoryName)
-        // build the directory structure, if needed.
-        activitiesDirectory.mkdirs()
-
-        val csvFile = File(activitiesDirectory, "activities-${parameters.clientId}-${parameters.year}.csv")
-        val writer = FileWriter(csvFile)
-        writer.use {
-            listOf(
-                "Date", "Description", "Distance (km)", "Time", "Speed"
-            ).writeCSVLine(writer)
-
-            filteredActivities.forEach { activity ->
-
-                listOf(
-                    activity.startDateLocal.formatDate(),
-                    activity.name.trim(),
-                    "%.02f".format(activity.distance / 1000),
-                    activity.elapsedTime.formatSeconds(),
-                    activity.getFormattedSpeed(),
-                ).writeCSVLine(writer)
-            }
-        }
+        stravaService.exportCSV(activities.filter { activity -> activity.type == "Ride" }, "Ride", parameters.year)
+        stravaService.exportCSV(activities.filter { activity -> activity.type == "Run" }, "Run", parameters.year)
+        stravaService.exportCSV(activities.filter { activity -> activity.type == "Hike" }, "Hike", parameters.year)
     }
 
     /**
@@ -214,15 +180,17 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
     }
 }
 
+private fun disableWarning() {
+    System.err.close()
+    System.setErr(System.out)
+}
+
 fun main(incomingArgs: Array<String>) {
     disableWarning()
     MyStravaStats(incomingArgs).run()
 }
 
-fun disableWarning() {
-    System.err.close()
-    System.setErr(System.out)
-}
+
 
 
 

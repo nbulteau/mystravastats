@@ -36,7 +36,7 @@ internal open class BestEffortDistanceStatistic(
  * Sliding window best time for a given distance.
  * @param distance given distance.
  */
-private fun Activity.calculateBestTimeForDistance(distance: Double): ActivityEffort? {
+fun Activity.calculateBestTimeForDistance(distance: Double): ActivityEffort? {
 
     var idxStart = 0
     var idxEnd = 0
