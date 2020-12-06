@@ -1,7 +1,7 @@
 package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.inDateTimeFormatter
+import me.nicolas.stravastats.helpers.inDateTimeFormatter
 import java.time.LocalDateTime
 import java.time.format.TextStyle
 import java.util.*

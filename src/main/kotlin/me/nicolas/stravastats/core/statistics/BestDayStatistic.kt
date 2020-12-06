@@ -1,7 +1,7 @@
 package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.dateFormatter
+import me.nicolas.stravastats.helpers.dateFormatter
 import java.time.LocalDate
 
 internal class BestDayStatistic(

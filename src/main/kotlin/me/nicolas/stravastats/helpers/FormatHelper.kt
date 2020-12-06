@@ -1,4 +1,4 @@
-package me.nicolas.stravastats.business
+package me.nicolas.stravastats.helpers
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

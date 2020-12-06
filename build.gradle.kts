@@ -37,11 +37,10 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.0")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.0")
 
-    implementation("kscience.plotlykt:plotlykt-server:0.3.0")
-    implementation(kotlin("script-runtime"))
-    implementation("de.mpicbg.scicomp:krangl:0.13")
-    implementation("io.github.microutils:kotlin-logging:2.0.3")
-
+    //implementation("kscience.plotlykt:plotlykt-server:0.3.0")
+    //implementation(kotlin("script-runtime"))
+    //implementation("de.mpicbg.scicomp:krangl:0.13")
+    //implementation("io.github.microutils:kotlin-logging:2.0.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
 }

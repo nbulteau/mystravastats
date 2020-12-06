@@ -6,12 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.formatDate
-import me.nicolas.stravastats.business.formatSeconds
 import me.nicolas.stravastats.core.ActivityLoader
 import me.nicolas.stravastats.core.StatsBuilder
 import me.nicolas.stravastats.core.StravaService
-import me.nicolas.stravastats.core.writeCSVLine
+import me.nicolas.stravastats.helpers.formatDate
+import me.nicolas.stravastats.helpers.formatSeconds
+import me.nicolas.stravastats.helpers.writeCSVLine
 import me.nicolas.stravastats.strava.StravaApi
 import java.io.File
 import java.io.FileWriter

@@ -1,5 +1,7 @@
 package me.nicolas.stravastats.business
 
+import me.nicolas.stravastats.helpers.formatSeconds
+
 
 /**
  * An effort within an activity.

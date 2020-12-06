@@ -3,6 +3,8 @@ package me.nicolas.stravastats.business
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import me.nicolas.stravastats.helpers.formatDate
+import me.nicolas.stravastats.helpers.formatSeconds
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Activity(

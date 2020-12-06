@@ -2,7 +2,7 @@ package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.ActivityEffort
-import me.nicolas.stravastats.business.formatSeconds
+import me.nicolas.stravastats.helpers.formatSeconds
 
 
 internal open class BestEffortDistanceStatistic(

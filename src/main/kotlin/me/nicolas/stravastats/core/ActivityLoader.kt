@@ -7,7 +7,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import me.nicolas.stravastats.MyStravaStatsProperties
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Stream
-import me.nicolas.stravastats.business.displayProgressBar
+import me.nicolas.stravastats.helpers.displayProgressBar
 import me.nicolas.stravastats.strava.StravaApi
 import java.io.File
 import java.nio.file.Paths

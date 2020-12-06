@@ -1,6 +1,5 @@
 package me.nicolas.stravastats.helpers
 
-import me.nicolas.stravastats.business.formatSeconds
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
