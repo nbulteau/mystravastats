@@ -131,11 +131,11 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
     }
 
     /**
-     * LoadActivities
+     * Load activities
      */
     private fun loadActivities(): List<Activity> {
 
-        val activities = when {
+        return when {
             // from file
             parameters.file != null -> activityLoader.getActivitiesFromFile(
                 parameters.file!!
@@ -155,10 +155,6 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
             )
             else -> throw ParameterException("-file, -code or -accessToken must be provided")
         }
-
-        println("Nb activities loaded : ${activities.size}")
-
-        return activities
     }
 
     /**
@@ -175,9 +171,14 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
 }
 
 fun main(incomingArgs: Array<String>) {
+    disableWarning()
     MyStravaStats(incomingArgs).run()
 }
 
+fun disableWarning() {
+    System.err.close()
+    System.setErr(System.out)
+}
 
 
 

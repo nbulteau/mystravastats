@@ -28,10 +28,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     implementation("com.beust:jcommander:1.78")
-    implementation("org.danilopianini:khttp:0.1.0-dev1u+b23a8f7")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.11.3")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.3")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.3")
+    implementation("org.danilopianini:khttp:0.1.0-dev2r+2d3b427")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.0")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
 }
