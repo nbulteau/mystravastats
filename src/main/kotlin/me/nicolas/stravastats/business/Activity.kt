@@ -43,7 +43,7 @@ data class Activity(
     @JsonProperty("end_latlng")
     val endLatlng: List<Double>?,
     @JsonProperty("external_id")
-    val externalId: String,
+    val externalId: String?,
     @JsonProperty("flagged")
     val flagged: Boolean,
     @JsonProperty("from_accepted_tag")
