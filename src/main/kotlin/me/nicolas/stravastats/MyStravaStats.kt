@@ -55,7 +55,7 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         displayStatistics(activities)
 
         if (parameters.csv) {
-            exportCSV(activities)
+            exportCSV(filterActivities(activities))
         }
 
         println()
