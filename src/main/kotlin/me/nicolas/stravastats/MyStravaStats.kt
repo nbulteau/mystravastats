@@ -9,8 +9,6 @@ import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.core.ActivityLoader
 import me.nicolas.stravastats.core.StatsBuilder
 import me.nicolas.stravastats.core.StravaService
-import me.nicolas.stravastats.helpers.formatDate
-import me.nicolas.stravastats.helpers.formatSeconds
 import me.nicolas.stravastats.strava.StravaApi
 
 
@@ -97,38 +95,6 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
             activities.filter { activity -> activity.distance > lowBoundary && activity.distance < highBoundary }
         } else {
             activities
-        }
-    }
-
-    /**
-     * Display activities.
-     * @param activities activities to display.
-     */
-    private fun doDisplayActivities(activities: List<Activity>) {
-
-        // if no activities : nothing to do
-        if (activities.isEmpty()) {
-            return
-        }
-
-        // list all activities
-        val maxActivityNameLength = activities.maxByOrNull { it.name.length }?.name?.length!!
-
-        println(
-            "Date".padEnd(DATE_PAD)
-                    + "Description".padEnd(maxActivityNameLength + 1)
-                    + "Distance".padEnd(DISTANCE_PAD)
-                    + "Time".padEnd(TIME_PAD)
-                    + "Speed"
-        )
-        activities.forEach { activity ->
-            println(
-                activity.startDateLocal.formatDate().padEnd(DATE_PAD)
-                        + activity.name.padEnd(maxActivityNameLength + 1) +
-                        "%.02f km".format(activity.distance / 1000).padEnd(DISTANCE_PAD)
-                        + activity.elapsedTime.formatSeconds().padEnd(TIME_PAD)
-                        + activity.getFormattedSpeed()
-            )
         }
     }
 
