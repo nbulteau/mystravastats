@@ -1,12 +1,16 @@
 package me.nicolas.stravastats
 
 import com.beust.jcommander.Parameter
+import java.time.LocalDate
 
 
 class Parameters {
 
-    @Parameter(names = ["-file"], required = false, description = "file")
-    var file: String? = null
+    @Parameter(names = ["-clientId"], required = true, description = "clientId")
+    var clientId: String = "clientId"
+
+    @Parameter(names = ["-clientSecret"], required = false, description = "clientSecret")
+    var clientSecret: String = "clientSecret"
 
     @Parameter(names = ["-code"], required = false, description = "authorization code")
     var code: String? = null
@@ -14,14 +18,8 @@ class Parameters {
     @Parameter(names = ["-accessToken"], required = false, description = "Access token")
     var accessToken: String? = null
 
-    @Parameter(names = ["-clientId"], required = false, description = "clientId")
-    var clientId: String = "clientId"
-
-    @Parameter(names = ["-clientSecret"], required = false, description = "clientSecret")
-    var clientSecret: String = "clientSecret"
-
     @Parameter(names = ["-year"], required = false, description = "year")
-    var year: Int = 2020
+    var year: Int = LocalDate.now().year
 
     @Parameter(names = ["-csv"], required = false, description = "Export all activities in a CSV file")
     var csv: Boolean = false

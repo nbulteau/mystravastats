@@ -155,41 +155,49 @@ Build the jar :
 ```
 
 *Mandatory parameters*
+
 * -clientId: your application’s ID. You can your find your client id on this page : https://www.strava.com/settings/api
-* -clientSecret: your client secret. You can your find client secret on this page : https://www.strava.com/settings/api
-with :
+  with :
 * -code: the authorization code you get above. This code can be used only once.
-or
+* -clientSecret: your client secret. You can your find client secret on this page : https://www.strava.com/settings/api
+  or
 * -accessToken: Your access token is print when you use -code.
 
 *Optional parameters*
-* -year: the year you request (default value is 2020).
-* -file: use locally download activities.
+
+* -year: the year you request (default value is the current year).
 * -csv : to export all activities in a CSV file.
 * -filter: to filter exported activities on a specific distance in meters. For example : -csv -filter 10000 will display
   all the activities around 10000 m (+/- 5 %)
 
-Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava.
-For people with a huge amount of long activities, I recommend to increase memory for example : -Xmx2048m (Set the maximum memory size to 2048 megabytes).
+Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava. For
+people with a huge amount of long activities, I recommend to increase memory for example : -Xmx2048m (Set the maximum
+memory size to 2048 megabytes).
 
 ```
  java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -clientSecret [clientSecret] -code d4ebd5ee7f512523d49fcb66d6eda207e46fcb8c
 ```
 
-You can use locally download activities :
-
 ```
- java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json
+ java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -accessToken [accessToken]
 ```
 
-Export activities in a CSV file :
+Some examples :
+
+You can use locally download activities (no -code and no -accessToken) :
 
 ```
- java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json -csv 
+ java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -year 2019
 ```
 
-Display export activities in a CSV file with a filter :
+Export activities in a CSV file using locally download activities (current year) :
 
 ```
- java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json -csv -filter 10000
+ java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -csv 
+```
+
+Display export activities in a CSV file with a filter using locally download activities (current year) :
+
+```
+ java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -csv -filter 10000
 ```

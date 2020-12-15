@@ -138,10 +138,6 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
     private fun loadActivities(): List<Activity> {
 
         return when {
-            // from file
-            parameters.file != null -> activityLoader.getActivitiesFromFile(
-                parameters.file!!
-            )
             // with access token
             parameters.accessToken != null -> activityLoader.getActivitiesWithAccessToken(
                 parameters.clientId,
@@ -155,7 +151,12 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
                 parameters.clientSecret,
                 parameters.code!!
             )
-            else -> throw ParameterException("-file, -code or -accessToken must be provided")
+            // from local cache
+            parameters.code == null && parameters.accessToken == null -> activityLoader.getActivitiesFromFile(
+                parameters.clientId,
+                parameters.year
+            )
+            else -> throw ParameterException("-code with -clientSecret or -accessToken must be provided")
         }
     }
 

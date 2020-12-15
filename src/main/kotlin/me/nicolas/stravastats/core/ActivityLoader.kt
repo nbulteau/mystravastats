@@ -10,7 +10,6 @@ import me.nicolas.stravastats.business.Stream
 import me.nicolas.stravastats.helpers.displayProgressBar
 import me.nicolas.stravastats.strava.StravaApi
 import java.io.File
-import java.nio.file.Paths
 import java.time.LocalDateTime
 
 internal class ActivityLoader(
@@ -20,18 +19,40 @@ internal class ActivityLoader(
 
     private val objectMapper = jacksonObjectMapper()
 
-    fun getActivitiesFromFile(filePath: String): List<Activity> {
+    private fun getActivitiesDirectoryName(clientId: String) = "strava-$clientId"
 
-        val objectMapper = ObjectMapper()
-        val activities: Array<Activity> =
-            objectMapper.readValue(
-                Paths.get(filePath).toFile(),
-                Array<Activity>::class.java
-            )
+    private fun getYearActivitiesDirectoryName(clientId: String, year: Int) = "strava-$clientId-$year"
+
+    private fun getYearActivitiesJsonFileName(clientId: String, year: Int) = "activities-$clientId-$year.json"
+
+
+    fun getActivitiesFromFile(
+        clientId: String,
+        year: Int
+    ): List<Activity> {
+
+        val activitiesDirectoryName = getActivitiesDirectoryName(clientId)
+        val yearActivitiesDirectoryName = getYearActivitiesDirectoryName(clientId, year)
+        val yearActivitiesJsonFileName = getYearActivitiesJsonFileName(clientId, year)
+
+        val yearActivitiesDirectory = File(activitiesDirectoryName, yearActivitiesDirectoryName)
+        val yearActivitiesJsonFile = File(yearActivitiesDirectory, yearActivitiesJsonFileName)
+
+        var activities = emptyList<Activity>()
+
+        if (yearActivitiesJsonFile.exists()) {
+            print("Load activities of clientId=$clientId for year $year ... ")
+            val objectMapper = ObjectMapper()
+            activities = objectMapper.readValue(yearActivitiesJsonFile, Array<Activity>::class.java)
+                .toList()
+                .filter { activity -> activity.type == "Ride" || activity.type == "Run" || activity.type == "Hike" }
+            println("done")
+
+            // Load activities streams
+            loadActivitiesStreams(activities, yearActivitiesDirectory)
+        }
 
         return activities
-            .toList()
-            .filter { activity -> activity.type == "Ride" || activity.type == "Run" || activity.type == "Hike" }
     }
 
     fun getActivitiesWithAuthorizationCode(
@@ -60,46 +81,71 @@ internal class ActivityLoader(
         println("done")
 
         println("Load ${activities.size} activities streams ... ")
-        var index = 0.0
         if (myStravaStatsProperties.saveActivitiesOnDisk) {
-            val activitiesDirectoryName = "strava-$clientId"
-            // create a File object for the parent directory
-            val yearActivitiesDirectoryName = "strava-$clientId-$year"
-            // create a File object for the parent directory
-            val activitiesDirectory = File(activitiesDirectoryName, yearActivitiesDirectoryName)
-            // build the directory structure, if needed.
-            activitiesDirectory.mkdirs()
+            val activitiesDirectoryName = getActivitiesDirectoryName(clientId)
+            val yearActivitiesDirectoryName = getYearActivitiesDirectoryName(clientId, year)
+
+            val yearActivitiesDirectory = File(activitiesDirectoryName, yearActivitiesDirectoryName)
+            yearActivitiesDirectory.mkdirs()
 
             val prettyWriter: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
-            val writer: ObjectWriter = objectMapper.writer()
-
-            prettyWriter.writeValue(File(activitiesDirectory, "activities-$clientId-$year.json"), activities)
+            prettyWriter.writeValue(
+                File(yearActivitiesDirectory, getYearActivitiesJsonFileName(clientId, year)),
+                activities
+            )
 
             // Load activities streams
-            activities.forEach { activity ->
-                displayProgressBar(index++ / (activities.size))
-
-                val streamFile = File(activitiesDirectory, "stream-${activity.id}")
-                val stream: Stream?
-                if (streamFile.exists()) {
-                    stream = objectMapper.readValue(streamFile, Stream::class.java)
-                } else {
-                    stream = stravaApi.getActivityStream(accessToken, activity)
-                    if (stream != null) {
-                        writer.writeValue(File(activitiesDirectory, "stream-${activity.id}"), stream)
-                    }
-                }
-                activity.stream = stream
-            }
-            writer.writeValue(File(activitiesDirectory, "activities-$clientId-$year-with-stream.json"), activities)
+            loadActivitiesStreams(activities, yearActivitiesDirectory, accessToken)
         } else {
             // Load all activities streams
             activities.forEach { activity ->
                 activity.stream = stravaApi.getActivityStream(accessToken, activity)
             }
         }
-        println()
 
         return activities
+    }
+
+    private fun loadActivitiesStreams(
+        activities: List<Activity>,
+        activitiesDirectory: File,
+        accessToken: String
+    ) {
+        var index = 0.0
+        val writer: ObjectWriter = objectMapper.writer()
+        activities.forEach { activity ->
+            displayProgressBar(index++ / (activities.size))
+
+            val streamFile = File(activitiesDirectory, "stream-${activity.id}")
+            val stream: Stream?
+            if (streamFile.exists()) {
+                stream = objectMapper.readValue(streamFile, Stream::class.java)
+            } else {
+                stream = stravaApi.getActivityStream(accessToken, activity)
+                if (stream != null) {
+                    writer.writeValue(File(activitiesDirectory, "stream-${activity.id}"), stream)
+                }
+            }
+            activity.stream = stream
+        }
+        println()
+    }
+
+    private fun loadActivitiesStreams(
+        activities: List<Activity>,
+        activitiesDirectory: File
+    ) {
+        var index = 0.0
+        activities.forEach { activity ->
+            displayProgressBar(index++ / (activities.size))
+
+            val streamFile = File(activitiesDirectory, "stream-${activity.id}")
+            val stream: Stream?
+            if (streamFile.exists()) {
+                stream = objectMapper.readValue(streamFile, Stream::class.java)
+                activity.stream = stream
+            }
+        }
+        println()
     }
 }
