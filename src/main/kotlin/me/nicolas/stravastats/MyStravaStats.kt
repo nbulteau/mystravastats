@@ -111,10 +111,10 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
                 parameters.accessToken!!
             )
             // with access authorization code
-            parameters.code != null -> activityLoader.getActivitiesWithAuthorizationCode(
+            parameters.code != null && parameters.clientSecret != null -> activityLoader.getActivitiesWithAuthorizationCode(
                 parameters.clientId,
                 parameters.year,
-                parameters.clientSecret,
+                parameters.clientSecret!!,
                 parameters.code!!
             )
             // from local cache

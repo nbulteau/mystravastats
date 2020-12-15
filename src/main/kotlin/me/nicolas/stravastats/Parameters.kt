@@ -10,7 +10,7 @@ class Parameters {
     var clientId: String = "clientId"
 
     @Parameter(names = ["-clientSecret"], required = false, description = "clientSecret")
-    var clientSecret: String = "clientSecret"
+    var clientSecret: String? = null
 
     @Parameter(names = ["-code"], required = false, description = "authorization code")
     var code: String? = null
