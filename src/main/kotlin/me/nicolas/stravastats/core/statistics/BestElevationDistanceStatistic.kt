@@ -33,7 +33,7 @@ internal open class BestElevationDistanceStatistic(
  * Sliding window best elevation gain for a given distance.
  * @param distance given distance.
  */
-private fun Activity.calculateBestElevationForDistance(distance: Double): ActivityEffort? {
+fun Activity.calculateBestElevationForDistance(distance: Double): ActivityEffort? {
 
     var idxStart = 0
     var idxEnd = 0

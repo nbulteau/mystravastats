@@ -29,7 +29,9 @@ internal class ActivityLoader(
                 Array<Activity>::class.java
             )
 
-        return activities.toList()
+        return activities
+            .toList()
+            .filter { activity -> activity.type == "Ride" || activity.type == "Run" || activity.type == "Hike" }
     }
 
     fun getActivitiesWithAuthorizationCode(
@@ -54,7 +56,7 @@ internal class ActivityLoader(
             accessToken = accessToken,
             before = LocalDateTime.of(year, 12, 31, 23, 59),
             after = LocalDateTime.of(year, 1, 1, 0, 0)
-        )
+        ).filter { activity -> activity.type == "Ride" || activity.type == "Run" || activity.type == "Hike" }
         println("done")
 
         println("Load ${activities.size} activities streams ... ")

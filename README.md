@@ -165,8 +165,9 @@ or
 *Optional parameters*
 * -year: the year you request (default value is 2020).
 * -file: use locally download activities.
-* -displayActivities : to display all activities. 
-* -filter: to filter activities on a specific distance in meters. For example : -displayActivities -filter 10000 will display all the activities around 10000 m (+/- 5 %)
+* -csv : to export all activities in a CSV file.
+* -filter: to filter exported activities on a specific distance in meters. For example : -csv -filter 10000 will display
+  all the activities around 10000 m (+/- 5 %)
 
 Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava.
 For people with a huge amount of long activities, I recommend to increase memory for example : -Xmx2048m (Set the maximum memory size to 2048 megabytes).
@@ -181,14 +182,14 @@ You can use locally download activities :
  java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json
 ```
 
-Display activities :
+Export activities in a CSV file :
 
 ```
- java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json --displayActivities 
+ java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json -csv 
 ```
 
-Display activities with a filter :
+Display export activities in a CSV file with a filter :
 
 ```
- java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json --displayActivities -filter 10000
+ java -Xmx2048m -jar ./build/libs/mystravastats.jar -file strava-41902-2020/activities-41902-2020-with-stream.json -csv -filter 10000
 ```

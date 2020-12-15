@@ -54,8 +54,8 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
 
         displayStatistics(activities)
 
-        if (parameters.displayActivities) {
-            displayActivities(activities)
+        if (parameters.csv) {
+            exportCSV(activities)
         }
 
         println()
@@ -71,26 +71,18 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
     }
 
     /**
-     * Display activities
+     * Export activities in a CSV file.
      */
-    private fun displayActivities(activities: List<Activity>) {
-        println("* Activities")
-        val filteredActivities = filterActivities(activities)
-
-        println("** Rides")
-        doDisplayActivities(filteredActivities.filter { activity -> activity.type == "Ride" })
-        println("** Run")
-        doDisplayActivities(filteredActivities.filter { activity -> activity.type == "Run" })
-        println("** Hike")
-        doDisplayActivities(filteredActivities.filter { activity -> activity.type == "Hike" })
-
-        exportCSV(filteredActivities)
-    }
-
     private fun exportCSV(activities: List<Activity>) {
-        stravaService.exportCSV(activities.filter { activity -> activity.type == "Ride" }, "Ride", parameters.year)
-        stravaService.exportCSV(activities.filter { activity -> activity.type == "Run" }, "Run", parameters.year)
-        stravaService.exportCSV(activities.filter { activity -> activity.type == "Hike" }, "Hike", parameters.year)
+        print("* Export activities [")
+        print("Ride")
+        stravaService.exportBikeCSV(activities.filter { activity -> activity.type == "Ride" }, "Ride", parameters.year)
+        print(", Run")
+        stravaService.exportRunCSV(activities.filter { activity -> activity.type == "Run" }, "Run", parameters.year)
+        print(", Hike")
+        stravaService.exportHikeCSV(activities.filter { activity -> activity.type == "Hike" }, "Hike", parameters.year)
+        println("]")
+
     }
 
     /**

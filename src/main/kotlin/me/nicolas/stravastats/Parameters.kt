@@ -23,9 +23,9 @@ class Parameters {
     @Parameter(names = ["-year"], required = false, description = "year")
     var year: Int = 2020
 
-    @Parameter(names = ["-displayActivities"], required = false, description = "Display all activities")
-    var displayActivities: Boolean = false
+    @Parameter(names = ["-csv"], required = false, description = "Export all activities in a CSV file")
+    var csv: Boolean = false
 
-    @Parameter(names = ["-filter"], required = false, description = "Distance filter")
+    @Parameter(names = ["-filter"], required = false, description = "Distance filter for CSV export")
     var filter: Double? = null
 }
