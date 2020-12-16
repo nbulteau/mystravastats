@@ -70,12 +70,12 @@ https://en.wikipedia.org/wiki/VVO2max
 | Best 3 h | Sliding window best effort for a given time.| 
 | Best 4 h | Sliding window best effort for a given time.|  
 | Best 5 h | Sliding window best effort for a given time.|  
-| Max slope for 250 m | Sliding window max slope for a given distance.| 
-| Max slope for 500 m | Sliding window max slope for a given distance.| 
-| Max slope for 1000 m | Sliding window max slope for a given distance.| 
-| Max slope for 5 km | Sliding window max slope for a given distance.| 
-| Max slope for 10 km | Sliding window max slope for a given distance.|
-| Max slope for 20 km | Sliding window max slope for a given distance.|
+| Max gradient for 250 m | Sliding window max gradient for a given distance.| 
+| Max gradient for 500 m | Sliding window max gradient for a given distance.| 
+| Max gradient for 1000 m | Sliding window max gradient for a given distance.| 
+| Max gradient for 5 km | Sliding window max gradient for a given distance.| 
+| Max gradient for 10 km | Sliding window max gradient for a given distance.|
+| Max gradient for 20 km | Sliding window max gradient for a given distance.|
 
 ## Runs
 
