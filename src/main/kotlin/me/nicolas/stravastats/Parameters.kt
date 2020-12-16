@@ -1,7 +1,6 @@
 package me.nicolas.stravastats
 
 import com.beust.jcommander.Parameter
-import java.time.LocalDate
 
 
 class Parameters {
@@ -19,7 +18,7 @@ class Parameters {
     var accessToken: String? = null
 
     @Parameter(names = ["-year"], required = false, description = "year")
-    var year: Int = LocalDate.now().year
+    var year: Int? = null
 
     @Parameter(names = ["-csv"], required = false, description = "Export all activities in a CSV file")
     var csv: Boolean = false

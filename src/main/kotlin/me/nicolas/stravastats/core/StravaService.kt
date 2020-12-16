@@ -72,12 +72,12 @@ internal class StravaService(
                 "Best 3 h",
                 "Best 4 h",
                 "Best 5 h",
-                "Max slope for 250 m",
-                "Max slope for 500 m",
-                "Max slope for 1000 m",
-                "Max slope for 5 km",
-                "Max slope for 10 km",
-                "Max slope for 20 km",
+                "Max gradient for 250 m",
+                "Max gradient for 500 m",
+                "Max gradient for 1000 m",
+                "Max gradient for 5 km",
+                "Max gradient for 10 km",
+                "Max gradient for 20 km",
             ).writeCSVLine(writer)
 
             activities.forEach { activity ->

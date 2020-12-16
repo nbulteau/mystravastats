@@ -10,15 +10,10 @@ import me.nicolas.stravastats.core.ActivityLoader
 import me.nicolas.stravastats.core.StatsBuilder
 import me.nicolas.stravastats.core.StravaService
 import me.nicolas.stravastats.strava.StravaApi
+import java.time.LocalDate
 
 
 internal class MyStravaStats(incomingArgs: Array<String>) {
-
-    companion object {
-        const val DATE_PAD = 34
-        const val DISTANCE_PAD = 10
-        const val TIME_PAD = 14
-    }
 
     private val stravaStatsProperties = loadPropertiesFromFile()
 
@@ -44,7 +39,14 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
     fun run() {
         val startTime = System.currentTimeMillis()
 
-        val activities = loadActivities()
+        val activities = mutableListOf<Activity>()
+        if (parameters.year != null) {
+            activities.addAll(loadActivities(parameters.clientId, parameters.year!!))
+        } else {
+            for (year in LocalDate.now().year downTo 2010) {
+                activities.addAll(loadActivities(parameters.clientId, year))
+            }
+        }
 
         if (stravaStatsProperties.removingNonMovingSections) {
             activities.forEach { it.removeNonMoving() }
@@ -53,11 +55,13 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         displayStatistics(activities)
 
         if (parameters.csv) {
-            exportCSV(filterActivities(activities))
+            activities
+                .groupBy { activity -> activity.startDateLocal.subSequence(0, 4).toString() }
+                .forEach { exportCSV(filterActivities(it.value), it.key.toInt()) }
         }
 
         println()
-        println("Execution time = ${System.currentTimeMillis() - startTime} ms")
+        println("Execution time = ${System.currentTimeMillis() - startTime} m")
     }
 
     /**
@@ -71,14 +75,14 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
     /**
      * Export activities in a CSV file.
      */
-    private fun exportCSV(activities: List<Activity>) {
-        print("* Export activities [")
+    private fun exportCSV(activities: List<Activity>, year: Int) {
+        print("* Export activities for $year [")
         print("Ride")
-        stravaService.exportBikeCSV(activities.filter { activity -> activity.type == "Ride" }, "Ride", parameters.year)
+        stravaService.exportBikeCSV(activities.filter { activity -> activity.type == "Ride" }, "Ride", year)
         print(", Run")
-        stravaService.exportRunCSV(activities.filter { activity -> activity.type == "Run" }, "Run", parameters.year)
+        stravaService.exportRunCSV(activities.filter { activity -> activity.type == "Run" }, "Run", year)
         print(", Hike")
-        stravaService.exportHikeCSV(activities.filter { activity -> activity.type == "Hike" }, "Hike", parameters.year)
+        stravaService.exportHikeCSV(activities.filter { activity -> activity.type == "Hike" }, "Hike", year)
         println("]")
 
     }
@@ -101,27 +105,28 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
     /**
      * Load activities
      */
-    private fun loadActivities(): List<Activity> {
+    private fun loadActivities(clientId: String, year: Int): List<Activity> {
 
         return when {
             // with access token
             parameters.accessToken != null -> activityLoader.getActivitiesWithAccessToken(
-                parameters.clientId,
-                parameters.year,
+                clientId,
+                year,
                 parameters.accessToken!!
             )
             // with access authorization code
             parameters.code != null && parameters.clientSecret != null -> activityLoader.getActivitiesWithAuthorizationCode(
-                parameters.clientId,
-                parameters.year,
+                clientId,
+                year,
                 parameters.clientSecret!!,
                 parameters.code!!
             )
             // from local cache
             parameters.code == null && parameters.accessToken == null -> activityLoader.getActivitiesFromFile(
-                parameters.clientId,
-                parameters.year
+                clientId,
+                year
             )
+
             else -> throw ParameterException("-code with -clientSecret or -accessToken must be provided")
         }
     }
