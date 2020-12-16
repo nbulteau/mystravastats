@@ -7,7 +7,7 @@ abstract class Statistic(
     protected val activities: List<Activity>
 ) {
     override fun toString(): String {
-        return "${name.padEnd(22)} : "
+        return "${name.padEnd(30)} : "
     }
 }
 

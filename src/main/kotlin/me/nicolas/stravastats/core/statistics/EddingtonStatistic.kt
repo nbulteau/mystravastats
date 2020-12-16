@@ -1,7 +1,6 @@
 package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
-import java.time.LocalDate
 
 /**
  * https://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling
@@ -23,7 +22,7 @@ internal class EddingtonStatistic(
         if (activities.isNotEmpty()) {
 
             val activeDaysList = activities
-                .groupBy { activity -> LocalDate.parse(activity.startDateLocal.substringBefore('T')).dayOfYear }
+                .groupBy { activity -> activity.startDateLocal.substringBefore('T') }
                 .mapValues { (_, activities) -> activities.sumByDouble { it.distance / 1000 } }
                 .mapValues { it.value.toInt() }
                 .toMap()
