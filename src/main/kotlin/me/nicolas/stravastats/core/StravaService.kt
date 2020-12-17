@@ -144,6 +144,7 @@ internal class StravaService(
                 "Best 3 h",
                 "Best 4 h",
                 "Best 5 h",
+                "Best vVO2max = 6 min (min/k)",
             ).writeCSVLine(writer)
 
             activities.forEach { activity ->
@@ -166,6 +167,8 @@ internal class StravaService(
                     activity.calculateBestDistanceForTime(3 * 60 * 60)?.getFormattedSpeed() ?: "",
                     activity.calculateBestDistanceForTime(4 * 60 * 60)?.getFormattedSpeed() ?: "",
                     activity.calculateBestDistanceForTime(5 * 60 * 60)?.getFormattedSpeed() ?: "",
+                    activity.calculateBestDistanceForTime(12 * 60)
+                        ?.run { "%s/km".format((seconds * 1000 / distance).formatSeconds()) } ?: ""
                 ).writeCSVLine(writer)
             }
         }

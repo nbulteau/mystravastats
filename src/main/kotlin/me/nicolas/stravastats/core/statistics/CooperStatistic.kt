@@ -16,9 +16,7 @@ internal class CooperStatistic(
 
     override fun result(bestActivityEffort: ActivityEffort) =
         super.result(bestActivityEffort) +
-                " -- VO2 max = %.2f ml/kg/min".format(calculateVo2max(bestActivityEffort.distance))
-
-    private fun calculateVo2max(distanceIn12Min: Double): Double {
-        return (distanceIn12Min - 504.9) / 44.73
-    }
+                " -- VO2 max = %.2f ml/kg/min".format(bestActivityEffort.calculateVo2max())
 }
+
+private fun ActivityEffort.calculateVo2max(): Double = (distance - 504.9) / 44.73
