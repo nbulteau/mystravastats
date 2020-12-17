@@ -1,7 +1,6 @@
 package me.nicolas.stravastats
 
 import com.beust.jcommander.JCommander
-import com.beust.jcommander.ParameterException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -39,29 +38,58 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
     fun run() {
         val startTime = System.currentTimeMillis()
 
-        val activities = mutableListOf<Activity>()
-        if (parameters.year != null) {
-            activities.addAll(loadActivities(parameters.clientId, parameters.year!!))
-        } else {
-            for (year in LocalDate.now().year downTo 2010) {
-                activities.addAll(loadActivities(parameters.clientId, year))
-            }
-        }
+        val activities = loadActivities()
 
         if (stravaStatsProperties.removingNonMovingSections) {
-            activities.forEach { it.removeNonMoving() }
+            removeNonMovingSections(activities)
         }
 
         displayStatistics(activities)
 
         if (parameters.csv) {
-            activities
-                .groupBy { activity -> activity.startDateLocal.subSequence(0, 4).toString() }
-                .forEach { exportCSV(filterActivities(it.value), it.key.toInt()) }
+            exportCSV(activities)
         }
 
         println()
         println("Execution time = ${System.currentTimeMillis() - startTime} m")
+    }
+
+    private fun exportCSV(activities: MutableList<Activity>) {
+        activities
+            .groupBy { activity -> activity.startDateLocal.subSequence(0, 4).toString() }
+            .forEach { exportCSV(filterActivities(it.value), it.key.toInt()) }
+    }
+
+    private fun removeNonMovingSections(activities: MutableList<Activity>) {
+        activities.forEach { it.removeNonMoving() }
+    }
+
+    private fun loadActivities(): MutableList<Activity> {
+        val activities = mutableListOf<Activity>()
+        if (parameters.year != null) {
+            activities.addAll(
+                activityLoader.loadActivities(
+                    parameters.clientId,
+                    parameters.year!!,
+                    parameters.accessToken,
+                    parameters.clientSecret,
+                    parameters.code
+                )
+            )
+        } else {
+            for (year in LocalDate.now().year downTo 2010) {
+                activities.addAll(
+                    activityLoader.loadActivities(
+                        parameters.clientId,
+                        year,
+                        parameters.accessToken,
+                        parameters.clientSecret,
+                        parameters.code
+                    )
+                )
+            }
+        }
+        return activities
     }
 
     /**
@@ -99,35 +127,6 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
             activities.filter { activity -> activity.distance > lowBoundary && activity.distance < highBoundary }
         } else {
             activities
-        }
-    }
-
-    /**
-     * Load activities
-     */
-    private fun loadActivities(clientId: String, year: Int): List<Activity> {
-
-        return when {
-            // with access token
-            parameters.accessToken != null -> activityLoader.getActivitiesWithAccessToken(
-                clientId,
-                year,
-                parameters.accessToken!!
-            )
-            // with access authorization code
-            parameters.code != null && parameters.clientSecret != null -> activityLoader.getActivitiesWithAuthorizationCode(
-                clientId,
-                year,
-                parameters.clientSecret!!,
-                parameters.code!!
-            )
-            // from local cache
-            parameters.code == null && parameters.accessToken == null -> activityLoader.getActivitiesFromFile(
-                clientId,
-                year
-            )
-
-            else -> throw ParameterException("-code with -clientSecret or -accessToken must be provided")
         }
     }
 

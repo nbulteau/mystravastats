@@ -1,5 +1,6 @@
 package me.nicolas.stravastats.core
 
+import com.beust.jcommander.ParameterException
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectWriter
@@ -25,8 +26,41 @@ internal class ActivityLoader(
 
     private fun getYearActivitiesJsonFileName(clientId: String, year: Int) = "activities-$clientId-$year.json"
 
+    private var accessToken: String? = null
 
-    fun getActivitiesFromFile(
+    /**
+     * Load activities
+     */
+    fun loadActivities(
+        clientId: String,
+        year: Int,
+        accessToken: String?,
+        clientSecret: String?,
+        authorizationCode: String?
+    ): List<Activity> {
+
+        if (accessToken == null && this.accessToken == null && (authorizationCode != null && clientSecret != null)) {
+            val token = stravaApi.getToken(clientId, clientSecret, authorizationCode)
+
+            println("-accessToken ${token.accessToken}")
+
+            this.accessToken = token.accessToken
+        } else if (this.accessToken == null) {
+            this.accessToken = accessToken
+        }
+
+        return when {
+            // with access token
+            this.accessToken != null -> getActivitiesWithAccessToken(clientId, year, this.accessToken!!)
+
+            // from local cache
+            authorizationCode == null && this.accessToken == null -> getActivitiesFromFile(clientId, year)
+
+            else -> throw ParameterException("-code with -clientSecret or -accessToken must be provided")
+        }
+    }
+
+    private fun getActivitiesFromFile(
         clientId: String,
         year: Int
     ): List<Activity> {
@@ -55,21 +89,7 @@ internal class ActivityLoader(
         return activities
     }
 
-    fun getActivitiesWithAuthorizationCode(
-        clientId: String,
-        year: Int,
-        clientSecret: String,
-        authorizationCode: String
-    ): List<Activity> {
-
-        val token = stravaApi.getToken(clientId, clientSecret, authorizationCode)
-
-        println("-accessToken ${token.accessToken}")
-
-        return getActivitiesWithAccessToken(clientId, year, token.accessToken)
-    }
-
-    fun getActivitiesWithAccessToken(clientId: String, year: Int, accessToken: String): List<Activity> {
+    private fun getActivitiesWithAccessToken(clientId: String, year: Int, accessToken: String): List<Activity> {
 
         // only get activities of type (Run, Bike and Hike)
         print("Load activities of clientId=$clientId for year $year ... ")

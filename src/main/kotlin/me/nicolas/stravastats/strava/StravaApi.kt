@@ -50,15 +50,23 @@ internal class StravaApi(
 
         val requestHeaders = buildRequestHeaders(accessToken)
         val response = get(url, requestHeaders)
-        if (response.statusCode == 200) {
-            return try {
-                mapper.readValue<Stream>(response.content)
-            } catch (jsonProcessingException: JsonProcessingException) {
-                println("Unable to load streams for activity : $activity")
+
+        return when {
+            response.statusCode >= 400 -> {
+                println(response)
                 null
             }
-        } else {
-            throw RuntimeException("Something was wrong with Strava API ${response.text}")
+            response.statusCode == 200 -> {
+                return try {
+                    mapper.readValue<Stream>(response.content)
+                } catch (jsonProcessingException: JsonProcessingException) {
+                    println("Unable to load streams for activity : $activity")
+                    null
+                }
+            }
+            else -> {
+                throw RuntimeException("Something was wrong with Strava API ${response.headers} - ${response.text}")
+            }
         }
     }
 
