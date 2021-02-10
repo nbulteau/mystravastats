@@ -134,7 +134,7 @@ internal class ActivityLoader(
         var index = 0.0
         val writer: ObjectWriter = objectMapper.writer()
         activities.forEach { activity ->
-            displayProgressBar(index++ / (activities.size))
+            displayProgressBar(++index / activities.size)
 
             val streamFile = File(activitiesDirectory, "stream-${activity.id}")
             val stream: Stream?
@@ -157,7 +157,7 @@ internal class ActivityLoader(
     ) {
         var index = 0.0
         activities.forEach { activity ->
-            displayProgressBar(index++ / (activities.size))
+            displayProgressBar(++index / activities.size)
 
             val streamFile = File(activitiesDirectory, "stream-${activity.id}")
             val stream: Stream?

@@ -14,6 +14,7 @@ import java.time.LocalDate
 
 internal class MyStravaStats(incomingArgs: Array<String>) {
 
+    // build instances
     private val stravaStatsProperties = loadPropertiesFromFile()
 
     private val stravaApi = StravaApi(stravaStatsProperties)
@@ -29,7 +30,7 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
     init {
         JCommander.newBuilder()
             .addObject(parameters)
-            .programName("Strava Stats")
+            .programName("My Strava Stats")
             .build().parse(*incomingArgs)
 
         println("http://www.strava.com/api/v3/oauth/authorize?client_id=${parameters.clientId}&response_type=code&redirect_uri=http://localhost:8080/exchange_token&approval_prompt=auto&scope=read_all,activity:read_all")
@@ -50,18 +51,24 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
             exportCSV(activities)
         }
 
+        exportCharts(activities)
+
         println()
         println("Execution time = ${System.currentTimeMillis() - startTime} m")
     }
 
-    private fun exportCSV(activities: MutableList<Activity>) {
+    private fun exportCharts(activities: List<Activity>) {
+
+    }
+
+    private fun exportCSV(activities: List<Activity>) {
         activities
-            .groupBy { activity -> activity.startDateLocal.subSequence(0, 4).toString() }
+            .groupBy { activity -> activity.startDateLocal.subSequence(0, 4).toString() } // year by year
             .forEach { exportCSV(filterActivities(it.value), it.key.toInt()) }
     }
 
-    private fun removeNonMovingSections(activities: MutableList<Activity>) {
-        activities.forEach { it.removeNonMoving() }
+    private fun removeNonMovingSections(activities: List<Activity>) {
+        activities.forEach { activity -> activity.removeNonMoving() }
     }
 
     private fun loadActivities(): MutableList<Activity> {
