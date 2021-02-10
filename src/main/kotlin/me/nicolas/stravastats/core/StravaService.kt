@@ -188,7 +188,14 @@ internal class StravaService(
         val writer = FileWriter(File("activities-$type-$year.csv"))
         writer.use {
             listOf(
-                "Date", "Description", "Distance (km)", "Time", "Elevation (m)", "Highest point (m)"
+                "Date",
+                "Description",
+                "Distance (km)",
+                "Time",
+                "Elevation (m)",
+                "Highest point (m)",
+                "Best 1000m",
+                "Best 1 h",
             ).writeCSVLine(writer)
 
             activities.forEach { activity ->
@@ -200,6 +207,8 @@ internal class StravaService(
                     activity.elapsedTime.formatSeconds(),
                     "%.0f".format(activity.totalElevationGain),
                     "%.0f".format(activity.elevHigh),
+                    activity.calculateBestTimeForDistance(1000.0)?.getFormattedSpeed() ?: "",
+                    activity.calculateBestDistanceForTime(60 * 60)?.getFormattedSpeed() ?: "",
                 ).writeCSVLine(writer)
             }
         }
