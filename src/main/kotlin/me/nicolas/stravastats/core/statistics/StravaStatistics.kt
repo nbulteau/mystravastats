@@ -6,6 +6,7 @@ internal data class StravaStatistics(
     val sportRideStats: List<Statistic>,
     val runsStats: List<Statistic>,
     val hikesStats: List<Statistic>,
+    val inlineSkateStats: List<Statistic>,
 ) {
 
     fun displayStatistics() {
@@ -30,6 +31,11 @@ internal data class StravaStatistics(
         println()
         println("** Runs")
         runsStats.forEach {
+            println(it)
+        }
+        println()
+        println("** InlineSkate")
+        inlineSkateStats.forEach {
             println(it)
         }
         println()

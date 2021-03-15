@@ -79,7 +79,12 @@ internal class ActivityLoader(
             val objectMapper = ObjectMapper()
             activities = objectMapper.readValue(yearActivitiesJsonFile, Array<Activity>::class.java)
                 .toList()
-                .filter { activity -> activity.type == "Ride" || activity.type == "Run" || activity.type == "Hike" }
+                .filter { activity ->
+                    activity.type == "Ride" ||
+                            activity.type == "Run" ||
+                            activity.type == "Hike" ||
+                            activity.type == "InlineSkate"
+                }
             println("done")
 
             // Load activities streams
@@ -97,7 +102,12 @@ internal class ActivityLoader(
             accessToken = accessToken,
             before = LocalDateTime.of(year, 12, 31, 23, 59),
             after = LocalDateTime.of(year, 1, 1, 0, 0)
-        ).filter { activity -> activity.type == "Ride" || activity.type == "Run" || activity.type == "Hike" }
+        ).filter { activity ->
+            activity.type == "Ride" ||
+                    activity.type == "Run" ||
+                    activity.type == "Hike" ||
+                    activity.type == "InlineSkate"
+        }
         println("done")
 
         println("Load ${activities.size} activities streams ... ")
