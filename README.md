@@ -36,9 +36,7 @@ My Strava Stats needs several parameters :
 
 Download activities from 2010 to now then display statistics.
 
-Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava. For
-people with a huge amount of long activities, I recommend to increase memory for example : -Xmx2048m (Set the maximum
-memory size to 2048 megabytes).
+Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava. 
 ```
 ./gradlew run --args="-clientId [clientId] -clientSecret [clientSecret]"    
 ```
