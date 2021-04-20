@@ -20,7 +20,7 @@ https://en.wikipedia.org/wiki/VVO2max
 
 | Global Statistics ||    
 |---|---|
-| Nb activities | Total of all commute activities.
+| Nb activities | Total of all activities.
 | Nb actives days | Number of active days for all activities.
 | Max streak | Max streak of activities for consecutive days.
 | Most active month. | The most active month of the year.
@@ -106,6 +106,33 @@ https://en.wikipedia.org/wiki/VVO2max
 | Best 5 h | Sliding window best effort for a given time.
 | Best 6 h | Sliding window best effort for a given time.
 
+## InlineSkate
+
+| InlineSkate || 
+| --- | --- 
+| Nb activities | Total of all InlineSkate rides.
+| Nb actives days | Number of active days for all InlineSkate rides.| 
+| Max streak | Max streak of InlineSkate rides for a consecutive days. | 
+| Total distance | Total elevation accumulated on all InlineSkate rides. | 
+| Total elevation | Total elevation accumulated on all InlineSkate rides. | 
+| Max distance | Max distance calculated by Strava for InlineSkate rides.| 
+| Max elevation | Max elevation calculated by Strava for InlineSkate rides.| 
+| Max moving time | Max moving time for InlineSkate rides. Moving time, is a measure of how long you were active. Strava attempt to calculate this based on the GPS locations, distance, and speed of your activity.|
+| Most active month | The most active month of the year for InlineSkate rides. | 
+| Eddington number | The Eddington number in the context of InlineSkate is defined as the maximum number E such that the cyclist has cycled E km on E days.|
+| Max speed | Max speed calculated by Strava for InlineSkate rides.| 
+| Max moving time | Max moving time calculated by Strava for InlineSkate rides| 
+| Best 200 m | Sliding window best effort for a given distance.
+| Best 400 m | Sliding window best effort for a given distance.
+| Best 1000 m | Sliding window best effort for a given distance.
+| Best 10000 m | Sliding window best effort for a given distance.
+| Best half Marathon | Sliding window best effort for a given distance.
+| Best Marathon | Sliding window best effort for a given distance.
+| Best 1 h | Sliding window best effort for a given time.| 
+| Best 2 h | Sliding window best effort for a given time.|  
+| Best 3 h | Sliding window best effort for a given time.| 
+| Best 4 h | Sliding window best effort for a given time.|  
+
 ## Hikes
 
 | Hikes ||
@@ -123,45 +150,21 @@ https://en.wikipedia.org/wiki/VVO2max
 | Max distance in a day | Max walked distance in a day for hikes.
 | Max elevation in a day | Max elevation in a day for hikes.
 
-## Get authorization code
+## Build mystravastats
 
-### Create a request URL for Strava authorization, where the base URL is https://www.strava.com/api/v3/oauth/authorize and parameters are:
-
-* client_id: your application’s ID. You can your find client_id on this page : https://www.strava.com/settings/api
-* redirect_uri:    URL to which the user will be redirected with the authorization code.
-* response_type: must be 'code'
-* scope : 'read', 'read_all', 'profile:read_all', 'profile:write', 'profile:write', 'activity:read', 'activity:
-  read_all', 'activity:write'
-
-http://www.strava.com/api/v3/oauth/authorize?client_id=[YOUR_CLIENT_ID]&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=read_all,profile:read_all,activity:read_all
-
-### Go to above URL in a browser
-
-Login to Strava then click 'Authorize' and tick the required permissions if needed.
-Browser should go to 404 as http://localhost/exchange_token doesn't exist.
-Copy the authorization code from URL. 
-
-For example : http://localhost/exchange_token?state=&code=d4ebd5ee7f512523d49fcb66d6eda207e46fcb8c&scope=read_all,profile:read_all,activity:read_all
-
-The authorization code for next step is d4ebd5ee7f512523d49fcb66d6eda207e46fcb8c.
-
-## Launch mystravastats
-
-My Strava Stats needs several parameters : 
-
-Build the jar :
+Build mystravastats :
 ```
 ./gradlew jar
 ```
 
+## Launch mystravastats
+
+My Strava Stats needs several parameters :
+
 *Mandatory parameters*
 
 * -clientId: your application’s ID. You can your find your client id on this page : https://www.strava.com/settings/api
-  with :
-* -code: the authorization code you get above. This code can be used only once.
 * -clientSecret: your client secret. You can your find client secret on this page : https://www.strava.com/settings/api
-  or
-* -accessToken: Your access token is print when you use -code.
 
 *Optional parameters*
 
@@ -169,35 +172,42 @@ Build the jar :
 * -csv : to export all activities in a CSV file.
 * -filter: to filter exported activities on a specific distance in meters. For example : -csv -filter 10000 will display
   all the activities around 10000 m (+/- 5 %)
+  
+### launch mystravastats 
+
+Download activities from 2011 to now then display statistics.
 
 Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava. For
 people with a huge amount of long activities, I recommend to increase memory for example : -Xmx2048m (Set the maximum
 memory size to 2048 megabytes).
-
 ```
- java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -clientSecret [clientSecret] -code d4ebd5ee7f512523d49fcb66d6eda207e46fcb8c
-```
-
-```
- java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -accessToken [accessToken]
+java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -clientSecret [clientSecret]
 ```
 
-Some examples :
-
-You can use locally download activities (no -code and no -accessToken) :
-
+Display statistics for current year using locally download activities.
 ```
- java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -year 2019
+java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] 
+```
+
+Display statistics for specified year using locally download activities.
+```
+java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -year 2019
 ```
 
 Export activities in a CSV file using locally download activities (current year) :
-
 ```
- java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -csv 
+java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -csv 
 ```
 
 Display export activities in a CSV file with a filter using locally download activities (current year) :
+```
+java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -csv -filter 10000
+```
 
+A URL will be displayed copy/past it in a browser to get allow mystravastats to access your Strava data. 
+This URL will look like :
 ```
- java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -csv -filter 10000
+http://www.strava.com/api/v3/oauth/authorize?client_id=[YOUR_CLIENT_ID]&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=read_all,profile:read_all,activity:read_all
 ```
+Login to Strava then click 'Authorize' and tick the required permissions if needed.
+

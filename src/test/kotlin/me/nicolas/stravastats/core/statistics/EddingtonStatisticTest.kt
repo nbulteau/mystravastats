@@ -12,7 +12,7 @@ internal class EddingtonStatisticTest {
     fun `eddingtonTest 4`() {
 
         // Given
-        val activities = listOf<Activity>(
+        val activities = listOf(
             buildActivity("2020-01-01T12:16:22Z", 2000.0),
             buildActivity("2020-01-01T17:13:52Z", 2000.0),
             buildActivity("2020-02-02T12:13:52Z", 4000.0),
@@ -31,7 +31,7 @@ internal class EddingtonStatisticTest {
     fun `eddingtonTest 3`() {
 
         // Given
-        val activities = listOf<Activity>(
+        val activities = listOf(
             buildActivity("2020-01-01T12:16:22Z", 2000.0),
             buildActivity("2020-01-01T17:13:52Z", 2000.0),
             buildActivity("2020-02-02T12:13:52Z", 4000.0),

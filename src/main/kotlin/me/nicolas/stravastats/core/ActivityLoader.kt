@@ -11,7 +11,14 @@ import me.nicolas.stravastats.business.Stream
 import me.nicolas.stravastats.helpers.displayProgressBar
 import me.nicolas.stravastats.strava.StravaApi
 import java.io.File
+import java.net.ConnectException
 import java.time.LocalDateTime
+
+import io.javalin.Javalin
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+
 
 internal class ActivityLoader(
     private val myStravaStatsProperties: MyStravaStatsProperties,
@@ -28,35 +35,56 @@ internal class ActivityLoader(
 
     private var accessToken: String? = null
 
+    private fun setAccessToken(accessToken: String) {
+        this.accessToken = accessToken
+    }
+
     /**
      * Load activities
      */
     fun loadActivities(
         clientId: String,
-        year: Int,
-        accessToken: String?,
         clientSecret: String?,
-        authorizationCode: String?
+        year: Int
     ): List<Activity> {
 
-        if (accessToken == null && this.accessToken == null && (authorizationCode != null && clientSecret != null)) {
-            val token = stravaApi.getToken(clientId, clientSecret, authorizationCode)
+        // get accessToken
+        if (clientSecret != null && this.accessToken == null) {
+            println("Copy paste this URL in a browser")
+            println("http://www.strava.com/api/v3/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=http://localhost:8080/exchange_token&approval_prompt=auto&scope=read_all,activity:read_all")
 
-            println("-accessToken ${token.accessToken}")
+            runBlocking {
+                val channel = Channel<String>()
 
-            this.accessToken = token.accessToken
-        } else if (this.accessToken == null) {
-            this.accessToken = accessToken
+                // Start a web server
+                val app = Javalin.create().start(8080)
+                // GET /exchange_token to get code
+                app.get("/exchange_token") { ctx ->
+                    val authorizationCode = ctx.req.getParameter("code")
+                    ctx.result("Ok")
+                    // Get authorisation token with the code
+                    val token = stravaApi.getToken(clientId, clientSecret, authorizationCode)
+                    launch {
+                        channel.send(token.accessToken)
+                    }
+                    // stop de web server
+                    app.stop()
+                }
+
+                    println("Waiting for your agreement to allow MyStravaStats to access to your Strava data ...")
+                val accessTokenFromToken = channel.receive()
+                setAccessToken(accessTokenFromToken)
+            }
         }
 
-        return when {
-            // with access token
-            this.accessToken != null -> getActivitiesWithAccessToken(clientId, year, this.accessToken!!)
-
-            // from local cache
-            authorizationCode == null && this.accessToken == null -> getActivitiesFromFile(clientId, year)
-
-            else -> throw ParameterException("-code with -clientSecret or -accessToken must be provided")
+        return if (this.accessToken == null) {
+            getActivitiesFromFile(clientId, year)
+        } else {
+            try {
+                getActivitiesWithAccessToken(clientId, year, this.accessToken!!)
+            } catch (connectException: ConnectException) {
+                throw ParameterException("Unable to connect to Strava API : ${connectException.message}")
+            }
         }
     }
 

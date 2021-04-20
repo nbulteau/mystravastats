@@ -30,7 +30,7 @@ internal class StatsBuilder {
      * Compute statistics.
      * @param activities
      */
-    fun computeStats(activities: List<Activity>): List<Statistic> {
+    private fun computeStats(activities: List<Activity>): List<Statistic> {
 
         return listOf(
             GlobalStatistic("Nb activities", activities, "%d", List<Activity>::size),
@@ -122,6 +122,32 @@ internal class StatsBuilder {
                 BestElevationDistanceStatistic("Max gradient for 5 km", activities, 5000.0),
                 BestElevationDistanceStatistic("Max gradient for 10 km", activities, 10000.0),
                 BestElevationDistanceStatistic("Max gradient for 20 km", activities, 20000.0),
+            )
+        )
+        return statistics
+    }
+
+    /**
+     * Compute commute Bike statistics.
+     * @param activities
+     */
+    fun computeCommuteBikeStats(activities: List<Activity>): List<Statistic> {
+
+        val statistics = computeStats(activities).toMutableList()
+        statistics.addAll(
+            listOf(
+                MaxSpeedStatistic(activities),
+                MaxMovingTimeStatistic(activities),
+                BestEffortDistanceStatistic("Best 250 m", activities, 250.0),
+                BestEffortDistanceStatistic("Best 500 m", activities, 500.0),
+                BestEffortDistanceStatistic("Best 1000 m", activities, 1000.0),
+                BestEffortDistanceStatistic("Best 5 km", activities, 5000.0),
+                BestEffortDistanceStatistic("Best 10 km", activities, 10000.0),
+                BestEffortTimeStatistic("Best 30 min", activities, 30 * 60),
+                BestEffortTimeStatistic("Best 1 h", activities, 60 * 60),
+                BestElevationDistanceStatistic("Max gradient for 250 m", activities, 250.0),
+                BestElevationDistanceStatistic("Max gradient for 500 m", activities, 500.0),
+                BestElevationDistanceStatistic("Max gradient for 1000 m", activities, 1000.0),
             )
         )
         return statistics

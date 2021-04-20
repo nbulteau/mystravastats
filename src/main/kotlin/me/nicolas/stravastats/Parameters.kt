@@ -11,12 +11,6 @@ class Parameters {
     @Parameter(names = ["-clientSecret"], required = false, description = "clientSecret")
     var clientSecret: String? = null
 
-    @Parameter(names = ["-code"], required = false, description = "authorization code")
-    var code: String? = null
-
-    @Parameter(names = ["-accessToken"], required = false, description = "Access token")
-    var accessToken: String? = null
-
     @Parameter(names = ["-year"], required = false, description = "year")
     var year: Int? = null
 

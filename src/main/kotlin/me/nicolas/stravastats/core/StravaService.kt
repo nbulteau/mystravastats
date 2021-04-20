@@ -30,7 +30,8 @@ internal class StravaService(
             .filter { it.stream != null && it.stream?.time != null && it.stream?.distance != null && it.stream?.altitude != null }
         println("Nb activities used to compute statistics (with streams) : ${filteredActivities.size}")
 
-        val commuteRideStats = statsBuilder.computeStats(filteredActivities.filter { it.type == "Ride" && it.commute })
+        val commuteRideStats =
+            statsBuilder.computeCommuteBikeStats(filteredActivities.filter { it.type == "Ride" && it.commute })
         val sportRideStats =
             statsBuilder.computeBikeStats(filteredActivities.filter { it.type == "Ride" && !it.commute })
         val runsStats = statsBuilder.computeRunStats(filteredActivities.filter { it.type == "Run" })
@@ -192,9 +193,13 @@ internal class StravaService(
                 "Description",
                 "Distance (km)",
                 "Time",
+                "Speed (min/k)",
                 "Elevation (m)",
                 "Highest point (m)",
+                "Best 200m",
+                "Best 400m",
                 "Best 1000m",
+                "Best 10000m",
                 "Best 1 h",
             ).writeCSVLine(writer)
 
@@ -205,9 +210,13 @@ internal class StravaService(
                     activity.name.trim(),
                     "%.02f".format(activity.distance / 1000),
                     activity.elapsedTime.formatSeconds(),
+                    activity.getFormattedSpeed(),
                     "%.0f".format(activity.totalElevationGain),
                     "%.0f".format(activity.elevHigh),
+                    activity.calculateBestTimeForDistance(200.0)?.getFormattedSpeed() ?: "",
+                    activity.calculateBestTimeForDistance(400.0)?.getFormattedSpeed() ?: "",
                     activity.calculateBestTimeForDistance(1000.0)?.getFormattedSpeed() ?: "",
+                    activity.calculateBestTimeForDistance(10000.0)?.getFormattedSpeed() ?: "",
                     activity.calculateBestDistanceForTime(60 * 60)?.getFormattedSpeed() ?: "",
                 ).writeCSVLine(writer)
             }

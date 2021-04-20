@@ -13,7 +13,7 @@ buildscript {
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.4.20"
+    id("org.jetbrains.kotlin.jvm") version "1.4.32"
 
     // Apply the application plugin to add support for building a CLI application.
     application
@@ -25,6 +25,7 @@ repositories {
 
 }
 
+
 dependencies {
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -32,17 +33,22 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     implementation("com.beust:jcommander:1.78")
-    implementation("org.danilopianini:khttp:0.1.0-dev2r+2d3b427")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.0")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.0")
+    implementation("org.danilopianini:khttp:0.1.0-dev30+51fa9ae")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.3")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.3")
+
+    //implementation("io.ktor:ktor-server-netty:1.5.3")
+    implementation("io.javalin:javalin:3.13.6")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+    implementation("org.slf4j:slf4j-nop:1.7.30")
 
     //implementation("kscience.plotlykt:plotlykt-server:0.3.0")
     //implementation(kotlin("script-runtime"))
     //implementation("de.mpicbg.scicomp:krangl:0.13")
     //implementation("io.github.microutils:kotlin-logging:2.0.3")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
 }
 
 application {
