@@ -14,7 +14,61 @@ Best Cooper (12 min) : In the original form, the point of the test is to run as 
 https://fr.wikipedia.org/wiki/Test_de_Cooper
 
 Best vVO2max (6 min) : This is the smallest speed that requires VO2 max in an accelerated speed test. MyStravaStats look for with a 'sliding window' the best effort for the given time (6 minutes) on running activities.
-https://en.wikipedia.org/wiki/VVO2max 
+https://en.wikipedia.org/wiki/VVO2max
+
+## Launch mystravastats
+
+My Strava Stats needs several parameters :
+
+*Mandatory parameters*
+
+* -clientId: your application’s ID. You can your find your client id on this page : https://www.strava.com/settings/api
+* -clientSecret: your client secret. You can your find client secret on this page : https://www.strava.com/settings/api
+
+*Optional parameters*
+
+* -year: the year you request (default value is the current year).
+* -csv : to export all activities in a CSV file.
+* -filter: to filter exported activities on a specific distance in meters. For example : -csv -filter 10000 will display
+  all the activities around 10000 m (+/- 5 %)
+
+### launch mystravastats
+
+Download activities from 2011 to now then display statistics.
+
+Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava. For
+people with a huge amount of long activities, I recommend to increase memory for example : -Xmx2048m (Set the maximum
+memory size to 2048 megabytes).
+```
+./gradlew run --args="-clientId [clientId] -clientSecret [clientSecret]"    
+```
+
+Display statistics for current year using locally download activities.
+```
+./gradlew run --args="-clientId [clientId]"
+```
+
+Display statistics for specified year using locally download activities.
+```
+./gradlew run --args="-clientId [clientId] -year 2019"
+```
+
+Export activities in a CSV file using locally download activities (current year) :
+```
+./gradlew run --args="-clientId [clientId] -csv"
+```
+
+Display export activities in a CSV file with a filter using locally download activities (current year) :
+```
+./gradlew run --args="-clientId [clientId] -csv -filter 10000"
+```
+
+A URL will be displayed copy/past it in a browser to get allow mystravastats to access your Strava data.
+This URL will look like :
+```
+http://www.strava.com/api/v3/oauth/authorize?client_id=[YOUR_CLIENT_ID]&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=read_all,profile:read_all,activity:read_all
+```
+Login to Strava then click 'Authorize' and tick the required permissions if needed.
 
 ## Global Statistics
 
@@ -149,65 +203,4 @@ https://en.wikipedia.org/wiki/VVO2max
 | Eddington number | The Eddington number in the context of cycling is defined as the maximum number E such that the cyclist has cycled E km on E days.
 | Max distance in a day | Max walked distance in a day for hikes.
 | Max elevation in a day | Max elevation in a day for hikes.
-
-## Build mystravastats
-
-Build mystravastats :
-```
-./gradlew jar
-```
-
-## Launch mystravastats
-
-My Strava Stats needs several parameters :
-
-*Mandatory parameters*
-
-* -clientId: your application’s ID. You can your find your client id on this page : https://www.strava.com/settings/api
-* -clientSecret: your client secret. You can your find client secret on this page : https://www.strava.com/settings/api
-
-*Optional parameters*
-
-* -year: the year you request (default value is the current year).
-* -csv : to export all activities in a CSV file.
-* -filter: to filter exported activities on a specific distance in meters. For example : -csv -filter 10000 will display
-  all the activities around 10000 m (+/- 5 %)
-  
-### launch mystravastats 
-
-Download activities from 2011 to now then display statistics.
-
-Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava. For
-people with a huge amount of long activities, I recommend to increase memory for example : -Xmx2048m (Set the maximum
-memory size to 2048 megabytes).
-```
-java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -clientSecret [clientSecret]
-```
-
-Display statistics for current year using locally download activities.
-```
-java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] 
-```
-
-Display statistics for specified year using locally download activities.
-```
-java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -year 2019
-```
-
-Export activities in a CSV file using locally download activities (current year) :
-```
-java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -csv 
-```
-
-Display export activities in a CSV file with a filter using locally download activities (current year) :
-```
-java -Xmx2048m -jar ./build/libs/mystravastats.jar -clientId [clientId] -csv -filter 10000
-```
-
-A URL will be displayed copy/past it in a browser to get allow mystravastats to access your Strava data. 
-This URL will look like :
-```
-http://www.strava.com/api/v3/oauth/authorize?client_id=[YOUR_CLIENT_ID]&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=read_all,profile:read_all,activity:read_all
-```
-Login to Strava then click 'Authorize' and tick the required permissions if needed.
 

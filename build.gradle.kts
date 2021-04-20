@@ -22,7 +22,6 @@ plugins {
 repositories {
     jcenter()
     mavenCentral()
-
 }
 
 
@@ -54,6 +53,7 @@ dependencies {
 application {
     // Define the main class for the application.
     mainClass.set("me.nicolas.stravastats.MyStravaStatsKt")
+    applicationDefaultJvmArgs = listOf("-Xmx2048m")
 }
 
 tasks.withType<Test> {
@@ -71,4 +71,5 @@ tasks.withType<Jar> {
 
     from(configurations.compileClasspath.map { config -> config.map { if (it.isDirectory) it else zipTree(it) } })
 }
+
 
