@@ -7,7 +7,7 @@ example, it finds for the fastest consecutive 1 km, 5 km, 10 km you've run, or t
 activities.
 
 Eddington number is the largest number, E, such that you have ridden at least E km on at least E days. MyStravaStats
-calculate Eddington number for rides, runs and hikes.
+calculate Eddington number for rides, runs, inline skate and hikes.
 https://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling
 
 Best Cooper (12 min) : In the original form, the point of the test is to run as far as possible within 12 minutes. MyStravaStats look for with a 'sliding window' the best effort for the given time (12 minutes) on running activities. 
@@ -34,7 +34,7 @@ My Strava Stats needs several parameters :
 
 ### launch mystravastats
 
-Download activities from 2011 to now then display statistics.
+Download activities from 2010 to now then display statistics.
 
 Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava. For
 people with a huge amount of long activities, I recommend to increase memory for example : -Xmx2048m (Set the maximum
