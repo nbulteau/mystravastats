@@ -22,8 +22,10 @@ My Strava Stats needs several parameters :
 
 *Mandatory parameters*
 
-* -clientId: your application’s ID. You can your find your client id on this page : https://www.strava.com/settings/api
-* -clientSecret: your client secret. You can your find client secret on this page : https://www.strava.com/settings/api
+* -clientId: your application’s ID.
+* -clientSecret: your client secret.
+
+You can find your 'client id' and your 'client secret' on this page : https://www.strava.com/settings/api
 
 *Optional parameters*
 
