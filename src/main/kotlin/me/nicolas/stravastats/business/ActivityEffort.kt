@@ -20,5 +20,15 @@ data class ActivityEffort(
         }
     }
 
+    fun getSpeed(): String {
+        return if (activity.type == "Run") {
+            "%s".format((seconds * 1000 / distance).formatSeconds())
+        } else {
+            "%.02f".format(distance / seconds * 3600 / 1000)
+        }
+    }
+
     fun getFormattedSlope() = "%.02f %%".format(100 * altitude / distance)
+
+    fun getSlope() = "%.02f".format(100 * altitude / distance)
 }

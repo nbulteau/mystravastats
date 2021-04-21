@@ -170,6 +170,14 @@ data class Activity(
             "%.02f km/h".format(distance / elapsedTime * 3600 / 1000)
         }
     }
+
+    fun getSpeed(): String {
+        return if (type == "Run") {
+            "${(elapsedTime * 1000 / distance).formatSeconds()}"
+        } else {
+            "%.02f".format(distance / elapsedTime * 3600 / 1000)
+        }
+    }
 }
 
 data class AthleteRef(

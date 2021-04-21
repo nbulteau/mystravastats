@@ -113,7 +113,7 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         print(", Hike")
         stravaService.exportHikeCSV(activities.filter { activity -> activity.type == "Hike" }, "Hike", year)
         print(", InlineSkate")
-        stravaService.exportHikeCSV(
+        stravaService.exportInLineSkateCSV(
             activities.filter { activity -> activity.type == "InlineSkate" },
             "InlineSkate",
             year
