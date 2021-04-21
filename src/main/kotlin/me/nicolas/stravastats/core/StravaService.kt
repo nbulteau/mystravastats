@@ -44,14 +44,14 @@ internal class StravaService(
      * Export to CSV file.
      * @param activities activities to export.
      */
-    fun exportBikeCSV(activities: List<Activity>, type: String, year: Int) {
+    fun exportBikeCSV(clientId: String, activities: List<Activity>, type: String, year: Int) {
 
         // if no activities : nothing to do
         if (activities.isEmpty()) {
             return
         }
 
-        val writer = FileWriter(File("activities-$type-$year.csv"))
+        val writer = FileWriter(File("$clientId-$type-$year.csv"))
         writer.use {
             listOf(
                 "Date",
@@ -120,14 +120,14 @@ internal class StravaService(
      * Export to CSV file.
      * @param activities activities to export.
      */
-    fun exportRunCSV(activities: List<Activity>, type: String, year: Int) {
+    fun exportRunCSV(clientId: String, activities: List<Activity>, type: String, year: Int) {
 
         // if no activities : nothing to do
         if (activities.isEmpty()) {
             return
         }
 
-        val writer = FileWriter(File("activities-$type-$year.csv"))
+        val writer = FileWriter(File("$clientId-$type-$year.csv"))
         writer.use {
             listOf(
                 "Date",
@@ -182,14 +182,14 @@ internal class StravaService(
      * Export to CSV file.
      * @param activities activities to export.
      */
-    fun exportInLineSkateCSV(activities: List<Activity>, type: String, year: Int) {
+    fun exportInLineSkateCSV(clientId: String, activities: List<Activity>, type: String, year: Int) {
 
         // if no activities : nothing to do
         if (activities.isEmpty()) {
             return
         }
 
-        val writer = FileWriter(File("activities-$type-$year.csv"))
+        val writer = FileWriter(File("$clientId-$type-$year.csv"))
         writer.use {
             listOf(
                 "Date",
@@ -245,14 +245,14 @@ internal class StravaService(
      * Export to CSV file.
      * @param activities activities to export.
      */
-    fun exportHikeCSV(activities: List<Activity>, type: String, year: Int) {
+    fun exportHikeCSV(clientId: String, activities: List<Activity>, type: String, year: Int) {
 
         // if no activities : nothing to do
         if (activities.isEmpty()) {
             return
         }
 
-        val writer = FileWriter(File("activities-$type-$year.csv"))
+        val writer = FileWriter(File("$clientId-$type-$year.csv"))
         writer.use {
             listOf(
                 "Date",

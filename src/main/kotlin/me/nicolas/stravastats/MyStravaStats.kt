@@ -46,23 +46,23 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         displayStatistics(activities)
 
         if (parameters.csv) {
-            exportCSV(activities)
+            exportCSV(parameters.clientId, activities)
         }
 
-        exportCharts(activities)
+        exportCharts(parameters.clientId, activities)
 
         println()
         println("Execution time = ${System.currentTimeMillis() - startTime} m")
     }
 
-    private fun exportCharts(activities: List<Activity>) {
+    private fun exportCharts(clientId: String, activities: List<Activity>) {
 
     }
 
-    private fun exportCSV(activities: List<Activity>) {
+    private fun exportCSV(clientId: String, activities: List<Activity>) {
         activities
             .groupBy { activity -> activity.startDateLocal.subSequence(0, 4).toString() } // year by year
-            .forEach { exportCSV(filterActivities(it.value), it.key.toInt()) }
+            .forEach { exportCSV(clientId, filterActivities(it.value), it.key.toInt()) }
     }
 
     private fun removeNonMovingSections(activities: List<Activity>) {
@@ -104,16 +104,16 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
     /**
      * Export activities in a CSV file.
      */
-    private fun exportCSV(activities: List<Activity>, year: Int) {
+    private fun exportCSV(clientId: String, activities: List<Activity>, year: Int) {
         print("* Export activities for $year [")
         print("Ride")
-        stravaService.exportBikeCSV(activities.filter { activity -> activity.type == "Ride" }, "Ride", year)
+        stravaService.exportBikeCSV(clientId, activities.filter { activity -> activity.type == "Ride" }, "Ride", year)
         print(", Run")
-        stravaService.exportRunCSV(activities.filter { activity -> activity.type == "Run" }, "Run", year)
+        stravaService.exportRunCSV(clientId, activities.filter { activity -> activity.type == "Run" }, "Run", year)
         print(", Hike")
-        stravaService.exportHikeCSV(activities.filter { activity -> activity.type == "Hike" }, "Hike", year)
+        stravaService.exportHikeCSV(clientId, activities.filter { activity -> activity.type == "Hike" }, "Hike", year)
         print(", InlineSkate")
-        stravaService.exportInLineSkateCSV(
+        stravaService.exportInLineSkateCSV(clientId,
             activities.filter { activity -> activity.type == "InlineSkate" },
             "InlineSkate",
             year
