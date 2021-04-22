@@ -20,6 +20,8 @@ internal class CSVExporter {
             .forEach { map: Map.Entry<String, List<Activity>> ->
                 if (filter != null) {
                     exportCSV(clientId, filterActivities(map.value, filter), map.key.toInt())
+                } else {
+                    exportCSV(clientId, map.value, map.key.toInt())
                 }
             }
     }
