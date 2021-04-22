@@ -7,42 +7,4 @@ internal data class StravaStatistics(
     val runsStats: List<Statistic>,
     val hikesStats: List<Statistic>,
     val inlineSkateStats: List<Statistic>,
-) {
-
-    fun displayStatistics() {
-
-        println("* Statistics")
-
-        println()
-        println("** Overview")
-        globalStatistic.forEach {
-            println(it)
-        }
-        println()
-        println("** Rides (commute)")
-        commuteRideStats.forEach {
-            println(it)
-        }
-        println()
-        println("** Rides (sport)")
-        sportRideStats.forEach {
-            println(it)
-        }
-        println()
-        println("** Runs")
-        runsStats.forEach {
-            println(it)
-        }
-        println()
-        println("** InlineSkate")
-        inlineSkateStats.forEach {
-            println(it)
-        }
-        println()
-        println("** Hikes")
-        hikesStats.forEach {
-            println(it)
-        }
-        println()
-    }
-}
+)

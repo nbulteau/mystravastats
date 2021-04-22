@@ -44,6 +44,7 @@ internal class TokenTest {
         Assertions.assertNull(token.athlete.username)
     }
 
+    @Test
     fun `read Token`() {
         val json = """
         {

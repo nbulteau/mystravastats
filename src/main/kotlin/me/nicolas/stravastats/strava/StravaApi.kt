@@ -9,6 +9,7 @@ import me.nicolas.stravastats.MyStravaStatsProperties
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Stream
 import me.nicolas.stravastats.business.Token
+import org.eclipse.jetty.http.HttpStatus
 import java.time.LocalDateTime
 import java.time.ZoneId
 import kotlin.system.exitProcess
@@ -45,18 +46,24 @@ internal class StravaApi(
 
     fun getActivityStream(accessToken: String, activity: Activity): Stream? {
 
-        val url =
-            "${properties.strava.url}/api/v3/activities/${activity.id}/streams?keys=time,distance,altitude,moving&key_by_type=true"
+        val url = "${properties.strava.url}/api/v3/activities/${activity.id}/streams" +
+                "?keys=time,distance,altitude,moving&key_by_type=true"
 
         val requestHeaders = buildRequestHeaders(accessToken)
         val response = get(url, requestHeaders)
 
         return when {
-            response.statusCode >= 400 -> {
-                println(response)
-                null
+            response.statusCode >= HttpStatus.BAD_REQUEST_400 -> {
+                println("Unable to load streams for activity : $activity")
+                if(response.statusCode == HttpStatus.TOO_MANY_REQUESTS_429) {
+                    println("Strava API usage is limited on a per-application basis using both a 15-minute and daily request limit."
+                        + "The default rate limit allows 100 requests every 15 minutes, with up to 1,000 requests per day.")
+                    throw RuntimeException("Something was wrong with Strava API : 429 Too Many Requests")
+                } else {
+                    throw RuntimeException("Something was wrong with Strava API ${response.headers} - ${response.text}")
+                }
             }
-            response.statusCode == 200 -> {
+            response.statusCode == HttpStatus.OK_200 -> {
                 return try {
                     mapper.readValue<Stream>(response.content)
                 } catch (jsonProcessingException: JsonProcessingException) {
@@ -65,6 +72,7 @@ internal class StravaApi(
                 }
             }
             else -> {
+                println("Unable to load streams for activity : $activity")
                 throw RuntimeException("Something was wrong with Strava API ${response.headers} - ${response.text}")
             }
         }

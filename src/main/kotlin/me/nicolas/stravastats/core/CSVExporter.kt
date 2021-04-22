@@ -1,8 +1,6 @@
 package me.nicolas.stravastats.core
 
-
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.core.statistics.StravaStatistics
 import me.nicolas.stravastats.core.statistics.calculateBestDistanceForTime
 import me.nicolas.stravastats.core.statistics.calculateBestElevationForDistance
 import me.nicolas.stravastats.core.statistics.calculateBestTimeForDistance
@@ -12,39 +10,61 @@ import me.nicolas.stravastats.helpers.writeCSVLine
 import java.io.File
 import java.io.FileWriter
 
+internal class CSVExporter {
 
-internal class StravaService(
-    private val statsBuilder: StatsBuilder
-) {
-
-    /**
-     * Compute statistics.
-     * @param activities activities to scan.
-     */
-    fun computeStatistics(activities: List<Activity>): StravaStatistics {
-
-        val globalStatistics = statsBuilder.computeGlobalStats(activities)
-
-        // filter activities without streams
-        val filteredActivities = activities
-            .filter { it.stream != null && it.stream?.time != null && it.stream?.distance != null && it.stream?.altitude != null }
-        println("Nb activities used to compute statistics (with streams) : ${filteredActivities.size}")
-
-        val commuteRideStats =
-            statsBuilder.computeCommuteBikeStats(filteredActivities.filter { it.type == "Ride" && it.commute })
-        val sportRideStats =
-            statsBuilder.computeBikeStats(filteredActivities.filter { it.type == "Ride" && !it.commute })
-        val runsStats = statsBuilder.computeRunStats(filteredActivities.filter { it.type == "Run" })
-        val hikesStats = statsBuilder.computeHikeStats(filteredActivities.filter { it.type == "Hike" })
-        val inlineSkate = statsBuilder.computeInlineSkateStats(filteredActivities.filter { it.type == "InlineSkate" })
-        return StravaStatistics(globalStatistics, commuteRideStats, sportRideStats, runsStats, hikesStats, inlineSkate)
+    fun exportCSV(clientId: String, activities: List<Activity>, filter: Double?) {
+        activities
+            .groupBy { activity ->
+                activity.startDateLocal.subSequence(0, 4).toString()
+            } // year by year
+            .forEach { map: Map.Entry<String, List<Activity>> ->
+                if (filter != null) {
+                    exportCSV(clientId, filterActivities(map.value, filter), map.key.toInt())
+                }
+            }
     }
 
-    /**
-     * Export to CSV file.
-     * @param activities activities to export.
-     */
-    fun exportBikeCSV(clientId: String, activities: List<Activity>, type: String, year: Int) {
+    private fun exportCSV(clientId: String, activities: List<Activity>, year: Int) {
+        print("* Export activities for $year [")
+        print("Ride")
+        exportBikeCSV(
+            clientId = clientId,
+            activities = activities.filter { activity -> activity.type == "Ride" },
+            type = "Ride",
+            year = year
+        )
+        print(", Run")
+        exportRunCSV(
+            clientId = clientId,
+            activities = activities.filter { activity -> activity.type == "Run" },
+            type = "Run",
+            year = year
+        )
+        print(", Hike")
+        exportHikeCSV(
+            clientId = clientId,
+            activities = activities.filter { activity -> activity.type == "Hike" },
+            type = "Hike",
+            year = year
+        )
+        print(", InlineSkate")
+        exportInLineSkateCSV(
+            clientId = clientId,
+            activities = activities.filter { activity -> activity.type == "InlineSkate" },
+            type = "InlineSkate",
+            year = year
+        )
+        println("]")
+
+    }
+
+    private fun filterActivities(activities: List<Activity>, filter: Double): List<Activity> {
+        val lowBoundary = filter - (5 * filter / 100)
+        val highBoundary = filter + (5 * filter / 100)
+        return activities.filter { activity -> activity.distance > lowBoundary && activity.distance < highBoundary }
+    }
+
+    private fun exportBikeCSV(clientId: String, activities: List<Activity>, type: String, year: Int) {
 
         // if no activities : nothing to do
         if (activities.isEmpty()) {
@@ -116,11 +136,7 @@ internal class StravaService(
         }
     }
 
-    /**
-     * Export to CSV file.
-     * @param activities activities to export.
-     */
-    fun exportRunCSV(clientId: String, activities: List<Activity>, type: String, year: Int) {
+    private fun exportRunCSV(clientId: String, activities: List<Activity>, type: String, year: Int) {
 
         // if no activities : nothing to do
         if (activities.isEmpty()) {
@@ -178,11 +194,7 @@ internal class StravaService(
         }
     }
 
-    /**
-     * Export to CSV file.
-     * @param activities activities to export.
-     */
-    fun exportInLineSkateCSV(clientId: String, activities: List<Activity>, type: String, year: Int) {
+    private fun exportInLineSkateCSV(clientId: String, activities: List<Activity>, type: String, year: Int) {
 
         // if no activities : nothing to do
         if (activities.isEmpty()) {
@@ -241,11 +253,7 @@ internal class StravaService(
         }
     }
 
-    /**
-     * Export to CSV file.
-     * @param activities activities to export.
-     */
-    fun exportHikeCSV(clientId: String, activities: List<Activity>, type: String, year: Int) {
+    private fun exportHikeCSV(clientId: String, activities: List<Activity>, type: String, year: Int) {
 
         // if no activities : nothing to do
         if (activities.isEmpty()) {

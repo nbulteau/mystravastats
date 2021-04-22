@@ -18,24 +18,23 @@ https://en.wikipedia.org/wiki/VVO2max
 
 ## Launch mystravastats
 
-My Strava Stats needs several parameters :
+### Stava access
+All calls to the Strava API require an access_token defining the athlete and application making the call. 
+Any registered Strava user can obtain an access_token by first creating an application at https://www.strava.com/settings/api.
 
-*Mandatory parameters*
+The Strava API application settings page provides *mandatory parameters* for My Strava Stats: 
 
 * -clientId: your application’s ID.
 * -clientSecret: your client secret.
 
-You can find your 'client id' and your 'client secret' on this page : https://www.strava.com/settings/api
+### Get statistics
 
 *Optional parameters*
 
 * -year: the year you request (default value is the current year).
 * -csv : to export all activities in a CSV file.
-* -filter: to filter exported activities on a specific distance in meters. For example : -csv -filter 10000 will display
-  all the activities around 10000 m (+/- 5 %)
-
-### launch mystravastats
-
+* -filter: to filter exported activities on a specific distance in meters. For example : -csv -filter 10000 will display all the activities around 10000 m (+/- 5 %)
+  
 Download activities from 2010 to now then display statistics.
 
 Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava. 
@@ -43,22 +42,27 @@ Activities are download in a local directory, in that way only new and missing o
 ./gradlew run --args="-clientId [clientId] -clientSecret [clientSecret]"    
 ```
 
-Display statistics for current year using locally download activities.
+Display statistics for current year using locally downloaded activities.
 ```
 ./gradlew run --args="-clientId [clientId]"
 ```
 
-Display statistics for specified year using locally download activities.
+Display statistics for specified year using locally downloaded activities for year 2019.
 ```
 ./gradlew run --args="-clientId [clientId] -year 2019"
 ```
 
-Export activities in a CSV file using locally download activities (current year) :
+Export activities in a CSV file using locally downloaded activities (year by year) :
 ```
 ./gradlew run --args="-clientId [clientId] -csv"
 ```
 
-Display export activities in a CSV file with a filter using locally download activities (current year) :
+Export activities in a CSV file using locally downloaded activities for year 2019 :
+```
+./gradlew run --args="-clientId [clientId] -csv -year 2019"
+```
+
+Display export activities in a CSV file with a filter using locally downloaded activities (current year) :
 ```
 ./gradlew run --args="-clientId [clientId] -csv -filter 10000"
 ```
@@ -70,7 +74,8 @@ http://www.strava.com/api/v3/oauth/authorize?client_id=[YOUR_CLIENT_ID]&response
 ```
 Login to Strava then click 'Authorize' and tick the required permissions if needed.
 
-## Global Statistics
+## Provided Statistics
+### Global Statistics
 
 | Global Statistics ||    
 |---|---|
@@ -79,7 +84,7 @@ Login to Strava then click 'Authorize' and tick the required permissions if need
 | Max streak | Max streak of activities for consecutive days.
 | Most active month. | The most active month of the year.
 
-## Rides (commute)
+### Rides (commute)
 
 | Rides (commute) ||    
 |---|--- 
@@ -94,7 +99,7 @@ Login to Strava then click 'Authorize' and tick the required permissions if need
 | Most active month | The most active month of the year for commute rides.
 | Eddington number | The Eddington number in the context of cycling is defined as the maximum number E such that the cyclist has cycled E km on E days.
 
-## Rides (sport)
+### Rides (sport)
 
 | Rides (sport) || 
 | --- | --- 
@@ -131,7 +136,7 @@ Login to Strava then click 'Authorize' and tick the required permissions if need
 | Max gradient for 10 km | Sliding window max gradient for a given distance.|
 | Max gradient for 20 km | Sliding window max gradient for a given distance.|
 
-## Runs
+### Runs
 
 | Runs || 
 |---|---| 
@@ -160,7 +165,7 @@ Login to Strava then click 'Authorize' and tick the required permissions if need
 | Best 5 h | Sliding window best effort for a given time.
 | Best 6 h | Sliding window best effort for a given time.
 
-## InlineSkate
+### InlineSkate
 
 | InlineSkate || 
 | --- | --- 
@@ -187,7 +192,7 @@ Login to Strava then click 'Authorize' and tick the required permissions if need
 | Best 3 h | Sliding window best effort for a given time.| 
 | Best 4 h | Sliding window best effort for a given time.|  
 
-## Hikes
+### Hikes
 
 | Hikes ||
 |---|---| 

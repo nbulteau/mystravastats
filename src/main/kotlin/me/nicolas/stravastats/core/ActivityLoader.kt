@@ -18,6 +18,7 @@ import io.javalin.Javalin
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.time.LocalDate
 
 
 internal class ActivityLoader(
@@ -39,10 +40,19 @@ internal class ActivityLoader(
         this.accessToken = accessToken
     }
 
-    /**
-     * Load activities
-     */
-    fun loadActivities(
+    fun loadActivities(clientId: String, clientSecret: String?, year: Int?): List<Activity> {
+        val activities = mutableListOf<Activity>()
+        if (year != null) {
+            activities.addAll(loadActivities(clientId, clientSecret, year))
+        } else {
+            for (currentYear in LocalDate.now().year downTo 2010) {
+                activities.addAll(loadActivities(clientId,clientSecret,currentYear))
+            }
+        }
+        return activities
+    }
+
+    private fun loadActivities(
         clientId: String,
         clientSecret: String?,
         year: Int
@@ -51,7 +61,14 @@ internal class ActivityLoader(
         // get accessToken
         if (clientSecret != null && this.accessToken == null) {
             println("Copy paste this URL in a browser")
-            println("http://www.strava.com/api/v3/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=http://localhost:8080/exchange_token&approval_prompt=auto&scope=read_all,activity:read_all")
+            println(
+                "http://www.strava.com/api/v3/oauth/authorize" +
+                        "?client_id=${clientId}" +
+                        "&response_type=code" +
+                        "&redirect_uri=http://localhost:8080/exchange_token" +
+                        "&approval_prompt=auto" +
+                        "&scope=read_all,activity:read_all"
+            )
 
             runBlocking {
                 val channel = Channel<String>()
@@ -61,18 +78,20 @@ internal class ActivityLoader(
                 // GET /exchange_token to get code
                 app.get("/exchange_token") { ctx ->
                     val authorizationCode = ctx.req.getParameter("code")
-                    ctx.result("Ok")
-                    // Get authorisation token with the code
-                    val token = stravaApi.getToken(clientId, clientSecret, authorizationCode)
+                    ctx.result("Access granted to read activities of clientId: $clientId.")
+
                     launch {
+                        // Get authorisation token with the code
+                        val token = stravaApi.getToken(clientId, clientSecret, authorizationCode)
                         channel.send(token.accessToken)
+                        // stop de web server
+                        app.stop()
                     }
-                    // stop de web server
-                    app.stop()
                 }
 
-                    println("Waiting for your agreement to allow MyStravaStats to access to your Strava data ...")
+                println("Waiting for your agreement to allow MyStravaStats to access to your Strava data ...")
                 val accessTokenFromToken = channel.receive()
+                print(" access granted.")
                 setAccessToken(accessTokenFromToken)
             }
         }

@@ -8,9 +8,31 @@ internal class StatsBuilder {
 
     /**
      * Compute statistics.
+     * @param activities activities to scan.
+     */
+    fun computeStatistics(activities: List<Activity>): StravaStatistics {
+
+        val globalStatistics = computeGlobalStats(activities)
+
+        // filter activities without streams
+        val filteredActivities = activities
+            .filter { it.stream != null && it.stream?.time != null && it.stream?.distance != null && it.stream?.altitude != null }
+        println("Nb activities used to compute statistics (with streams) : ${filteredActivities.size}")
+
+        val commuteRideStats = computeCommuteBikeStats(filteredActivities.filter { it.type == "Ride" && it.commute })
+        val sportRideStats = computeBikeStats(filteredActivities.filter { it.type == "Ride" && !it.commute })
+        val runsStats = computeRunStats(filteredActivities.filter { it.type == "Run" })
+        val hikesStats = computeHikeStats(filteredActivities.filter { it.type == "Hike" })
+        val inlineSkate = computeInlineSkateStats(filteredActivities.filter { it.type == "InlineSkate" })
+
+        return StravaStatistics(globalStatistics, commuteRideStats, sportRideStats, runsStats, hikesStats, inlineSkate)
+    }
+
+    /**
+     * Compute statistics.
      * @param activities
      */
-    fun computeGlobalStats(activities: List<Activity>): List<Statistic> {
+    private fun computeGlobalStats(activities: List<Activity>): List<Statistic> {
 
         return listOf(
             GlobalStatistic("Nb activities", activities, "%d", List<Activity>::size),
@@ -65,7 +87,7 @@ internal class StatsBuilder {
      * Compute Run statistics.
      * @param activities
      */
-    fun computeRunStats(activities: List<Activity>): List<Statistic> {
+    private fun computeRunStats(activities: List<Activity>): List<Statistic> {
 
         val statistics = computeStats(activities).toMutableList()
 
@@ -95,7 +117,7 @@ internal class StatsBuilder {
      * Compute Bike statistics.
      * @param activities
      */
-    fun computeBikeStats(activities: List<Activity>): List<Statistic> {
+    private fun computeBikeStats(activities: List<Activity>): List<Statistic> {
 
         val statistics = computeStats(activities).toMutableList()
         statistics.addAll(
@@ -131,7 +153,7 @@ internal class StatsBuilder {
      * Compute commute Bike statistics.
      * @param activities
      */
-    fun computeCommuteBikeStats(activities: List<Activity>): List<Statistic> {
+    private fun computeCommuteBikeStats(activities: List<Activity>): List<Statistic> {
 
         val statistics = computeStats(activities).toMutableList()
         statistics.addAll(
@@ -157,7 +179,7 @@ internal class StatsBuilder {
      * Compute Hike statistics.
      * @param activities
      */
-    fun computeHikeStats(activities: List<Activity>): List<Statistic> {
+    private fun computeHikeStats(activities: List<Activity>): List<Statistic> {
 
         val statistics = computeStats(activities).toMutableList()
 
@@ -185,7 +207,7 @@ internal class StatsBuilder {
         return statistics
     }
 
-    fun computeInlineSkateStats(activities: List<Activity>): List<Statistic> {
+    private fun computeInlineSkateStats(activities: List<Activity>): List<Statistic> {
 
         val statistics = computeStats(activities).toMutableList()
 

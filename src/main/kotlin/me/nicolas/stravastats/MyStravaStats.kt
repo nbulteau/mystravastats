@@ -4,26 +4,27 @@ import com.beust.jcommander.JCommander
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.core.*
 import me.nicolas.stravastats.core.ActivityLoader
 import me.nicolas.stravastats.core.StatsBuilder
-import me.nicolas.stravastats.core.StravaService
 import me.nicolas.stravastats.strava.StravaApi
-import java.time.LocalDate
 
 
 internal class MyStravaStats(incomingArgs: Array<String>) {
 
-    // build instances
     private val stravaStatsProperties = loadPropertiesFromFile()
 
     private val stravaApi = StravaApi(stravaStatsProperties)
 
-    private val statsBuilder = StatsBuilder()
-
     private val activityLoader = ActivityLoader(stravaStatsProperties, stravaApi)
 
-    private val stravaService = StravaService(statsBuilder)
+    private val statsBuilder = StatsBuilder()
+
+    private val chartsBuilder = ChartsBuilder()
+
+    private val csvExporter = CSVExporter()
+
+    private val terminalDisplayer = TerminalDisplayer()
 
     private val parameters = Parameters()
 
@@ -37,104 +38,24 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
     fun run() {
         val startTime = System.currentTimeMillis()
 
-        val activities = loadActivities()
+        val activities = activityLoader.loadActivities(parameters.clientId, parameters.clientSecret, parameters.year)
 
         if (stravaStatsProperties.removingNonMovingSections) {
-            removeNonMovingSections(activities)
+            activities.forEach { activity -> activity.removeNonMoving() }
         }
 
-        displayStatistics(activities)
+        val stravaStats = statsBuilder.computeStatistics(activities)
+
+        terminalDisplayer.displayStatistics(stravaStats)
 
         if (parameters.csv) {
-            exportCSV(parameters.clientId, activities)
+            csvExporter.exportCSV(parameters.clientId, activities, parameters.filter)
         }
 
-        exportCharts(parameters.clientId, activities)
+        chartsBuilder.exportCharts(parameters.clientId, activities)
 
         println()
         println("Execution time = ${System.currentTimeMillis() - startTime} m")
-    }
-
-    private fun exportCharts(clientId: String, activities: List<Activity>) {
-
-    }
-
-    private fun exportCSV(clientId: String, activities: List<Activity>) {
-        activities
-            .groupBy { activity -> activity.startDateLocal.subSequence(0, 4).toString() } // year by year
-            .forEach { exportCSV(clientId, filterActivities(it.value), it.key.toInt()) }
-    }
-
-    private fun removeNonMovingSections(activities: List<Activity>) {
-        activities.forEach { activity -> activity.removeNonMoving() }
-    }
-
-    private fun loadActivities(): MutableList<Activity> {
-        val activities = mutableListOf<Activity>()
-        if (parameters.year != null) {
-            activities.addAll(
-                activityLoader.loadActivities(
-                    parameters.clientId,
-                    parameters.clientSecret,
-                    parameters.year!!
-                )
-            )
-        } else {
-            for (year in LocalDate.now().year downTo 2010) {
-                activities.addAll(
-                    activityLoader.loadActivities(
-                        parameters.clientId,
-                        parameters.clientSecret,
-                        year
-                    )
-                )
-            }
-        }
-        return activities
-    }
-
-    /**
-     * Display statistics
-     */
-    private fun displayStatistics(activities: List<Activity>) {
-        val stravaStats = stravaService.computeStatistics(activities)
-        stravaStats.displayStatistics()
-    }
-
-    /**
-     * Export activities in a CSV file.
-     */
-    private fun exportCSV(clientId: String, activities: List<Activity>, year: Int) {
-        print("* Export activities for $year [")
-        print("Ride")
-        stravaService.exportBikeCSV(clientId, activities.filter { activity -> activity.type == "Ride" }, "Ride", year)
-        print(", Run")
-        stravaService.exportRunCSV(clientId, activities.filter { activity -> activity.type == "Run" }, "Run", year)
-        print(", Hike")
-        stravaService.exportHikeCSV(clientId, activities.filter { activity -> activity.type == "Hike" }, "Hike", year)
-        print(", InlineSkate")
-        stravaService.exportInLineSkateCSV(clientId,
-            activities.filter { activity -> activity.type == "InlineSkate" },
-            "InlineSkate",
-            year
-        )
-        println("]")
-
-    }
-
-    /**
-     * Apply filter if exist.
-     * @param activities activities to filter.
-     */
-    private fun filterActivities(activities: List<Activity>): List<Activity> {
-        return if (parameters.filter != null) {
-            val lowBoundary = parameters.filter!! - (5 * parameters.filter!! / 100)
-            val highBoundary = parameters.filter!! + (5 * parameters.filter!! / 100)
-
-            activities.filter { activity -> activity.distance > lowBoundary && activity.distance < highBoundary }
-        } else {
-            activities
-        }
     }
 
     /**
