@@ -8,14 +8,12 @@ import java.time.LocalDateTime
 
 internal class MaxElevationInADayStatistic(
     activities: List<Activity>
-) : Statistic("Max elevation gain in a day", activities) {
+) : Statistic(name = "Max elevation gain in a day", activities) {
 
     private val mostActiveDay: Map.Entry<String, Double>? =
         activities.groupBy { activity -> activity.startDateLocal.substringBefore('T') }
             .mapValues { (_, activities) -> activities.sumByDouble { activity -> activity.totalElevationGain } }
             .maxByOrNull { it.value }
-
-    private fun getDay(startDateLocal: String) = LocalDateTime.parse(startDateLocal, inDateTimeFormatter).dayOfYear
 
     override fun toString(): String {
         return super.toString() + if (mostActiveDay != null) {
