@@ -14,8 +14,11 @@ class Parameters {
     @Parameter(names = ["-year"], required = false, description = "year")
     var year: Int? = null
 
-    @Parameter(names = ["-csv"], required = false, description = "Export all activities in CSV files")
+    @Parameter(names = ["-csv"], required = false, description = "Export activities in CSV files")
     var csv: Boolean = false
+
+    @Parameter(names = ["-charts"], required = false, description = "Draw some charts")
+    var charts: Boolean = false
 
     @Parameter(names = ["-filter"], required = false, description = "Distance filter for CSV export")
     var filter: Double? = null

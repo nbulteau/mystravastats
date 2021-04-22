@@ -52,10 +52,12 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
             csvExporter.exportCSV(parameters.clientId, activities, parameters.filter)
         }
 
-        chartsBuilder.exportCharts(parameters.clientId, activities)
+        if (parameters.charts) {
+            chartsBuilder.exportCharts(parameters.clientId, activities)
+        }
 
         println()
-        println("Execution time = ${System.currentTimeMillis() - startTime} m")
+        println("Execution time = ${System.currentTimeMillis() - startTime} ms")
     }
 
     /**
