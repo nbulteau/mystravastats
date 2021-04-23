@@ -53,7 +53,7 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         }
 
         if (parameters.charts) {
-            chartsBuilder.exportCharts(parameters.clientId, activities)
+            chartsBuilder.kilometersByMonthsChart(parameters.clientId, activities)
         }
 
         println()

@@ -5,9 +5,6 @@ buildscript {
     repositories {
         gradlePluginPortal()
         mavenCentral()
-        maven("https://dl.bintray.com/mipt-npm/dataforge")
-        maven("https://dl.bintray.com/mipt-npm/kscience")
-        maven("https://dl.bintray.com/mipt-npm/dev")
     }
 }
 
@@ -21,6 +18,10 @@ plugins {
 
 repositories {
     mavenCentral()
+    jcenter()
+    maven("https://dl.bintray.com/mipt-npm/dataforge")
+    maven("https://dl.bintray.com/mipt-npm/kscience")
+    maven("https://dl.bintray.com/mipt-npm/dev")
 }
 
 
@@ -41,7 +42,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
     implementation("org.slf4j:slf4j-nop:1.7.30")
 
-    //implementation("kscience.plotlykt:plotlykt-server:0.3.0")
+    implementation("kscience.plotlykt:plotlykt-server:0.3.0")
     //implementation(kotlin("script-runtime"))
     //implementation("de.mpicbg.scicomp:krangl:0.13")
     //implementation("io.github.microutils:kotlin-logging:2.0.3")
