@@ -22,9 +22,7 @@ internal class ChartsBuilder {
 
     private fun kilometersByMonthsChart(clientId: String, activities: List<Activity>, year: Int) {
 
-        val activitiesByMonth = activities
-            .groupBy { activity -> activity.startDateLocal.subSequence(5, 7).toString() }
-            .toSortedMap()
+        val activitiesByMonth = getActivitiesByMonth(activities)
 
         val runByMonths = activitiesByMonth.mapValues { (_, activities) ->
             activities
@@ -77,6 +75,20 @@ internal class ChartsBuilder {
         }
 
         plot.makeFile()
+    }
+
+    private fun getActivitiesByMonth(activities: List<Activity>): SortedMap<String, List<Activity>> {
+        val activitiesByMonth = activities
+            .groupBy { activity -> activity.startDateLocal.subSequence(5, 7).toString() }.toMutableMap()
+
+        // Add month without activities
+        (1..12).forEach {
+            if (!activitiesByMonth.contains("$it".padStart(2, '0'))) {
+                activitiesByMonth["$it".padStart(2, '0')] = emptyList()
+            }
+        }
+
+        return activitiesByMonth.toSortedMap()
     }
 
     private fun PlotGrid.buildCumulativePlot(
