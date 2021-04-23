@@ -33,6 +33,9 @@ The Strava API application settings page provides *mandatory parameters* for My 
 
 * -year: the year you request (default value is the current year).
 * -csv : to export all activities in a CSV file.
+* -charts : generate some charts.
+
+*Experimental*
 * -filter: to filter exported activities on a specific distance in meters. For example : -csv -filter 10000 will display all the activities around 10000 m (+/- 5 %)
   
 Download activities from 2010 to now then display statistics.
@@ -66,6 +69,8 @@ Display export activities in a CSV file with a filter using locally downloaded a
 ```
 ./gradlew run --args="-clientId [clientId] -csv -filter 10000"
 ```
+
+![alt text](https://github.com/nbulteau/mystravats/docs/charts-1.png?raw=true)
 
 A URL will be displayed copy/past it in a browser to get allow mystravastats to access your Strava data.
 This URL will look like :
