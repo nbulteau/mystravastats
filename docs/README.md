@@ -70,7 +70,7 @@ Display export activities in a CSV file with a filter using locally downloaded a
 ./gradlew run --args="-clientId [clientId] -csv -filter 10000"
 ```
 
-![alt text](https://github.com/nbulteau/mystravats/docs/charts-1.png?raw=true)
+![alt text](https://github.com/nbulteau/mystravastats/blob/main/docs/charts-1.png?raw=true)
 
 A URL will be displayed copy/past it in a browser to get allow mystravastats to access your Strava data.
 This URL will look like :
