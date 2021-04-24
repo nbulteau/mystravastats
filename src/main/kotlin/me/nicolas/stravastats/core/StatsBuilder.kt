@@ -1,6 +1,7 @@
 package me.nicolas.stravastats.core
 
 import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.StravaStatistics
 import me.nicolas.stravastats.core.statistics.*
 
 

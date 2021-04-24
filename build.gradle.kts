@@ -42,7 +42,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
     implementation("org.slf4j:slf4j-nop:1.7.30")
 
-    implementation("kscience.plotlykt:plotlykt-server:0.3.0")
+    implementation("kscience.plotlykt:plotlykt-server:0.3.1")
     //implementation(kotlin("script-runtime"))
     //implementation("de.mpicbg.scicomp:krangl:0.13")
     //implementation("io.github.microutils:kotlin-logging:2.0.3")

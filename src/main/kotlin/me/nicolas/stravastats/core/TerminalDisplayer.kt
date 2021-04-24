@@ -1,6 +1,6 @@
 package me.nicolas.stravastats.core
 
-import me.nicolas.stravastats.core.statistics.StravaStatistics
+import me.nicolas.stravastats.business.StravaStatistics
 
 internal class TerminalDisplayer {
 

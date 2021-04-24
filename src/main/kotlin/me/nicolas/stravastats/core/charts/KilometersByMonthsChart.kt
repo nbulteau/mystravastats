@@ -11,7 +11,7 @@ internal class KilometersByMonthsChart {
 
     companion object {
 
-        fun buildKilometersByMonthsCharts(clientId: String, activities: List<Activity>, year: Int) {
+        fun buildKilometersByMonthsCharts(activities: List<Activity>, year: Int) {
 
             val activitiesByMonth = getActivitiesByMonth(activities)
 
@@ -37,9 +37,9 @@ internal class KilometersByMonthsChart {
             }
 
             val plot = Plotly.grid {
-                buildBarModeStackPlot(runByMonths, bikeByMonths, inLineSkateByMonths, hikeByMonths, clientId, year)
-                buildBarModeGroupPlot(runByMonths, bikeByMonths, inLineSkateByMonths, hikeByMonths, clientId, year)
-                buildCumulativePlot(runByMonths, bikeByMonths, inLineSkateByMonths, hikeByMonths, clientId, year)
+                buildBarModeStackPlot(runByMonths, bikeByMonths, inLineSkateByMonths, hikeByMonths, year)
+                buildBarModeGroupPlot(runByMonths, bikeByMonths, inLineSkateByMonths, hikeByMonths, year)
+                buildCumulativePlot(runByMonths, bikeByMonths, inLineSkateByMonths, hikeByMonths, year)
             }
 
             plot.makeFile()
@@ -50,7 +50,6 @@ internal class KilometersByMonthsChart {
             bikeByMonths: Map<String, Double>,
             inLineSkateByMonths: Map<String, Double>,
             hikeByMonths: Map<String, Double>,
-            clientId: String,
             year: Int
         ) {
             plot(row = 1, width = 6) {
@@ -85,7 +84,6 @@ internal class KilometersByMonthsChart {
             bikeByMonths: Map<String, Double>,
             inLineSkateByMonths: Map<String, Double>,
             hikeByMonths: Map<String, Double>,
-            clientId: String,
             year: Int
         ) {
             plot(row = 1, width = 6) {
@@ -117,7 +115,8 @@ internal class KilometersByMonthsChart {
 
         private fun getActivitiesByMonth(activities: List<Activity>): SortedMap<String, List<Activity>> {
             val activitiesByMonth = activities
-                .groupBy { activity -> activity.startDateLocal.subSequence(5, 7).toString() }.toMutableMap()
+                .groupBy { activity -> activity.startDateLocal.subSequence(5, 7).toString() }
+                .toMutableMap()
 
             // Add months without activities
             (1..12).forEach {
@@ -134,7 +133,6 @@ internal class KilometersByMonthsChart {
             bikeByMonths: Map<String, Double>,
             inLineSkateByMonths: Map<String, Double>,
             hikeByMonths: Map<String, Double>,
-            clientId: String,
             year: Int
         ) {
             plot(row = 2, width = 12) {
@@ -146,7 +144,6 @@ internal class KilometersByMonthsChart {
                 )
 
                 layout {
-                    //barmode = BarMode.stack
                     title = "Cumulative kilometers by month for $year (sport by sport)"
 
                     xaxis {

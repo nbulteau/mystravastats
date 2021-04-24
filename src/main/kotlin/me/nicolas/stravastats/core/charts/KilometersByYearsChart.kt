@@ -69,6 +69,7 @@ class KilometersByYearsChart {
 
                     xaxis {
                         title = "Month"
+                        type = AxisType.category
                     }
                     yaxis {
                         title = "Km"
@@ -102,6 +103,7 @@ class KilometersByYearsChart {
 
                     xaxis {
                         title = "Month"
+                        type = AxisType.category
                     }
                     yaxis {
                         title = "Km"
@@ -135,6 +137,7 @@ class KilometersByYearsChart {
 
                     xaxis {
                         title = "Month"
+                        type = AxisType.category
                     }
                     yaxis {
                         title = "Km"
