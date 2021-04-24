@@ -6,6 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import me.nicolas.stravastats.helpers.formatDate
 import me.nicolas.stravastats.helpers.formatSeconds
 
+const val Run = "Run"
+const val Ride = "Ride"
+const val InlineSkate = "InlineSkate"
+const val Hike = "Hike"
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Activity(
     @JsonProperty("achievement_count")
