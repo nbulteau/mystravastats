@@ -1,6 +1,7 @@
 package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.Statistic
 import java.time.Month
 import java.time.format.TextStyle
 import java.util.*

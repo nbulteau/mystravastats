@@ -1,10 +1,9 @@
 package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.Statistic
 import me.nicolas.stravastats.helpers.dateFormatter
-import me.nicolas.stravastats.helpers.inDateTimeFormatter
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 internal class MaxElevationInADayStatistic(
     activities: List<Activity>

@@ -1,6 +1,7 @@
 package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.Statistic
 
 /**
  * https://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling

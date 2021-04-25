@@ -1,9 +1,8 @@
 package me.nicolas.stravastats.core
 
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.core.charts.KilometersByMonthsChart.Companion.buildKilometersByMonthsCharts
+import me.nicolas.stravastats.core.charts.KilometersByMonthsChart.Companion.buildCharts
 import me.nicolas.stravastats.core.charts.KilometersByYearsChart.Companion.buildKilometersByYearsCharts
-import me.nicolas.stravastats.core.charts.KilometersForAYearChart.Companion.buildKilometersForAYearCharts
 
 
 internal class ChartsBuilder {
@@ -17,8 +16,7 @@ internal class ChartsBuilder {
             }
             .forEach { map: Map.Entry<String, List<Activity>> ->
                 // year by year
-                buildKilometersByMonthsCharts(map.value, map.key.toInt())
-                buildKilometersForAYearCharts(map.value, map.key.toInt())
+                buildCharts(map.value, map.key.toInt())
                 nbYears++
             }
 

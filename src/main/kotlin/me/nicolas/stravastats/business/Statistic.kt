@@ -1,6 +1,4 @@
-package me.nicolas.stravastats.core.statistics
-
-import me.nicolas.stravastats.business.Activity
+package me.nicolas.stravastats.business
 
 abstract class Statistic(
     private val name: String,

@@ -1,6 +1,7 @@
 package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.ActivityStatistic
 
 internal class MaxDistanceStatistic(
     activities: List<Activity>

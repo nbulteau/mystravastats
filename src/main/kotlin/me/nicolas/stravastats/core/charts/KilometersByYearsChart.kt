@@ -3,9 +3,6 @@ package me.nicolas.stravastats.core.charts
 import kscience.plotly.*
 import kscience.plotly.models.*
 import me.nicolas.stravastats.business.*
-import java.time.Month
-import java.time.format.TextStyle
-import java.util.*
 
 class KilometersByYearsChart {
 
