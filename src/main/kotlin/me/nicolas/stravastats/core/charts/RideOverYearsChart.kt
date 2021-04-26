@@ -50,7 +50,7 @@ internal class RideOverYearsChart(activities: List<Activity>) : ActivityChart(ac
 
             layout {
                 barmode = BarMode.stack
-                title = "Distance"
+                title = "Ride distance (km)"
 
                 xaxis {
                     title = "Day"
@@ -102,7 +102,7 @@ internal class RideOverYearsChart(activities: List<Activity>) : ActivityChart(ac
 
             layout {
                 barmode = BarMode.stack
-                title = "Elevation"
+                title = "Ride elevation (m)"
 
                 xaxis {
                     title = "Day"
