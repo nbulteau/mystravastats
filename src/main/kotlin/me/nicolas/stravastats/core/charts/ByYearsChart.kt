@@ -4,7 +4,7 @@ import kscience.plotly.*
 import kscience.plotly.models.*
 import me.nicolas.stravastats.business.*
 
-class KilometersByYearsChart {
+internal class ByYearsChart {
 
     companion object {
 
@@ -21,7 +21,7 @@ class KilometersByYearsChart {
                     .filter { activity -> activity.type == Run }
                     .sumByDouble { activity -> activity.distance / 1000 }
             }
-            val bikeByYears = activitiesByYear.mapValues { (_, activities) ->
+            val rideByYears = activitiesByYear.mapValues { (_, activities) ->
                 activities
                     .filter { activity -> activity.type == Ride }
                     .sumByDouble { activity -> activity.distance / 1000 }
@@ -38,11 +38,10 @@ class KilometersByYearsChart {
             }
 
             val plot = Plotly.grid {
-                buildBarModeStackPlot(runByYears, bikeByYears, inLineSkateByYears, hikeByYears)
-                buildBarModeGroupPlot(runByYears, bikeByYears, inLineSkateByYears, hikeByYears)
-                buildCumulativePlot(runByYears, bikeByYears, inLineSkateByYears, hikeByYears)
+                buildBarModeStackPlot(runByYears, rideByYears, inLineSkateByYears, hikeByYears)
+                buildBarModeGroupPlot(runByYears, rideByYears, inLineSkateByYears, hikeByYears)
+                buildCumulativePlot(runByYears, rideByYears, inLineSkateByYears, hikeByYears)
             }
-
             plot.makeFile()
         }
 
@@ -129,8 +128,7 @@ class KilometersByYearsChart {
                 )
 
                 layout {
-                    //barmode = BarMode.stack
-                    title = "Cumulative kilometers by year (sport by sport)"
+                    title = "Cumulative kilometers by year"
 
                     xaxis {
                         title = "Month"

@@ -2,7 +2,7 @@ package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Statistic
-import me.nicolas.stravastats.helpers.dateFormatter
+import me.nicolas.stravastats.core.dateFormatter
 import java.time.LocalDate
 
 internal class MaxDistanceInADayStatistic(

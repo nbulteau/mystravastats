@@ -1,4 +1,4 @@
-package me.nicolas.stravastats.helpers
+package me.nicolas.stravastats.core
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -38,18 +38,5 @@ fun Double.formatSeconds(): String {
     return String.format("%d'%02d", min, sec)
 }
 
-fun displayProgressBar(progressPercentage: Double) {
-    val width = 100 // progress bar width in chars
-    print("\r[")
-    var i = 0
-    while (i <= (progressPercentage * width).toInt()) {
-        print(".")
-        i++
-    }
-    while (i < width) {
-        print(" ")
-        i++
-    }
-    print("]")
-}
+
 

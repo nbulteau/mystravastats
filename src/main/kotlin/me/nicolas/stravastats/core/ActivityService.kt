@@ -6,9 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectWriter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import me.nicolas.stravastats.MyStravaStatsProperties
-import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.Stream
-import me.nicolas.stravastats.helpers.displayProgressBar
 import me.nicolas.stravastats.strava.StravaApi
 import java.io.File
 import java.net.ConnectException
@@ -18,10 +15,11 @@ import io.javalin.Javalin
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import me.nicolas.stravastats.business.*
 import java.time.LocalDate
 
 
-internal class ActivityLoader(
+internal class ActivityService(
     private val myStravaStatsProperties: MyStravaStatsProperties,
     private val stravaApi: StravaApi
 ) {
@@ -46,7 +44,7 @@ internal class ActivityLoader(
             activities.addAll(loadActivities(clientId, clientSecret, year))
         } else {
             for (currentYear in LocalDate.now().year downTo 2010) {
-                activities.addAll(loadActivities(clientId,clientSecret,currentYear))
+                activities.addAll(loadActivities(clientId, clientSecret, currentYear))
             }
         }
         return activities
@@ -127,10 +125,10 @@ internal class ActivityLoader(
             activities = objectMapper.readValue(yearActivitiesJsonFile, Array<Activity>::class.java)
                 .toList()
                 .filter { activity ->
-                    activity.type == "Ride" ||
-                            activity.type == "Run" ||
-                            activity.type == "Hike" ||
-                            activity.type == "InlineSkate"
+                    activity.type == Ride ||
+                            activity.type == Run ||
+                            activity.type == Hike ||
+                            activity.type == InlineSkate
                 }
             println("done")
 
@@ -150,10 +148,10 @@ internal class ActivityLoader(
             before = LocalDateTime.of(year, 12, 31, 23, 59),
             after = LocalDateTime.of(year, 1, 1, 0, 0)
         ).filter { activity ->
-            activity.type == "Ride" ||
-                    activity.type == "Run" ||
-                    activity.type == "Hike" ||
-                    activity.type == "InlineSkate"
+            activity.type == Ride ||
+                    activity.type == Run ||
+                    activity.type == Hike ||
+                    activity.type == InlineSkate
         }
         println("done")
 
@@ -224,5 +222,20 @@ internal class ActivityLoader(
             }
         }
         println()
+    }
+
+    private fun displayProgressBar(progressPercentage: Double) {
+        val width = 100 // progress bar width in chars
+        print("\r[")
+        var i = 0
+        while (i <= (progressPercentage * width).toInt()) {
+            print(".")
+            i++
+        }
+        while (i < width) {
+            print(" ")
+            i++
+        }
+        print("]")
     }
 }

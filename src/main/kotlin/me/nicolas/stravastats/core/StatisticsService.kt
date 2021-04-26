@@ -7,7 +7,7 @@ import me.nicolas.stravastats.business.StravaStatistics
 import me.nicolas.stravastats.core.statistics.*
 
 
-internal class StatsBuilder {
+internal class StatisticsService {
 
     /**
      * Compute statistics.

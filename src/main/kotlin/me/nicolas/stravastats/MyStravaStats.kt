@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import me.nicolas.stravastats.core.*
-import me.nicolas.stravastats.core.ActivityLoader
-import me.nicolas.stravastats.core.StatsBuilder
+import me.nicolas.stravastats.core.ActivityService
+import me.nicolas.stravastats.core.StatisticsService
 import me.nicolas.stravastats.strava.StravaApi
 
 
@@ -16,15 +16,13 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
 
     private val stravaApi = StravaApi(stravaStatsProperties)
 
-    private val activityLoader = ActivityLoader(stravaStatsProperties, stravaApi)
+    private val activityLoader = ActivityService(stravaStatsProperties, stravaApi)
 
-    private val statsBuilder = StatsBuilder()
+    private val statsBuilder = StatisticsService()
 
-    private val chartsBuilder = ChartsBuilder()
+    private val chartsBuilder = ChartsService()
 
-    private val csvExporter = CSVExporter()
-
-    private val terminalDisplayer = TerminalDisplayer()
+    private val csvExporter = CSVService()
 
     private val parameters = Parameters()
 
@@ -45,8 +43,7 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         }
 
         val stravaStats = statsBuilder.computeStatistics(activities)
-
-        terminalDisplayer.displayStatistics(stravaStats)
+        println(stravaStats)
 
         if (parameters.csv) {
             csvExporter.exportCSV(parameters.clientId, activities, parameters.filter)
