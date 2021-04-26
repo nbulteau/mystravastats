@@ -12,7 +12,7 @@ internal class KilometersByMonthsChart {
 
     companion object {
 
-        fun buildCharts(activities: List<Activity>, year: Int) {
+        fun buildKilometersByMonthsCharts(activities: List<Activity>, year: Int) {
 
             val activitiesByMonth = getActivitiesByMonth(activities)
 

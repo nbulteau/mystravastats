@@ -8,7 +8,7 @@ class KilometersByYearsChart {
 
     companion object {
 
-        fun buildKilometersByYearsCharts(clientId: String, activities: List<Activity>) {
+        fun buildKilometersByYearsCharts(activities: List<Activity>) {
 
             // group by year
             val activitiesByYear = activities
