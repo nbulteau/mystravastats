@@ -4,13 +4,14 @@ import hep.dataforge.values.Value
 import kscience.plotly.*
 import kscience.plotly.models.*
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.Ride
 import java.time.LocalDate
 
-internal class RideOverYearsOverYearsChartTyped(activities: List<Activity>) :
-    TypedActivityOverYearsChart(activities, Ride) {
+internal class ActivityByYearsChart(activities: List<Activity>, val type: String) {
 
-    override fun build() {
+    private val activitiesByYear: Map<String, List<Activity>> =
+        ChartHelper.groupActivitiesByYear(activities.filter { activity -> activity.type == type })
+
+    fun build() {
         val plot = Plotly.grid {
             buildCumulativeKilometers()
             buildCumulativeElevation()
@@ -24,9 +25,9 @@ internal class RideOverYearsOverYearsChartTyped(activities: List<Activity>) :
 
         plot(row = 1, width = 12) {
             for (year in 2010..LocalDate.now().year) {
-                val rideByYear =
+                val activities =
                     if (activitiesByYear[year.toString()] != null) activitiesByYear[year.toString()]!! else continue
-                val activitiesByDay = ChartHelper.groupActivitiesByDay(rideByYear, year)
+                val activitiesByDay = ChartHelper.groupActivitiesByDay(activities, year)
                 val cumulativeDistance = getCumulativeDistance(activitiesByDay)
                 traces(
                     buildLine(cumulativeDistance, year)
@@ -51,7 +52,7 @@ internal class RideOverYearsOverYearsChartTyped(activities: List<Activity>) :
 
             layout {
                 barmode = BarMode.stack
-                title = "Ride distance (km)"
+                title = "$type distance (km)"
 
                 xaxis {
                     title = "Day"
@@ -76,9 +77,9 @@ internal class RideOverYearsOverYearsChartTyped(activities: List<Activity>) :
 
         plot(row = 2, width = 12) {
             for (year in 2010..LocalDate.now().year) {
-                val rideByYear =
+                val activities =
                     if (activitiesByYear[year.toString()] != null) activitiesByYear[year.toString()]!! else continue
-                val activitiesByDay = ChartHelper.groupActivitiesByDay(rideByYear, year)
+                val activitiesByDay = ChartHelper.groupActivitiesByDay(activities, year)
                 val cumulativeElevation = getCumulativeElevation(activitiesByDay)
                 traces(
                     buildLine(cumulativeElevation, year)
@@ -103,7 +104,7 @@ internal class RideOverYearsOverYearsChartTyped(activities: List<Activity>) :
 
             layout {
                 barmode = BarMode.stack
-                title = "Ride elevation (m)"
+                title = "$type elevation (m)"
 
                 xaxis {
                     title = "Day"
