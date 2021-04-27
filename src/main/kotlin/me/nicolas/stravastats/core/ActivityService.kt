@@ -61,7 +61,7 @@ internal class ActivityService(
         // get accessToken
         if (clientSecret != null && this.accessToken == null) {
             println()
-            println("Copy paste this URL in a browser")
+            println("To grant MyStravaStats to read your Strava activities data: copy paste this URL in a browser")
             val url =
                 "http://www.strava.com/api/v3/oauth/authorize" +
                         "?client_id=${clientId}" +
