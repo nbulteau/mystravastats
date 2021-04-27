@@ -10,32 +10,11 @@ internal class ByYearsChart {
 
         fun buildKilometersByYearsCharts(activities: List<Activity>) {
 
-            // group by year
-            val activitiesByYear = activities
-                .groupBy { activity ->
-                    activity.startDateLocal.subSequence(0, 4).toString()
-                }.toSortedMap()
-
-            val runByYears = activitiesByYear.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == Run }
-                    .sumByDouble { activity -> activity.distance / 1000 }
-            }
-            val rideByYears = activitiesByYear.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == Ride }
-                    .sumByDouble { activity -> activity.distance / 1000 }
-            }
-            val inLineSkateByYears = activitiesByYear.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == InlineSkate }
-                    .sumByDouble { activity -> activity.distance / 1000 }
-            }
-            val hikeByYears = activitiesByYear.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == Hike }
-                    .sumByDouble { activity -> activity.distance / 1000 }
-            }
+            val activitiesByYear = ChartHelper.groupActivitiesByYear(activities)
+            val runByYears = ChartHelper.cumulativeDistance(activitiesByYear, Run)
+            val rideByYears = ChartHelper.cumulativeDistance(activitiesByYear, Ride)
+            val inLineSkateByYears = ChartHelper.cumulativeDistance(activitiesByYear, InlineSkate)
+            val hikeByYears = ChartHelper.cumulativeDistance(activitiesByYear, Hike)
 
             val plot = Plotly.grid {
                 buildBarModeStackPlot(runByYears, rideByYears, inLineSkateByYears, hikeByYears)
@@ -162,9 +141,9 @@ internal class ByYearsChart {
             val max = activitiesByYears.keys.maxOf { it.toInt() }
 
             // Add years without activities
-            (min..max).forEach {
-                if (!activitiesByYears.contains("$it")) {
-                    activitiesByYears["$it"] = 0.0
+            for (year in min..max) {
+                if (!activitiesByYears.contains("$year")) {
+                    activitiesByYears["$year"] = 0.0
                 }
             }
             return activitiesByYears

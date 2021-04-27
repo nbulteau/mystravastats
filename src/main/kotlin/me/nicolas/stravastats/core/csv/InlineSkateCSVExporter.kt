@@ -6,7 +6,6 @@ import me.nicolas.stravastats.core.formatDate
 import me.nicolas.stravastats.core.formatSeconds
 import me.nicolas.stravastats.core.statistics.calculateBestDistanceForTime
 import me.nicolas.stravastats.core.statistics.calculateBestTimeForDistance
-import java.io.FileWriter
 
 internal class InlineSkateCSVExporter(clientId: String, activities: List<Activity>, year: Int) :
     CSVExporter(clientId, activities, year, InlineSkate) {

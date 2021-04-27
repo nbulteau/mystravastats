@@ -11,58 +11,22 @@ internal class ByMonthsChart {
 
     companion object {
 
-        fun buildKilometersByMonthsCharts(activities: List<Activity>, year: Int) {
+        fun build(activities: List<Activity>, year: Int) {
 
-            val activitiesByMonth = ChartHelper.getActivitiesByMonth(activities)
+            val activitiesByMonth = ChartHelper.groupActivitiesByMonth(activities)
+            val runByMonths = ChartHelper.cumulativeDistance(activitiesByMonth, Run)
+            val bikeByMonths = ChartHelper.cumulativeDistance(activitiesByMonth, Ride)
+            val inLineSkateByMonths = ChartHelper.cumulativeDistance(activitiesByMonth, InlineSkate)
+            val hikeByMonths = ChartHelper.cumulativeDistance(activitiesByMonth, Hike)
 
-            val runByMonths = activitiesByMonth.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == Run }
-                    .sumByDouble { activity -> activity.distance / 1000 }
-            }
-            val bikeByMonths = activitiesByMonth.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == Ride }
-                    .sumByDouble { activity -> activity.distance / 1000 }
-            }
-            val inLineSkateByMonths = activitiesByMonth.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == InlineSkate }
-                    .sumByDouble { activity -> activity.distance / 1000 }
-            }
-            val hikeByMonths = activitiesByMonth.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == Hike }
-                    .sumByDouble { activity -> activity.distance / 1000 }
-            }
-
-            val activitiesByDay = ChartHelper.getActivitiesByDay(activities, year)
-
-            val runByDays = activitiesByDay.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == Run }
-                    .sumByDouble { activity -> activity.distance / 1000 }
-            }
-            val rideByDays = activitiesByDay.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == Ride }
-                    .sumByDouble { activity -> activity.distance / 1000 }
-            }
-            val inLineSkateByDays = activitiesByDay.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == InlineSkate }
-                    .sumByDouble { activity -> activity.distance / 1000 }
-            }
-            val hikeByDays = activitiesByDay.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == Hike }
-                    .sumByDouble { activity -> activity.distance / 1000 }
-            }
-
+            val activitiesByDay = ChartHelper.groupActivitiesByDay(activities, year)
+            val runByDays = ChartHelper.cumulativeDistance(activitiesByDay, Run)
+            val rideByDays = ChartHelper.cumulativeDistance(activitiesByDay, Ride)
+            val inLineSkateByDays = ChartHelper.cumulativeDistance(activitiesByDay, InlineSkate)
+            val hikeByDays = ChartHelper.cumulativeDistance(activitiesByDay, Hike)
 
             val plot = Plotly.grid {
                 buildBarModeGroupPlot(runByMonths, bikeByMonths, inLineSkateByMonths, hikeByMonths, year)
-                buildCumulativePlot(runByMonths, bikeByMonths, inLineSkateByMonths, hikeByMonths, year)
                 buildBarModeStackByDayPlot(runByDays, rideByDays, inLineSkateByDays, hikeByDays, year)
             }
 
@@ -76,7 +40,7 @@ internal class ByMonthsChart {
             hikeByMonths: Map<String, Double>,
             year: Int
         ) {
-            plot(row = 1, width = 6) {
+            plot(row = 1, width = 12) {
                 traces(
                     buildBarByMonth(runByMonths, Run),
                     buildBarByMonth(bikeByMonths, Ride),
@@ -103,44 +67,6 @@ internal class ByMonthsChart {
             }
         }
 
-        private fun PlotGrid.buildCumulativePlot(
-            runByMonths: Map<String, Double>,
-            bikeByMonths: Map<String, Double>,
-            inLineSkateByMonths: Map<String, Double>,
-            hikeByMonths: Map<String, Double>,
-            year: Int
-        ) {
-            plot(row = 1, width = 6) {
-                traces(
-                    buildLine(getCumulativeSum(runByMonths), Run),
-                    buildLine(getCumulativeSum(bikeByMonths), Ride),
-                    buildLine(getCumulativeSum(inLineSkateByMonths), InlineSkate),
-                    buildLine(getCumulativeSum(hikeByMonths), Hike)
-                )
-
-                layout {
-                    title = "Cumulative kilometers by month for $year"
-
-                    xaxis {
-                        title = "Month"
-                    }
-                    yaxis {
-                        title = "Km"
-                    }
-                    legend {
-                        xanchor = XAnchor.left
-                        bgcolor("#E2E2E2")
-                        traceorder = TraceOrder.normal
-                    }
-                }
-            }
-        }
-
-        private fun getCumulativeSum(activities: Map<String, Double>): Map<String, Double> {
-            var sum = 0.0
-            return activities.mapValues { (_, value) -> sum += value; sum }
-        }
-
         private fun buildBarByMonth(activitiesByMonths: Map<String, Double>, type: String): Bar {
             val sumKms = activitiesByMonths.values.toMutableList()
             for (i in sumKms.size..12) {
@@ -148,19 +74,6 @@ internal class ByMonthsChart {
             }
 
             return Bar {
-                x.set(Month.values().map { it.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()) })
-                y.set(sumKms)
-                name = type
-            }
-        }
-
-        private fun buildLine(activitiesByMonths: Map<String, Double>, type: String): Scatter {
-            val sumKms = activitiesByMonths.values.toMutableList()
-            for (i in sumKms.size..12) {
-                sumKms.add(sumKms.maxOf { it })
-            }
-
-            return Scatter {
                 x.set(Month.values().map { it.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()) })
                 y.set(sumKms)
                 name = type

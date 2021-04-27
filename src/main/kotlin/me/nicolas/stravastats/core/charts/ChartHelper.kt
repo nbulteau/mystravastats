@@ -6,7 +6,15 @@ import java.time.LocalDate
 class ChartHelper {
 
     companion object {
-        fun getActivitiesByMonth(activities: List<Activity>): Map<String, List<Activity>> {
+
+        fun groupActivitiesByYear(activities: List<Activity>): Map<String, List<Activity>> {
+            return activities
+                .groupBy { activity ->
+                    activity.startDateLocal.subSequence(0, 4).toString()
+                }.toSortedMap()
+        }
+
+        fun groupActivitiesByMonth(activities: List<Activity>): Map<String, List<Activity>> {
             val activitiesByMonth = activities
                 .groupBy { activity -> activity.startDateLocal.subSequence(5, 7).toString() }
                 .toMutableMap()
@@ -21,7 +29,7 @@ class ChartHelper {
             return activitiesByMonth.toSortedMap()
         }
 
-        fun getActivitiesByDay(activities: List<Activity>, year: Int): Map<String, List<Activity>> {
+        fun groupActivitiesByDay(activities: List<Activity>, year: Int): Map<String, List<Activity>> {
             val activitiesGroupedByDay = activities
                 .groupBy { activity -> activity.startDateLocal.subSequence(5, 10).toString() }
 
@@ -39,5 +47,13 @@ class ChartHelper {
 
             return activitiesByDay.toSortedMap()
         }
+
+        fun cumulativeDistance(activities: Map<String, List<Activity>>, type: String) =
+            activities.mapValues { (_, activities) ->
+                activities
+                    .filter { activity -> activity.type == type }
+                    .sumByDouble { activity -> activity.distance / 1000 }
+            }
+
     }
 }

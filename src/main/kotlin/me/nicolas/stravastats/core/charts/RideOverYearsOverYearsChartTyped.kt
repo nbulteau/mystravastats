@@ -7,7 +7,8 @@ import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Ride
 import java.time.LocalDate
 
-internal class RideOverYearsChart(activities: List<Activity>) : ActivityChart(activities, Ride) {
+internal class RideOverYearsOverYearsChartTyped(activities: List<Activity>) :
+    TypedActivityOverYearsChart(activities, Ride) {
 
     override fun build() {
         val plot = Plotly.grid {
@@ -25,7 +26,7 @@ internal class RideOverYearsChart(activities: List<Activity>) : ActivityChart(ac
             for (year in 2010..LocalDate.now().year) {
                 val rideByYear =
                     if (activitiesByYear[year.toString()] != null) activitiesByYear[year.toString()]!! else continue
-                val activitiesByDay = ChartHelper.getActivitiesByDay(rideByYear, year)
+                val activitiesByDay = ChartHelper.groupActivitiesByDay(rideByYear, year)
                 val cumulativeDistance = getCumulativeDistance(activitiesByDay)
                 traces(
                     buildLine(cumulativeDistance, year)
@@ -77,7 +78,7 @@ internal class RideOverYearsChart(activities: List<Activity>) : ActivityChart(ac
             for (year in 2010..LocalDate.now().year) {
                 val rideByYear =
                     if (activitiesByYear[year.toString()] != null) activitiesByYear[year.toString()]!! else continue
-                val activitiesByDay = ChartHelper.getActivitiesByDay(rideByYear, year)
+                val activitiesByDay = ChartHelper.groupActivitiesByDay(rideByYear, year)
                 val cumulativeElevation = getCumulativeElevation(activitiesByDay)
                 traces(
                     buildLine(cumulativeElevation, year)

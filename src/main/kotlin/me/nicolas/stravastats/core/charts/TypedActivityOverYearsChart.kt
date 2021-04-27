@@ -2,7 +2,7 @@ package me.nicolas.stravastats.core.charts
 
 import me.nicolas.stravastats.business.Activity
 
-internal abstract class ActivityChart(activities: List<Activity>, val type: String) {
+internal abstract class TypedActivityOverYearsChart(activities: List<Activity>, val type: String) {
 
     protected val activitiesByYear: Map<String, List<Activity>>
 
