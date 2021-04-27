@@ -129,12 +129,7 @@ internal class ActivityService(
             val objectMapper = ObjectMapper()
             activities = objectMapper.readValue(yearActivitiesJsonFile, Array<Activity>::class.java)
                 .toList()
-                .filter { activity ->
-                    activity.type == Ride ||
-                            activity.type == Run ||
-                            activity.type == Hike ||
-                            activity.type == InlineSkate
-                }
+                .filterActivities()
             println("done")
 
             // Load activities streams
@@ -152,12 +147,8 @@ internal class ActivityService(
             accessToken = accessToken,
             before = LocalDateTime.of(year, 12, 31, 23, 59),
             after = LocalDateTime.of(year, 1, 1, 0, 0)
-        ).filter { activity ->
-            activity.type == Ride ||
-                    activity.type == Run ||
-                    activity.type == Hike ||
-                    activity.type == InlineSkate
-        }
+        ).filterActivities()
+
         println("done")
 
         println("Load ${activities.size} activities streams ... ")
@@ -225,6 +216,10 @@ internal class ActivityService(
             }
         }
         println()
+    }
+
+    private fun List<Activity>.filterActivities() = this.filter { activity ->
+        activity.type == Ride || activity.type == Run || activity.type == Hike || activity.type == InlineSkate
     }
 
     private fun displayProgressBar(progressPercentage: Double) {
