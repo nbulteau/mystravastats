@@ -1,8 +1,7 @@
 package me.nicolas.stravastats.core
 
-import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.*
 import me.nicolas.stravastats.business.GlobalStatistic
-import me.nicolas.stravastats.business.Statistic
 import me.nicolas.stravastats.business.StravaStatistics
 import me.nicolas.stravastats.core.statistics.*
 
@@ -22,19 +21,15 @@ internal class StatisticsService {
             .filter { it.stream != null && it.stream?.time != null && it.stream?.distance != null && it.stream?.altitude != null }
         println("Nb activities used to compute statistics (with streams) : ${filteredActivities.size}")
 
-        val commuteRideStats = computeCommuteBikeStats(filteredActivities.filter { it.type == "Ride" && it.commute })
-        val sportRideStats = computeBikeStats(filteredActivities.filter { it.type == "Ride" && !it.commute })
-        val runsStats = computeRunStats(filteredActivities.filter { it.type == "Run" })
-        val hikesStats = computeHikeStats(filteredActivities.filter { it.type == "Hike" })
-        val inlineSkate = computeInlineSkateStats(filteredActivities.filter { it.type == "InlineSkate" })
+        val commuteRideStats = computeCommuteBikeStats(filteredActivities.filter { it.type == Ride && it.commute })
+        val sportRideStats = computeBikeStats(filteredActivities.filter { it.type == Ride && !it.commute })
+        val runsStats = computeRunStats(filteredActivities.filter { it.type == Run })
+        val hikesStats = computeHikeStats(filteredActivities.filter { it.type == Hike })
+        val inlineSkate = computeInlineSkateStats(filteredActivities.filter { it.type == InlineSkate })
 
         return StravaStatistics(globalStatistics, commuteRideStats, sportRideStats, runsStats, hikesStats, inlineSkate)
     }
 
-    /**
-     * Compute statistics.
-     * @param activities
-     */
     private fun computeGlobalStats(activities: List<Activity>): List<Statistic> {
 
         return listOf(
@@ -51,10 +46,6 @@ internal class StatisticsService {
         )
     }
 
-    /**
-     * Compute statistics.
-     * @param activities
-     */
     private fun computeStats(activities: List<Activity>): List<Statistic> {
 
         return listOf(
@@ -86,10 +77,6 @@ internal class StatisticsService {
         )
     }
 
-    /**
-     * Compute Run statistics.
-     * @param activities
-     */
     private fun computeRunStats(activities: List<Activity>): List<Statistic> {
 
         val statistics = computeStats(activities).toMutableList()
@@ -116,10 +103,6 @@ internal class StatisticsService {
         return statistics
     }
 
-    /**
-     * Compute Bike statistics.
-     * @param activities
-     */
     private fun computeBikeStats(activities: List<Activity>): List<Statistic> {
 
         val statistics = computeStats(activities).toMutableList()
@@ -152,10 +135,6 @@ internal class StatisticsService {
         return statistics
     }
 
-    /**
-     * Compute commute Bike statistics.
-     * @param activities
-     */
     private fun computeCommuteBikeStats(activities: List<Activity>): List<Statistic> {
 
         val statistics = computeStats(activities).toMutableList()
@@ -178,10 +157,6 @@ internal class StatisticsService {
         return statistics
     }
 
-    /**
-     * Compute Hike statistics.
-     * @param activities
-     */
     private fun computeHikeStats(activities: List<Activity>): List<Statistic> {
 
         val statistics = computeStats(activities).toMutableList()

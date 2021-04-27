@@ -1,6 +1,6 @@
 package me.nicolas.stravastats.core
 
-import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.*
 import me.nicolas.stravastats.core.csv.RideCSVExporter
 import me.nicolas.stravastats.core.csv.HikeCSVExporter
 import me.nicolas.stravastats.core.csv.InlineSkateCSVExporter
@@ -25,19 +25,19 @@ internal class CSVService {
     private fun exportCSV(clientId: String, activities: List<Activity>, year: Int) {
         print("* Export activities for $year [")
 
-        print("Ride")
+        print(Ride)
         val rideCSVExporter = RideCSVExporter(clientId = clientId, activities = activities, year = year)
         rideCSVExporter.export()
 
-        print(", Run")
+        print(", $Run")
         val runCSVExporter = RunCSVExporter(clientId = clientId, activities = activities, year = year)
         runCSVExporter.export()
 
-        print(", InlineSkate")
+        print(", $InlineSkate")
         val inlineSkateCSVExporter = InlineSkateCSVExporter(clientId = clientId, activities = activities, year = year)
         inlineSkateCSVExporter.export()
 
-        print(", Hike")
+        print(", $Hike")
         val hikeCSVExporter = HikeCSVExporter(clientId = clientId, activities = activities, year = year)
         hikeCSVExporter.export()
 
