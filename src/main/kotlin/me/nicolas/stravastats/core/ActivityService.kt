@@ -220,10 +220,8 @@ internal class ActivityService(
             displayProgressBar(++index / activities.size)
 
             val streamFile = File(activitiesDirectory, "stream-${activity.id}")
-            val stream: Stream?
             if (streamFile.exists()) {
-                stream = objectMapper.readValue(streamFile, Stream::class.java)
-                activity.stream = stream
+                activity.stream = objectMapper.readValue(streamFile, Stream::class.java)
             }
         }
         println()
