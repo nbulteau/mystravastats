@@ -16,6 +16,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.nicolas.stravastats.business.*
+import java.awt.Desktop
+import java.net.URI
 import java.time.LocalDate
 
 
@@ -58,15 +60,18 @@ internal class ActivityService(
 
         // get accessToken
         if (clientSecret != null && this.accessToken == null) {
+            println()
             println("Copy paste this URL in a browser")
-            println(
+            val url =
                 "http://www.strava.com/api/v3/oauth/authorize" +
                         "?client_id=${clientId}" +
                         "&response_type=code" +
                         "&redirect_uri=http://localhost:8080/exchange_token" +
                         "&approval_prompt=auto" +
                         "&scope=read_all,activity:read_all"
-            )
+            println(url)
+            Desktop.getDesktop().browse(URI(url))
+            println()
 
             runBlocking {
                 val channel = Channel<String>()
