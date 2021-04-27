@@ -12,9 +12,9 @@ class ChartHelper {
                 .toMutableMap()
 
             // Add months without activities
-            (1..12).forEach {
-                if (!activitiesByMonth.contains("$it".padStart(2, '0'))) {
-                    activitiesByMonth["$it".padStart(2, '0')] = emptyList()
+            for (month in (1..12)) {
+                if (!activitiesByMonth.contains("$month".padStart(2, '0'))) {
+                    activitiesByMonth["$month".padStart(2, '0')] = emptyList()
                 }
             }
 

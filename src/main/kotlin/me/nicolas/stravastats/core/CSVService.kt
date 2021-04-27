@@ -26,20 +26,20 @@ internal class CSVService {
         print("* Export activities for $year [")
 
         print("Ride")
-        val rideCSVExporter = RideCSVExporter(activities = activities)
-        rideCSVExporter.export(clientId = clientId, year = year)
+        val rideCSVExporter = RideCSVExporter(clientId = clientId, activities = activities, year = year)
+        rideCSVExporter.export()
 
         print(", Run")
-        val runCSVExporter = RunCSVExporter(activities = activities)
-        runCSVExporter.export(clientId = clientId, year = year)
+        val runCSVExporter = RunCSVExporter(clientId = clientId, activities = activities, year = year)
+        runCSVExporter.export()
 
         print(", InlineSkate")
-        val inlineSkateCSVExporter = InlineSkateCSVExporter(activities = activities)
-        inlineSkateCSVExporter.export(clientId = clientId, year = year)
+        val inlineSkateCSVExporter = InlineSkateCSVExporter(clientId = clientId, activities = activities, year = year)
+        inlineSkateCSVExporter.export()
 
         print(", Hike")
-        val hikeCSVExporter = HikeCSVExporter(activities = activities)
-        hikeCSVExporter.export(clientId = clientId, year = year)
+        val hikeCSVExporter = HikeCSVExporter(clientId = clientId, activities = activities, year = year)
+        hikeCSVExporter.export()
 
         println("]")
     }
