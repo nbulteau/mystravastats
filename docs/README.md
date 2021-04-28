@@ -75,7 +75,9 @@ Display statistics for specified year using locally downloaded activities, then 
 ```
 ./gradlew run --args="-clientId [clientId] -charts -year 2020"
 ```
-![Charts](https://github.com/nbulteau/mystravastats/blob/main/docs/charts-1.png?raw=true)
+
+![Charts](https://github.com/nbulteau/mystravastats/blob/main/docs/ride_distance_by_years.png?raw=true)
+![Charts](https://github.com/nbulteau/mystravastats/blob/main/docs/kilometers_by_years.png?raw=true)
 
 
 Display export activities in a CSV file with a filter using locally downloaded activities (current year) :
