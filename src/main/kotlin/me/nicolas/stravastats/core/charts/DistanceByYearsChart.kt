@@ -9,10 +9,10 @@ internal class DistanceByYearsChart(activities: List<Activity>): Chart() {
     private val activitiesByYear = groupActivitiesByYear(activities)
 
     override fun build() {
-        val runByYears = cumulativeDistance(activitiesByYear, Run)
-        val rideByYears = cumulativeDistance(activitiesByYear, Ride)
-        val inLineSkateByYears = cumulativeDistance(activitiesByYear, InlineSkate)
-        val hikeByYears = cumulativeDistance(activitiesByYear, Hike)
+        val runByYears = sumDistance(activitiesByYear, Run)
+        val rideByYears = sumDistance(activitiesByYear, Ride)
+        val inLineSkateByYears = sumDistance(activitiesByYear, InlineSkate)
+        val hikeByYears = sumDistance(activitiesByYear, Hike)
 
         val plot = Plotly.grid {
             buildBarModeStackPlot(runByYears, rideByYears, inLineSkateByYears, hikeByYears)
@@ -30,10 +30,10 @@ internal class DistanceByYearsChart(activities: List<Activity>): Chart() {
     ) {
         plot(row = 1, width = 6) {
             traces(
-                buildBar(runByYears, Run),
-                buildBar(bikeByYears, Ride),
-                buildBar(inLineSkateByYears, InlineSkate),
-                buildBar(hikeByYears, Hike)
+                buildBarByType(runByYears, Run),
+                buildBarByType(bikeByYears, Ride),
+                buildBarByType(inLineSkateByYears, InlineSkate),
+                buildBarByType(hikeByYears, Hike)
             )
 
             layout {
@@ -64,10 +64,10 @@ internal class DistanceByYearsChart(activities: List<Activity>): Chart() {
     ) {
         plot(row = 1, width = 6) {
             traces(
-                buildBar(runByYears, Run),
-                buildBar(bikeByYears, Ride),
-                buildBar(inLineSkateByYears, InlineSkate),
-                buildBar(hikeByYears, Hike)
+                buildBarByType(runByYears, Run),
+                buildBarByType(bikeByYears, Ride),
+                buildBarByType(inLineSkateByYears, InlineSkate),
+                buildBarByType(hikeByYears, Hike)
             )
 
             layout {
@@ -98,10 +98,10 @@ internal class DistanceByYearsChart(activities: List<Activity>): Chart() {
     ) {
         plot(row = 2, width = 12) {
             traces(
-                buildLine(cumulativeSum(runByYears), Run),
-                buildLine(cumulativeSum(bikeByYears), Ride),
-                buildLine(cumulativeSum(inLineSkateByYears), InlineSkate),
-                buildLine(cumulativeSum(hikeByYears), Hike)
+                buildLineByType(cumulativeValue(runByYears), Run),
+                buildLineByType(cumulativeValue(bikeByYears), Ride),
+                buildLineByType(cumulativeValue(inLineSkateByYears), InlineSkate),
+                buildLineByType(cumulativeValue(hikeByYears), Hike)
             )
 
             layout {

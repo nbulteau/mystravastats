@@ -29,8 +29,9 @@ internal class ActivityByYearsChart(activities: List<Activity>, val type: String
                     if (activitiesByYear[year.toString()] != null) activitiesByYear[year.toString()]!! else continue
                 val activitiesByDay = groupActivitiesByDay(activities, year)
                 val cumulativeDistance = cumulativeDistance(activitiesByDay)
+
                 traces(
-                    buildLine(cumulativeDistance, year)
+                    buildLineByYear(cumulativeDistance, year)
                 )
                 val text = Text {
                     xref = "x"
@@ -81,8 +82,9 @@ internal class ActivityByYearsChart(activities: List<Activity>, val type: String
                     if (activitiesByYear[year.toString()] != null) activitiesByYear[year.toString()]!! else continue
                 val activitiesByDay = groupActivitiesByDay(activities, year)
                 val cumulativeElevation = cumulativeElevation(activitiesByDay)
+
                 traces(
-                    buildLine(cumulativeElevation, year)
+                    buildLineByYear(cumulativeElevation, year)
                 )
                 val text = Text {
                     xref = "x"

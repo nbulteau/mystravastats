@@ -65,44 +65,44 @@ abstract class Chart {
             return activitiesByDay.toSortedMap()
         }
 
-        fun buildBar(activities: Map<String, Double>, type: String) = Bar {
+        fun buildBarByType(activities: Map<String, Double>, type: String) = Bar {
             x.set(activities.keys)
             y.set(activities.values)
             name = type
         }
 
-        fun buildLine(activities: Map<String, Double>, type: String) = Scatter {
+        fun buildLineByType(activities: Map<String, Double>, type: String) = Scatter {
             x.set(activities.keys)
             y.set(activities.values)
             name = type
         }
 
-        fun buildLine(activities: Map<String, Double>, year: Int) = Scatter {
+        fun buildLineByYear(activities: Map<String, Double>, year: Int) = Scatter {
             x.set(activities.keys)
             y.set(activities.values)
             name = "$year"
         }
 
-        fun cumulativeSum(activities: Map<String, Double>): Map<String, Double> {
+        fun cumulativeValue(activities: Map<String, Double>): Map<String, Double> {
             var sum = 0.0
             return activities.mapValues { (_, value) -> sum += value; sum }
         }
 
         fun cumulativeDistance(activities: Map<String, List<Activity>>): Map<String, Double> {
             var sum = 0.0
-            return activities.mapValues { (_, value) ->
-                sum += value.sumOf { activity -> activity.distance / 1000 }; sum
+            return activities.mapValues { (_, activities) ->
+                sum += activities.sumOf { activity -> activity.distance / 1000 }; sum
             }
         }
 
         fun cumulativeElevation(activities: Map<String, List<Activity>>): Map<String, Double> {
             var sum = 0.0
-            return activities.mapValues { (_, value) ->
-                sum += value.sumOf { activity -> activity.totalElevationGain }; sum
+            return activities.mapValues { (_, activities) ->
+                sum += activities.sumOf { activity -> activity.totalElevationGain }; sum
             }
         }
 
-        fun cumulativeDistance(activities: Map<String, List<Activity>>, type: String) =
+        fun sumDistance(activities: Map<String, List<Activity>>, type: String) =
             activities.mapValues { (_, activities) ->
                 activities
                     .filter { activity -> activity.type == type }

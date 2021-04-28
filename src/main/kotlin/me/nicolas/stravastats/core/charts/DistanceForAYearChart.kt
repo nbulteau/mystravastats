@@ -14,15 +14,15 @@ internal class DistanceForAYearChart(activities: List<Activity>, val year: Int):
     private val activitiesByDay = groupActivitiesByDay(activities, year)
 
     override fun build() {
-        val runByMonths = cumulativeDistance(activitiesByMonth, Run)
-        val bikeByMonths = cumulativeDistance(activitiesByMonth, Ride)
-        val inLineSkateByMonths = cumulativeDistance(activitiesByMonth, InlineSkate)
-        val hikeByMonths = cumulativeDistance(activitiesByMonth, Hike)
+        val runByMonths = sumDistance(activitiesByMonth, Run)
+        val bikeByMonths = sumDistance(activitiesByMonth, Ride)
+        val inLineSkateByMonths = sumDistance(activitiesByMonth, InlineSkate)
+        val hikeByMonths = sumDistance(activitiesByMonth, Hike)
 
-        val runByDays = cumulativeDistance(activitiesByDay, Run)
-        val rideByDays = cumulativeDistance(activitiesByDay, Ride)
-        val inLineSkateByDays = cumulativeDistance(activitiesByDay, InlineSkate)
-        val hikeByDays = cumulativeDistance(activitiesByDay, Hike)
+        val runByDays = sumDistance(activitiesByDay, Run)
+        val rideByDays = sumDistance(activitiesByDay, Ride)
+        val inLineSkateByDays = sumDistance(activitiesByDay, InlineSkate)
+        val hikeByDays = sumDistance(activitiesByDay, Hike)
 
         val plot = Plotly.grid {
             buildBarModeGroupPlot(runByMonths, bikeByMonths, inLineSkateByMonths, hikeByMonths, year)
@@ -41,10 +41,10 @@ internal class DistanceForAYearChart(activities: List<Activity>, val year: Int):
     ) {
         plot(row = 1, width = 12) {
             traces(
-                buildBar(runByMonths, Run),
-                buildBar(bikeByMonths, Ride),
-                buildBar(inLineSkateByMonths, InlineSkate),
-                buildBar(hikeByMonths, Hike)
+                buildBarByType(runByMonths, Run),
+                buildBarByType(bikeByMonths, Ride),
+                buildBarByType(inLineSkateByMonths, InlineSkate),
+                buildBarByType(hikeByMonths, Hike)
             )
 
             layout {
@@ -75,10 +75,10 @@ internal class DistanceForAYearChart(activities: List<Activity>, val year: Int):
     ) {
         plot(row = 2, width = 12) {
             traces(
-                buildBar(runByDays, Run),
-                buildBar(bikeByDays, Ride),
-                buildBar(inLineSkateByDays, InlineSkate),
-                buildBar(hikeByDays, Hike)
+                buildBarByType(runByDays, Run),
+                buildBarByType(bikeByDays, Ride),
+                buildBarByType(inLineSkateByDays, InlineSkate),
+                buildBarByType(hikeByDays, Hike)
             )
 
             layout {
