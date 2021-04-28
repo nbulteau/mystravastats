@@ -3,8 +3,9 @@ package me.nicolas.stravastats.core.charts
 import kscience.plotly.*
 import kscience.plotly.models.*
 import me.nicolas.stravastats.business.*
+import hep.dataforge.values.Value
 
-internal class DistanceByYearsChart(activities: List<Activity>): Chart() {
+internal class DistanceByYearsChart(activities: List<Activity>) : Chart() {
 
     private val activitiesByYear = groupActivitiesByYear(activities)
 
@@ -38,10 +39,10 @@ internal class DistanceByYearsChart(activities: List<Activity>): Chart() {
 
             layout {
                 barmode = BarMode.stack
-                title = "Cumulative kilometers by year"
+                title = "Kilometers by year"
 
                 xaxis {
-                    title = "Month"
+                    title = "Year"
                     type = AxisType.category
                 }
                 yaxis {
@@ -75,7 +76,7 @@ internal class DistanceByYearsChart(activities: List<Activity>): Chart() {
                 title = "Kilometers by year"
 
                 xaxis {
-                    title = "Month"
+                    title = "Year"
                     type = AxisType.category
                 }
                 yaxis {
@@ -96,19 +97,31 @@ internal class DistanceByYearsChart(activities: List<Activity>): Chart() {
         inLineSkateByYears: Map<String, Double>,
         hikeByYears: Map<String, Double>
     ) {
+        val annotationsList = mutableListOf<Text>()
+
+        val cumulativeRun = cumulativeValue(runByYears)
+        val cumulativeRide = cumulativeValue(bikeByYears)
+        val cumulativeInlineSkate = cumulativeValue(inLineSkateByYears)
+        val cumulativeHike = cumulativeValue(hikeByYears)
+
         plot(row = 2, width = 12) {
             traces(
-                buildLineByType(cumulativeValue(runByYears), Run),
-                buildLineByType(cumulativeValue(bikeByYears), Ride),
-                buildLineByType(cumulativeValue(inLineSkateByYears), InlineSkate),
-                buildLineByType(cumulativeValue(hikeByYears), Hike)
+                buildLineByType(cumulativeRun, Run),
+                buildLineByType(cumulativeRide, Ride),
+                buildLineByType(cumulativeInlineSkate, InlineSkate),
+                buildLineByType(cumulativeHike, Hike)
             )
+
+            annotationsList.add(buildText(cumulativeRun))
+            annotationsList.add(buildText(cumulativeRide))
+            annotationsList.add(buildText(cumulativeInlineSkate))
+            annotationsList.add(buildText(cumulativeHike))
 
             layout {
                 title = "Cumulative kilometers by year"
 
                 xaxis {
-                    title = "Month"
+                    title = "Year"
                     type = AxisType.category
                 }
                 yaxis {
@@ -119,7 +132,26 @@ internal class DistanceByYearsChart(activities: List<Activity>): Chart() {
                     bgcolor("#E2E2E2")
                     traceorder = TraceOrder.normal
                 }
+                annotations = annotationsList
             }
+        }
+    }
+
+    private fun buildText(activities: Map<String, Double>): Text {
+        return Text {
+            xref = "x"
+            yref = "y"
+            x = Value.of(activities.keys.last())
+            y = Value.of(activities.values.last())
+            xanchor = XAnchor.left
+            yanchor = YAnchor.middle
+            text = " %.0f km".format(activities.values.last())
+            font {
+                family = "Arial"
+                size = 12
+                color("black")
+            }
+            showarrow = false
         }
     }
 }

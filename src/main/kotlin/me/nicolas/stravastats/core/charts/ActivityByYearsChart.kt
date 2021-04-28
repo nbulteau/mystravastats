@@ -37,10 +37,10 @@ internal class ActivityByYearsChart(activities: List<Activity>, val type: String
                     xref = "x"
                     yref = "y"
                     x = Value.of(cumulativeDistance.keys.last())
-                    y = Value.of(cumulativeDistance.values.maxOf { it })
+                    y = Value.of(cumulativeDistance.values.last())
                     xanchor = XAnchor.left
                     yanchor = YAnchor.middle
-                    text = "  %.0f".format(cumulativeDistance.values.maxOf { it })
+                    text = "  %.0f km".format(cumulativeDistance.values.last())
                     font {
                         family = "Arial"
                         size = 12
@@ -52,7 +52,6 @@ internal class ActivityByYearsChart(activities: List<Activity>, val type: String
             }
 
             layout {
-                barmode = BarMode.stack
                 title = "$type distance (km)"
 
                 xaxis {
@@ -70,7 +69,6 @@ internal class ActivityByYearsChart(activities: List<Activity>, val type: String
                 annotations = annotationsList
             }
         }
-
     }
 
     private fun PlotGrid.buildCumulativeElevation() {
@@ -90,10 +88,10 @@ internal class ActivityByYearsChart(activities: List<Activity>, val type: String
                     xref = "x"
                     yref = "y"
                     x = Value.of(cumulativeElevation.keys.last())
-                    y = Value.of(cumulativeElevation.values.maxOf { it })
+                    y = Value.of(cumulativeElevation.values.last())
                     xanchor = XAnchor.left
                     yanchor = YAnchor.middle
-                    text = "  %.0f".format(cumulativeElevation.values.maxOf { it })
+                    text = " %.0f m".format(cumulativeElevation.values.last())
                     font {
                         family = "Arial"
                         size = 12
@@ -105,7 +103,6 @@ internal class ActivityByYearsChart(activities: List<Activity>, val type: String
             }
 
             layout {
-                barmode = BarMode.stack
                 title = "$type elevation (m)"
 
                 xaxis {
