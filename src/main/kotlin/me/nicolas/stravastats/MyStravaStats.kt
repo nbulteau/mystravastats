@@ -4,8 +4,9 @@ import com.beust.jcommander.JCommander
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import me.nicolas.stravastats.core.*
 import me.nicolas.stravastats.core.ActivityService
+import me.nicolas.stravastats.core.CSVService
+import me.nicolas.stravastats.core.ChartsService
 import me.nicolas.stravastats.core.StatisticsService
 import me.nicolas.stravastats.strava.StravaApi
 
@@ -77,7 +78,11 @@ private fun disableWarning() {
 
 fun main(incomingArgs: Array<String>) {
     disableWarning()
-    MyStravaStats(incomingArgs).run()
+    try {
+        MyStravaStats(incomingArgs).run()
+    } catch (throwable: Throwable) {
+        println("\n${throwable.message}")
+    }
 }
 
 

@@ -54,7 +54,7 @@ internal class StravaApi(
 
         return when {
             response.statusCode >= HttpStatus.BAD_REQUEST_400 -> {
-                println("Unable to load streams for activity : $activity")
+                println("\nUnable to load streams for activity : $activity")
                 if(response.statusCode == HttpStatus.TOO_MANY_REQUESTS_429) {
                     println("Strava API usage is limited on a per-application basis using both a 15-minute and daily request limit."
                         + "The default rate limit allows 100 requests every 15 minutes, with up to 1,000 requests per day.")
@@ -67,12 +67,12 @@ internal class StravaApi(
                 return try {
                     mapper.readValue<Stream>(response.content)
                 } catch (jsonProcessingException: JsonProcessingException) {
-                    println("Unable to load streams for activity : $activity")
+                    println("\nUnable to load streams for activity : $activity")
                     null
                 }
             }
             else -> {
-                println("Unable to load streams for activity : $activity")
+                println("\nUnable to load streams for activity : $activity")
                 throw RuntimeException("Something was wrong with Strava API ${response.headers} - ${response.text}")
             }
         }
