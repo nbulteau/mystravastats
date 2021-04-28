@@ -1,28 +1,28 @@
 package me.nicolas.stravastats.core.charts
 
 import kscience.plotly.*
-import kscience.plotly.models.*
+import kscience.plotly.models.AxisType
+import kscience.plotly.models.BarMode
+import kscience.plotly.models.TraceOrder
+import kscience.plotly.models.XAnchor
 import me.nicolas.stravastats.business.*
-import java.time.Month
-import java.time.format.TextStyle
-import java.util.*
 
-internal class DistanceForAYearChart(activities: List<Activity>, val year: Int) {
+internal class DistanceForAYearChart(activities: List<Activity>, val year: Int): Chart() {
 
-    private val activitiesByMonth = ChartHelper.groupActivitiesByMonth(activities)
+    private val activitiesByMonth = groupActivitiesByMonth(activities)
 
-    private val activitiesByDay = ChartHelper.groupActivitiesByDay(activities, year)
+    private val activitiesByDay = groupActivitiesByDay(activities, year)
 
-    fun build() {
-        val runByMonths = ChartHelper.cumulativeDistance(activitiesByMonth, Run)
-        val bikeByMonths = ChartHelper.cumulativeDistance(activitiesByMonth, Ride)
-        val inLineSkateByMonths = ChartHelper.cumulativeDistance(activitiesByMonth, InlineSkate)
-        val hikeByMonths = ChartHelper.cumulativeDistance(activitiesByMonth, Hike)
+    override fun build() {
+        val runByMonths = cumulativeDistance(activitiesByMonth, Run)
+        val bikeByMonths = cumulativeDistance(activitiesByMonth, Ride)
+        val inLineSkateByMonths = cumulativeDistance(activitiesByMonth, InlineSkate)
+        val hikeByMonths = cumulativeDistance(activitiesByMonth, Hike)
 
-        val runByDays = ChartHelper.cumulativeDistance(activitiesByDay, Run)
-        val rideByDays = ChartHelper.cumulativeDistance(activitiesByDay, Ride)
-        val inLineSkateByDays = ChartHelper.cumulativeDistance(activitiesByDay, InlineSkate)
-        val hikeByDays = ChartHelper.cumulativeDistance(activitiesByDay, Hike)
+        val runByDays = cumulativeDistance(activitiesByDay, Run)
+        val rideByDays = cumulativeDistance(activitiesByDay, Ride)
+        val inLineSkateByDays = cumulativeDistance(activitiesByDay, InlineSkate)
+        val hikeByDays = cumulativeDistance(activitiesByDay, Hike)
 
         val plot = Plotly.grid {
             buildBarModeGroupPlot(runByMonths, bikeByMonths, inLineSkateByMonths, hikeByMonths, year)
@@ -41,10 +41,10 @@ internal class DistanceForAYearChart(activities: List<Activity>, val year: Int) 
     ) {
         plot(row = 1, width = 12) {
             traces(
-                buildBarByMonth(runByMonths, Run),
-                buildBarByMonth(bikeByMonths, Ride),
-                buildBarByMonth(inLineSkateByMonths, InlineSkate),
-                buildBarByMonth(hikeByMonths, Hike)
+                buildBar(runByMonths, Run),
+                buildBar(bikeByMonths, Ride),
+                buildBar(inLineSkateByMonths, InlineSkate),
+                buildBar(hikeByMonths, Hike)
             )
 
             layout {
@@ -63,19 +63,6 @@ internal class DistanceForAYearChart(activities: List<Activity>, val year: Int) 
                     traceorder = TraceOrder.normal
                 }
             }
-        }
-    }
-
-    private fun buildBarByMonth(activitiesByMonths: Map<String, Double>, type: String): Bar {
-        val sumKms = activitiesByMonths.values.toMutableList()
-        for (i in sumKms.size..12) {
-            sumKms.add(0.0)
-        }
-
-        return Bar {
-            x.set(Month.values().map { it.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()) })
-            y.set(sumKms)
-            name = type
         }
     }
 
@@ -113,12 +100,5 @@ internal class DistanceForAYearChart(activities: List<Activity>, val year: Int) 
             }
         }
     }
-
-    private fun buildBar(activitiesByDays: Map<String, Double>, type: String) =
-        Bar {
-            x.set(activitiesByDays.keys)
-            y.set(activitiesByDays.values)
-            name = type
-        }
 }
 

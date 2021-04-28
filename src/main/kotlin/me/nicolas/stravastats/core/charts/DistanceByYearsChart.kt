@@ -4,19 +4,15 @@ import kscience.plotly.*
 import kscience.plotly.models.*
 import me.nicolas.stravastats.business.*
 
-internal class DistanceByYearsChart(activities: List<Activity>) {
+internal class DistanceByYearsChart(activities: List<Activity>): Chart() {
 
-    private val activitiesByYear = ChartHelper.groupActivitiesByYear(activities)
+    private val activitiesByYear = groupActivitiesByYear(activities)
 
-    fun build() {
-        var runByYears = ChartHelper.cumulativeDistance(activitiesByYear, Run)
-        runByYears = addYearWithoutActivity(runByYears)
-        var rideByYears = ChartHelper.cumulativeDistance(activitiesByYear, Ride)
-        rideByYears = addYearWithoutActivity(rideByYears)
-        var inLineSkateByYears = ChartHelper.cumulativeDistance(activitiesByYear, InlineSkate)
-        inLineSkateByYears = addYearWithoutActivity(inLineSkateByYears)
-        var hikeByYears = ChartHelper.cumulativeDistance(activitiesByYear, Hike)
-        hikeByYears = addYearWithoutActivity(hikeByYears)
+    override fun build() {
+        val runByYears = cumulativeDistance(activitiesByYear, Run)
+        val rideByYears = cumulativeDistance(activitiesByYear, Ride)
+        val inLineSkateByYears = cumulativeDistance(activitiesByYear, InlineSkate)
+        val hikeByYears = cumulativeDistance(activitiesByYear, Hike)
 
         val plot = Plotly.grid {
             buildBarModeStackPlot(runByYears, rideByYears, inLineSkateByYears, hikeByYears)
@@ -102,10 +98,10 @@ internal class DistanceByYearsChart(activities: List<Activity>) {
     ) {
         plot(row = 2, width = 12) {
             traces(
-                buildLine(getCumulativeSum(runByYears), Run),
-                buildLine(getCumulativeSum(bikeByYears), Ride),
-                buildLine(getCumulativeSum(inLineSkateByYears), InlineSkate),
-                buildLine(getCumulativeSum(hikeByYears), Hike)
+                buildLine(cumulativeSum(runByYears), Run),
+                buildLine(cumulativeSum(bikeByYears), Ride),
+                buildLine(cumulativeSum(inLineSkateByYears), InlineSkate),
+                buildLine(cumulativeSum(hikeByYears), Hike)
             )
 
             layout {
@@ -125,38 +121,5 @@ internal class DistanceByYearsChart(activities: List<Activity>) {
                 }
             }
         }
-    }
-
-    private fun buildBar(activities: Map<String, Double>, type: String) = Bar {
-        x.set(activities.keys)
-        y.set(activities.values)
-        name = type
-    }
-
-
-    private fun buildLine(activities: Map<String, Double>, type: String) = Scatter {
-        x.set(activities.keys)
-        y.set(activities.values)
-        name = type
-    }
-
-
-    private fun addYearWithoutActivity(activities: Map<String, Double>): Map<String, Double> {
-        val activitiesByYears = activities.toMutableMap()
-        val min = activitiesByYears.keys.minOf { it.toInt() }
-        val max = activitiesByYears.keys.maxOf { it.toInt() }
-
-        // Add years without activities
-        for (year in min..max) {
-            if (!activitiesByYears.contains("$year")) {
-                activitiesByYears["$year"] = 0.0
-            }
-        }
-        return activitiesByYears.toSortedMap()
-    }
-
-    private fun getCumulativeSum(activities: Map<String, Double>): Map<String, Double> {
-        var sum = 0.0
-        return activities.mapValues { (_, value) -> sum += value; sum }
     }
 }

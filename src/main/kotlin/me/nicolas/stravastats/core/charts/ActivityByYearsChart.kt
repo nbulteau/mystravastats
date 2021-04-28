@@ -6,12 +6,12 @@ import kscience.plotly.models.*
 import me.nicolas.stravastats.business.Activity
 import java.time.LocalDate
 
-internal class ActivityByYearsChart(activities: List<Activity>, val type: String) {
+internal class ActivityByYearsChart(activities: List<Activity>, val type: String): Chart() {
 
     private val activitiesByYear: Map<String, List<Activity>> =
-        ChartHelper.groupActivitiesByYear(activities.filter { activity -> activity.type == type })
+        groupActivitiesByYear(activities.filter { activity -> activity.type == type })
 
-    fun build() {
+    override fun build() {
         val plot = Plotly.grid {
             buildCumulativeKilometers()
             buildCumulativeElevation()
@@ -27,8 +27,8 @@ internal class ActivityByYearsChart(activities: List<Activity>, val type: String
             for (year in 2010..LocalDate.now().year) {
                 val activities =
                     if (activitiesByYear[year.toString()] != null) activitiesByYear[year.toString()]!! else continue
-                val activitiesByDay = ChartHelper.groupActivitiesByDay(activities, year)
-                val cumulativeDistance = getCumulativeDistance(activitiesByDay)
+                val activitiesByDay = groupActivitiesByDay(activities, year)
+                val cumulativeDistance = cumulativeDistance(activitiesByDay)
                 traces(
                     buildLine(cumulativeDistance, year)
                 )
@@ -79,8 +79,8 @@ internal class ActivityByYearsChart(activities: List<Activity>, val type: String
             for (year in 2010..LocalDate.now().year) {
                 val activities =
                     if (activitiesByYear[year.toString()] != null) activitiesByYear[year.toString()]!! else continue
-                val activitiesByDay = ChartHelper.groupActivitiesByDay(activities, year)
-                val cumulativeElevation = getCumulativeElevation(activitiesByDay)
+                val activitiesByDay = groupActivitiesByDay(activities, year)
+                val cumulativeElevation = cumulativeElevation(activitiesByDay)
                 traces(
                     buildLine(cumulativeElevation, year)
                 )
@@ -121,24 +121,5 @@ internal class ActivityByYearsChart(activities: List<Activity>, val type: String
                 annotations = annotationsList
             }
         }
-    }
-
-    private fun buildLine(activitiesByDay: Map<String, Double>, year: Int): Scatter {
-
-        return Scatter {
-            x.set(activitiesByDay.keys)
-            y.set(activitiesByDay.values)
-            name = "$year"
-        }
-    }
-
-    private fun getCumulativeDistance(activities: Map<String, List<Activity>>): Map<String, Double> {
-        var sum = 0.0
-        return activities.mapValues { (_, value) -> sum += value.sumOf { activity -> activity.distance / 1000 }; sum }
-    }
-
-    private fun getCumulativeElevation(activities: Map<String, List<Activity>>): Map<String, Double> {
-        var sum = 0.0
-        return activities.mapValues { (_, value) -> sum += value.sumOf { activity -> activity.totalElevationGain }; sum }
     }
 }
