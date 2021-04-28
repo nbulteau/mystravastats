@@ -46,7 +46,7 @@ internal class StatisticsService {
         )
     }
 
-    private fun computeStats(activities: List<Activity>): List<Statistic> {
+    private fun computeCommonStats(activities: List<Activity>): List<Statistic> {
 
         return listOf(
             GlobalStatistic("Nb activities", activities, "%d", List<Activity>::size),
@@ -79,7 +79,7 @@ internal class StatisticsService {
 
     private fun computeRunStats(activities: List<Activity>): List<Statistic> {
 
-        val statistics = computeStats(activities).toMutableList()
+        val statistics = computeCommonStats(activities).toMutableList()
 
         statistics.addAll(
             listOf(
@@ -105,7 +105,7 @@ internal class StatisticsService {
 
     private fun computeBikeStats(activities: List<Activity>): List<Statistic> {
 
-        val statistics = computeStats(activities).toMutableList()
+        val statistics = computeCommonStats(activities).toMutableList()
         statistics.addAll(
             listOf(
                 MaxSpeedStatistic(activities),
@@ -137,7 +137,7 @@ internal class StatisticsService {
 
     private fun computeCommuteBikeStats(activities: List<Activity>): List<Statistic> {
 
-        val statistics = computeStats(activities).toMutableList()
+        val statistics = computeCommonStats(activities).toMutableList()
         statistics.addAll(
             listOf(
                 MaxSpeedStatistic(activities),
@@ -159,7 +159,7 @@ internal class StatisticsService {
 
     private fun computeHikeStats(activities: List<Activity>): List<Statistic> {
 
-        val statistics = computeStats(activities).toMutableList()
+        val statistics = computeCommonStats(activities).toMutableList()
 
         statistics.addAll(
             listOf(
@@ -187,7 +187,7 @@ internal class StatisticsService {
 
     private fun computeInlineSkateStats(activities: List<Activity>): List<Statistic> {
 
-        val statistics = computeStats(activities).toMutableList()
+        val statistics = computeCommonStats(activities).toMutableList()
 
         statistics.addAll(
             listOf(
