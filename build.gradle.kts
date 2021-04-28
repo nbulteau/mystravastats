@@ -65,6 +65,7 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.withType<Jar> {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
         attributes("Main-Class" to "me.nicolas.stravastats.MyStravaStatsKt")
     }
