@@ -9,10 +9,14 @@ internal class DistanceByYearsChart(activities: List<Activity>) {
     private val activitiesByYear = ChartHelper.groupActivitiesByYear(activities)
 
     fun build() {
-        val runByYears = ChartHelper.cumulativeDistance(activitiesByYear, Run)
-        val rideByYears = ChartHelper.cumulativeDistance(activitiesByYear, Ride)
-        val inLineSkateByYears = ChartHelper.cumulativeDistance(activitiesByYear, InlineSkate)
-        val hikeByYears = ChartHelper.cumulativeDistance(activitiesByYear, Hike)
+        var runByYears = ChartHelper.cumulativeDistance(activitiesByYear, Run)
+        runByYears = addYearWithoutActivity(runByYears)
+        var rideByYears = ChartHelper.cumulativeDistance(activitiesByYear, Ride)
+        rideByYears = addYearWithoutActivity(rideByYears)
+        var inLineSkateByYears = ChartHelper.cumulativeDistance(activitiesByYear, InlineSkate)
+        inLineSkateByYears = addYearWithoutActivity(inLineSkateByYears)
+        var hikeByYears = ChartHelper.cumulativeDistance(activitiesByYear, Hike)
+        hikeByYears = addYearWithoutActivity(hikeByYears)
 
         val plot = Plotly.grid {
             buildBarModeStackPlot(runByYears, rideByYears, inLineSkateByYears, hikeByYears)
@@ -123,15 +127,19 @@ internal class DistanceByYearsChart(activities: List<Activity>) {
         }
     }
 
-    private fun buildBar(activities: Map<String, Double>, type: String): Bar {
-        val activitiesByYears = addYearWithoutActivity(activities)
-
-        return Bar {
-            x.set(activitiesByYears.keys)
-            y.set(activitiesByYears.values)
-            name = type
-        }
+    private fun buildBar(activities: Map<String, Double>, type: String) = Bar {
+        x.set(activities.keys)
+        y.set(activities.values)
+        name = type
     }
+
+
+    private fun buildLine(activities: Map<String, Double>, type: String) = Scatter {
+        x.set(activities.keys)
+        y.set(activities.values)
+        name = type
+    }
+
 
     private fun addYearWithoutActivity(activities: Map<String, Double>): Map<String, Double> {
         val activitiesByYears = activities.toMutableMap()
@@ -144,17 +152,7 @@ internal class DistanceByYearsChart(activities: List<Activity>) {
                 activitiesByYears["$year"] = 0.0
             }
         }
-        return activitiesByYears
-    }
-
-    private fun buildLine(activities: Map<String, Double>, type: String): Scatter {
-        val activitiesByYears = addYearWithoutActivity(activities)
-
-        return Scatter {
-            x.set(activitiesByYears.keys)
-            y.set(activitiesByYears.values)
-            name = type
-        }
+        return activitiesByYears.toSortedMap()
     }
 
     private fun getCumulativeSum(activities: Map<String, Double>): Map<String, Double> {

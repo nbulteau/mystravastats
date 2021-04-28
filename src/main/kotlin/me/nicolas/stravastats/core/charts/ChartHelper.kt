@@ -54,6 +54,5 @@ class ChartHelper {
                     .filter { activity -> activity.type == type }
                     .sumByDouble { activity -> activity.distance / 1000 }
             }
-
     }
 }
