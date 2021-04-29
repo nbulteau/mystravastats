@@ -125,7 +125,7 @@ internal class ActivityService(
         var activities = emptyList<Activity>()
 
         if (yearActivitiesJsonFile.exists()) {
-            print("Load activities of clientId=$clientId for year $year ... ")
+            print("\nLoad activities of clientId=$clientId for year $year ... ")
             val objectMapper = ObjectMapper()
             activities = objectMapper.readValue(yearActivitiesJsonFile, Array<Activity>::class.java)
                 .toList()
