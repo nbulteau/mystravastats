@@ -114,7 +114,7 @@ data class Activity(
     @JsonProperty("upload_id")
     val uploadId: Long,
     @JsonProperty("upload_id_str")
-    val uploadIdStr: String,
+    val uploadIdStr: String?,
     @JsonProperty("utc_offset")
     val utcOffset: Double,
     @JsonProperty("visibility")
