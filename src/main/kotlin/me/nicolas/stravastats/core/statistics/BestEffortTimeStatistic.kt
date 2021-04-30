@@ -40,6 +40,12 @@ internal open class BestEffortTimeStatistic(
  * @param seconds given time
  */
 fun Activity.calculateBestDistanceForTime(seconds: Int): ActivityEffort? {
+
+    // no stream -> return null
+    if(stream == null ) {
+        return null
+    }
+
     var idxStart = 0
     var idxEnd = 0
     var maxDist = 0.0

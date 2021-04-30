@@ -36,6 +36,11 @@ internal open class BestElevationDistanceStatistic(
  */
 fun Activity.calculateBestElevationForDistance(distance: Double): ActivityEffort? {
 
+    // no stream -> return null
+    if(stream == null ) {
+        return null
+    }
+
     var idxStart = 0
     var idxEnd = 0
     var bestElevation = Double.MIN_VALUE

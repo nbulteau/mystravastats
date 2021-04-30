@@ -16,16 +16,13 @@ internal class StatisticsService {
 
         val globalStatistics = computeGlobalStats(activities)
 
-        // filter activities without streams
-        val filteredActivities = activities
-            .filter { it.stream != null && it.stream?.time != null && it.stream?.distance != null && it.stream?.altitude != null }
-        println("Nb activities used to compute statistics (with streams) : ${filteredActivities.size}")
+        println("Nb activities used to compute statistics (with streams) : ${activities.size}")
 
-        val commuteRideStats = computeCommuteBikeStats(filteredActivities.filter { it.type == Ride && it.commute })
-        val sportRideStats = computeBikeStats(filteredActivities.filter { it.type == Ride && !it.commute })
-        val runsStats = computeRunStats(filteredActivities.filter { it.type == Run })
-        val hikesStats = computeHikeStats(filteredActivities.filter { it.type == Hike })
-        val inlineSkate = computeInlineSkateStats(filteredActivities.filter { it.type == InlineSkate })
+        val commuteRideStats = computeCommuteBikeStats(activities.filter { activity -> activity.type == Ride && activity.commute })
+        val sportRideStats = computeBikeStats(activities.filter { activity -> activity.type == Ride && !activity.commute })
+        val runsStats = computeRunStats(activities.filter { activity -> activity.type == Run })
+        val hikesStats = computeHikeStats(activities.filter { activity -> activity.type == Hike })
+        val inlineSkate = computeInlineSkateStats(activities.filter { activity -> activity.type == InlineSkate })
 
         return StravaStatistics(globalStatistics, commuteRideStats, sportRideStats, runsStats, hikesStats, inlineSkate)
     }
