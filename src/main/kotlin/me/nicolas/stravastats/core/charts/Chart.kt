@@ -1,6 +1,7 @@
 package me.nicolas.stravastats.core.charts
 
 import kscience.plotly.models.Bar
+import kscience.plotly.models.LineShape
 import kscience.plotly.models.Scatter
 import me.nicolas.stravastats.business.Activity
 import java.time.LocalDate
@@ -74,12 +75,16 @@ abstract class Chart {
         fun buildLineByType(activities: Map<String, Double>, type: String) = Scatter {
             x.set(activities.keys)
             y.set(activities.values)
+            line.shape= LineShape.spline
+            connectgaps=true
             name = type
         }
 
         fun buildLineByYear(activities: Map<String, Double>, year: Int) = Scatter {
             x.set(activities.keys)
             y.set(activities.values)
+            line.shape= LineShape.spline
+            connectgaps=true
             name = "$year"
         }
 
@@ -106,8 +111,17 @@ abstract class Chart {
             activities.mapValues { (_, activities) ->
                 activities
                     .filter { activity -> activity.type == type }
-                    .sumByDouble { activity -> activity.distance / 1000 }
+                    .sumOf { activity -> activity.distance / 1000 }
             }
+
+        fun averageSpeed(activities: Map<String, List<Activity>>, type: String) =
+            activities.mapValues { (_, activities) ->
+                activities
+                    .filter { activity -> activity.type == type }
+                    .map { activity -> activity.averageSpeed * 3.6}
+                    .average()
+            }
+
     }
 
     abstract fun build()
