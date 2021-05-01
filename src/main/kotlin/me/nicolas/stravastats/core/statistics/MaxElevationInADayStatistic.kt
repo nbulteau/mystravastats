@@ -11,7 +11,7 @@ internal class MaxElevationInADayStatistic(
 
     private val mostActiveDay: Map.Entry<String, Double>? =
         activities.groupBy { activity -> activity.startDateLocal.substringBefore('T') }
-            .mapValues { (_, activities) -> activities.sumByDouble { activity -> activity.totalElevationGain } }
+            .mapValues { (_, activities) -> activities.sumOf { activity -> activity.totalElevationGain } }
             .maxByOrNull { it.value }
 
     override fun toString(): String {

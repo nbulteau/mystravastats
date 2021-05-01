@@ -11,8 +11,8 @@ internal class MaxDistanceInADayStatistic(
 
     private val mostActiveDay: Map.Entry<String, Double>? =
         activities.groupBy { activity -> activity.startDateLocal.substringBefore('T') }
-            .mapValues { (_, activities) -> activities.sumByDouble { activity -> activity.distance } }
-            .maxByOrNull { it.value }
+            .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance } }
+            .maxByOrNull { entry: Map.Entry<String, Double> ->  entry.value }
 
     override fun toString(): String {
         return super.toString() + if (mostActiveDay != null) {

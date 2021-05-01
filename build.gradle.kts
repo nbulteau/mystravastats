@@ -70,7 +70,11 @@ tasks.withType<Jar> {
         attributes("Main-Class" to "me.nicolas.stravastats.MyStravaStatsKt")
     }
 
-    from(configurations.compileClasspath.map { config -> config.map { if (it.isDirectory) it else zipTree(it) } })
+    from(configurations.compileClasspath.map { config ->
+        config.map { file ->
+            if (file.isDirectory) file else zipTree(file)
+        }
+    })
 }
 
 fun isNonStable(version: String): Boolean {

@@ -20,9 +20,9 @@ internal class ByYearsChart(activities: List<Activity>) : Chart() {
             buildBarModeStackPlot(row = 1, width = 6, runByYears, rideByYears, inLineSkateByYears, hikeByYears)
             buildBarModeGroupPlot(row = 1, width = 6, runByYears, rideByYears, inLineSkateByYears, hikeByYears)
             buildCumulativePlot(row = 2, width = 12, runByYears, rideByYears, inLineSkateByYears, hikeByYears)
-            buildCumulativeKilometers(row = 3, width = 12, Run, activitiesByYear)
-            buildCumulativeKilometers(row = 4, width = 12, Ride, activitiesByYear)
-            buildCumulativeElevation(row = 5, width = 12, Ride, activitiesByYear)
+            buildCumulativeKilometers(row = 3, width = 12, activitiesByYear, Run)
+            buildCumulativeKilometers(row = 4, width = 12, activitiesByYear, Ride)
+            buildCumulativeElevation(row = 5, width = 12, activitiesByYear, Ride)
         }
         plot.makeFile()
     }
@@ -150,8 +150,8 @@ internal class ByYearsChart(activities: List<Activity>) : Chart() {
     private fun PlotGrid.buildCumulativeKilometers(
         row: Int,
         width: Int,
-        activityType: String,
-        activitiesByYear: Map<String, List<Activity>>
+        activitiesByYear: Map<String, List<Activity>>,
+        activityType: String
     ) {
 
         val annotationsList = mutableListOf<Text>()
@@ -159,10 +159,11 @@ internal class ByYearsChart(activities: List<Activity>) : Chart() {
 
         plot(row = row, width = width) {
             for (year in 2010..LocalDate.now().year) {
-                val activities =
-                    if (activitiesByYear[year.toString()] != null) activitiesByYear[year.toString()]?.filter { activity ->
-                        activity.type == activityType
-                    }!! else continue
+                val activities = if (activitiesByYear[year.toString()] != null) {
+                    activitiesByYear[year.toString()]?.filter { activity -> activity.type == activityType }!!
+                } else {
+                    continue
+                }
                 val activitiesByDay = groupActivitiesByDay(activities, year)
                 val cumulativeDistance = cumulativeDistance(activitiesByDay)
 
@@ -210,17 +211,18 @@ internal class ByYearsChart(activities: List<Activity>) : Chart() {
     private fun PlotGrid.buildCumulativeElevation(
         row: Int,
         width: Int,
-        activityType: String,
-        activitiesByYear: Map<String, List<Activity>>
+        activitiesByYear: Map<String, List<Activity>>,
+        activityType: String
     ) {
         val annotationsList = mutableListOf<Text>()
 
         plot(row = row, width = width) {
             for (year in 2010..LocalDate.now().year) {
-                val activities =
-                    if (activitiesByYear[year.toString()] != null) activitiesByYear[year.toString()]?.filter { activity ->
-                        activity.type == activityType
-                    }!! else continue
+                val activities = if (activitiesByYear[year.toString()] != null) {
+                    activitiesByYear[year.toString()]?.filter { activity -> activity.type == activityType }!!
+                } else {
+                    continue
+                }
                 val activitiesByDay = groupActivitiesByDay(activities, year)
                 val cumulativeElevation = cumulativeElevation(activitiesByDay)
 

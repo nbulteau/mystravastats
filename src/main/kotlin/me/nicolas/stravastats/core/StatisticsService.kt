@@ -18,7 +18,8 @@ internal class StatisticsService {
 
         println("Nb activities used to compute statistics (with streams) : ${activities.size}")
 
-        val commuteRideStats = computeCommuteBikeStats(activities.filter { activity -> activity.type == Ride && activity.commute })
+        val commuteRideStats =
+            computeCommuteBikeStats(activities.filter { activity -> activity.type == Ride && activity.commute })
         val rideStats = computeBikeStats(activities.filter { activity -> activity.type == Ride && !activity.commute })
         val runsStats = computeRunStats(activities.filter { activity -> activity.type == Run })
         val hikesStats = computeHikeStats(activities.filter { activity -> activity.type == Hike })
@@ -34,7 +35,7 @@ internal class StatisticsService {
             GlobalStatistic("Nb actives days", activities, "%d")
             { activityList: List<Activity> ->
                 activityList
-                    .map { it.startDateLocal.substringBefore('T') }
+                    .map { activity -> activity.startDateLocal.substringBefore('T') }
                     .toSet()
                     .size
             },
@@ -51,16 +52,16 @@ internal class StatisticsService {
             GlobalStatistic("Nb actives days", activities, "%d")
             { activityList: List<Activity> ->
                 activityList
-                    .groupBy { it.startDateLocal.substringBefore('T') }
+                    .groupBy { activity: Activity -> activity.startDateLocal.substringBefore('T') }
                     .count()
             },
             MaxStreakStatistic(activities),
 
             GlobalStatistic("Total distance", activities, "%.2f km")
-            { activityList: List<Activity> -> activityList.sumByDouble { it.distance } / 1000 },
+            { activityList: List<Activity> -> activityList.sumOf { activity: Activity -> activity.distance } / 1000 },
 
             GlobalStatistic("Total elevation", activities, "%.2f m")
-            { activityList: List<Activity> -> activityList.sumByDouble { it.totalElevationGain } },
+            { activityList: List<Activity> -> activityList.sumOf { activity: Activity -> activity.totalElevationGain } },
 
             MaxDistanceStatistic(activities),
             MaxDistanceInADayStatistic(activities),
@@ -163,17 +164,17 @@ internal class StatisticsService {
                 BestDayStatistic("Max distance in a day", activities, "%s => %.02f km")
                 {
                     activities
-                        .groupBy { it.startDateLocal.substringBefore('T') }
-                        .mapValues { it.value.sumByDouble { activity -> activity.distance / 1000 } }
-                        .maxByOrNull { it.value }
+                        .groupBy { activity: Activity ->  activity.startDateLocal.substringBefore('T') }
+                        .mapValues { it.value.sumOf { activity -> activity.distance / 1000 } }
+                        .maxByOrNull { entry: Map.Entry<String, Double> ->  entry.value }
                         ?.toPair()
                 },
                 BestDayStatistic("Max elevation in a day", activities, "%s => %.02f m")
                 {
                     activities
-                        .groupBy { it.startDateLocal.substringBefore('T') }
-                        .mapValues { it.value.sumByDouble { activity -> activity.totalElevationGain } }
-                        .maxByOrNull { it.value }
+                        .groupBy { activity: Activity ->  activity.startDateLocal.substringBefore('T') }
+                        .mapValues { it.value.sumOf { activity -> activity.totalElevationGain } }
+                        .maxByOrNull { entry: Map.Entry<String, Double> ->  entry.value }
                         ?.toPair()
                 }
             )

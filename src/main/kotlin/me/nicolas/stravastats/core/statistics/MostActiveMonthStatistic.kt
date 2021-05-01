@@ -12,8 +12,8 @@ internal class MostActiveMonthStatistic(
 
     private val mostActiveMonth =
         activities.groupBy { activity -> activity.startDateLocal.substringBeforeLast('-') }
-            .mapValues { (_, activities) -> activities.sumByDouble { activity -> activity.distance } }
-            .maxByOrNull { it.value }
+            .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance } }
+            .maxByOrNull { entry: Map.Entry<String, Double> ->  entry.value }
 
     override fun toString(): String {
         return super.toString() + if (mostActiveMonth != null) {

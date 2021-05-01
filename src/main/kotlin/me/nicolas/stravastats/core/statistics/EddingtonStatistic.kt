@@ -24,13 +24,13 @@ internal class EddingtonStatistic(
 
             val activeDaysList = activities
                 .groupBy { activity -> activity.startDateLocal.substringBefore('T') }
-                .mapValues { (_, activities) -> activities.sumByDouble { it.distance / 1000 } }
-                .mapValues { it.value.toInt() }
+                .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance / 1000 } }
+                .mapValues { entry: Map.Entry<String, Double> -> entry.value.toInt() }
                 .toMap()
 
             val counts = List(activeDaysList.maxOf { it.value }) { 0 }.toMutableList()
-            activeDaysList.forEach {
-                for (day in it.value downTo 1) {
+            activeDaysList.forEach { entry: Map.Entry<String, Int> ->
+                for (day in entry.value downTo 1) {
                     counts[day - 1] += 1
                 }
             }
