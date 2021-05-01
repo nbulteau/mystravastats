@@ -156,10 +156,13 @@ internal class ByYearsChart(activities: List<Activity>) : Chart() {
 
         val annotationsList = mutableListOf<Text>()
 
+
         plot(row = row, width = width) {
             for (year in 2010..LocalDate.now().year) {
                 val activities =
-                    if (activitiesByYear[year.toString()] != null) activitiesByYear[year.toString()]!! else continue
+                    if (activitiesByYear[year.toString()] != null) activitiesByYear[year.toString()]?.filter { activity ->
+                        activity.type == activityType
+                    }!! else continue
                 val activitiesByDay = groupActivitiesByDay(activities, year)
                 val cumulativeDistance = cumulativeDistance(activitiesByDay)
 
@@ -215,7 +218,9 @@ internal class ByYearsChart(activities: List<Activity>) : Chart() {
         plot(row = row, width = width) {
             for (year in 2010..LocalDate.now().year) {
                 val activities =
-                    if (activitiesByYear[year.toString()] != null) activitiesByYear[year.toString()]!! else continue
+                    if (activitiesByYear[year.toString()] != null) activitiesByYear[year.toString()]?.filter { activity ->
+                        activity.type == activityType
+                    }!! else continue
                 val activitiesByDay = groupActivitiesByDay(activities, year)
                 val cumulativeElevation = cumulativeElevation(activitiesByDay)
 

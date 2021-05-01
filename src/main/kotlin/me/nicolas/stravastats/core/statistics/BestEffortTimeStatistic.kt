@@ -42,7 +42,7 @@ internal open class BestEffortTimeStatistic(
 fun Activity.calculateBestDistanceForTime(seconds: Int): ActivityEffort? {
 
     // no stream -> return null
-    if(stream == null ) {
+    if(stream == null || stream?.distance == null|| stream?.time == null || stream?.altitude == null) {
         return null
     }
 
