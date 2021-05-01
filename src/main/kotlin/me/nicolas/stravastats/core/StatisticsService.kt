@@ -19,12 +19,12 @@ internal class StatisticsService {
         println("Nb activities used to compute statistics (with streams) : ${activities.size}")
 
         val commuteRideStats = computeCommuteBikeStats(activities.filter { activity -> activity.type == Ride && activity.commute })
-        val sportRideStats = computeBikeStats(activities.filter { activity -> activity.type == Ride && !activity.commute })
+        val rideStats = computeBikeStats(activities.filter { activity -> activity.type == Ride && !activity.commute })
         val runsStats = computeRunStats(activities.filter { activity -> activity.type == Run })
         val hikesStats = computeHikeStats(activities.filter { activity -> activity.type == Hike })
         val inlineSkate = computeInlineSkateStats(activities.filter { activity -> activity.type == InlineSkate })
 
-        return StravaStatistics(globalStatistics, commuteRideStats, sportRideStats, runsStats, hikesStats, inlineSkate)
+        return StravaStatistics(globalStatistics, commuteRideStats, rideStats, runsStats, hikesStats, inlineSkate)
     }
 
     private fun computeGlobalStats(activities: List<Activity>): List<Statistic> {
