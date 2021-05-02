@@ -19,28 +19,38 @@ internal class ForAYearChart(activities: List<Activity>, val year: Int) : Chart(
                 xAxis = "months",
                 yAxis = "Distance",
                 unit = "km/h",
-                runByMonths = sumDistance(activitiesByMonth, Run),
-                rideByMonths = sumDistance(activitiesByMonth, Ride),
-                inLineSkateByMonths = sumDistance(activitiesByMonth, InlineSkate),
-                hikeByMonths = sumDistance(activitiesByMonth, Hike),
+                runByMonths = sumDistanceByType(activitiesByMonth, Run),
+                rideByMonths = sumDistanceByType(activitiesByMonth, Ride),
+                inLineSkateByMonths = sumDistanceByType(activitiesByMonth, InlineSkate),
+                hikeByMonths = sumDistanceByType(activitiesByMonth, Hike),
                 year
             )
             buildBarModeStackByDayPlot(
                 xAxis = "days",
                 yAxis = "Distance",
                 unit = "km/h",
-                runByDays = sumDistance(activitiesByDay, Run),
-                rideByDays = sumDistance(activitiesByDay, Ride),
-                inLineSkateByDays = sumDistance(activitiesByDay, InlineSkate),
-                hikeByDays = sumDistance(activitiesByDay, Hike),
+                runByDays = sumDistanceByType(activitiesByDay, Run),
+                rideByDays = sumDistanceByType(activitiesByDay, Ride),
+                inLineSkateByDays = sumDistanceByType(activitiesByDay, InlineSkate),
+                hikeByDays = sumDistanceByType(activitiesByDay, Hike),
+                year
+            )
+            buildBarModeGroupPlot(
+                xAxis = "months",
+                yAxis = "Elevation",
+                unit = "m",
+                runByMonths = sumElevationByType(activitiesByMonth, Run),
+                rideByMonths = sumElevationByType(activitiesByMonth, Ride),
+                inLineSkateByMonths = sumElevationByType(activitiesByMonth, InlineSkate),
+                hikeByMonths = sumElevationByType(activitiesByMonth, Hike),
                 year
             )
             buildLineByDayPlot(
                 xAxis = "days",
                 yAxis = "Average speed",
                 unit = "km/h",
-                runByDays = averageSpeed(activitiesByDay, Run),
-                inLineSkateByDays = averageSpeed(activitiesByDay, InlineSkate),
+                runByDays = averageSpeedByType(activitiesByDay, Run),
+                inLineSkateByDays = averageSpeedByType(activitiesByDay, InlineSkate),
                 year
             )
         }.makeFile()

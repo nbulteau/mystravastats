@@ -11,10 +11,10 @@ internal class ByYearsChart(activities: List<Activity>) : Chart() {
     private val activitiesByYear = groupActivitiesByYear(activities)
 
     override fun build() {
-        val runByYears = sumDistance(activitiesByYear, Run)
-        val rideByYears = sumDistance(activitiesByYear, Ride)
-        val inLineSkateByYears = sumDistance(activitiesByYear, InlineSkate)
-        val hikeByYears = sumDistance(activitiesByYear, Hike)
+        val runByYears = sumDistanceByType(activitiesByYear, Run)
+        val rideByYears = sumDistanceByType(activitiesByYear, Ride)
+        val inLineSkateByYears = sumDistanceByType(activitiesByYear, InlineSkate)
+        val hikeByYears = sumDistanceByType(activitiesByYear, Hike)
 
         val plot = Plotly.grid {
             buildBarModeStackPlot(row = 1, width = 6, runByYears, rideByYears, inLineSkateByYears, hikeByYears)

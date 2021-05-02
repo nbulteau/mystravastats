@@ -107,14 +107,21 @@ abstract class Chart {
             }
         }
 
-        fun sumDistance(activities: Map<String, List<Activity>>, type: String) =
+        fun sumDistanceByType(activities: Map<String, List<Activity>>, type: String) =
             activities.mapValues { (_, activities) ->
                 activities
                     .filter { activity -> activity.type == type }
                     .sumOf { activity -> activity.distance / 1000 }
             }
 
-        fun averageSpeed(activities: Map<String, List<Activity>>, type: String) =
+        fun sumElevationByType(activities: Map<String, List<Activity>>, type: String) =
+            activities.mapValues { (_, activities) ->
+                activities
+                    .filter { activity -> activity.type == type }
+                    .sumOf { activity -> activity.totalElevationGain }
+            }
+
+        fun averageSpeedByType(activities: Map<String, List<Activity>>, type: String) =
             activities.mapValues { (_, activities) ->
                 activities
                     .filter { activity -> activity.type == type }
