@@ -6,7 +6,7 @@ import me.nicolas.stravastats.business.*
 import hep.dataforge.values.Value
 import java.time.LocalDate
 
-internal class ByYearsChart(activities: List<Activity>) : Chart() {
+internal class ByYearsChart(val activities: List<Activity>) : Chart() {
 
     private val activitiesByYear = groupActivitiesByYear(activities)
 
@@ -23,6 +23,8 @@ internal class ByYearsChart(activities: List<Activity>) : Chart() {
             buildCumulativeKilometers(row = 3, width = 12, activitiesByYear, Run)
             buildCumulativeKilometers(row = 4, width = 12, activitiesByYear, Ride)
             buildCumulativeElevation(row = 5, width = 12, activitiesByYear, Ride)
+            buildEddingtonNumberPlotByType(row = 6, width = 6, activities, Run)
+            buildEddingtonNumberPlotByType(row = 6, width = 6, activities, Ride)
         }
         plot.makeFile()
     }

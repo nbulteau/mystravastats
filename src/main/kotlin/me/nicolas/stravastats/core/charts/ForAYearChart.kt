@@ -7,7 +7,7 @@ import kscience.plotly.models.TraceOrder
 import kscience.plotly.models.XAnchor
 import me.nicolas.stravastats.business.*
 
-internal class ForAYearChart(activities: List<Activity>, val year: Int) : Chart() {
+internal class ForAYearChart(val activities: List<Activity>, val year: Int) : Chart() {
 
     private val activitiesByMonth = groupActivitiesByMonth(activities)
 
@@ -53,6 +53,8 @@ internal class ForAYearChart(activities: List<Activity>, val year: Int) : Chart(
                 inLineSkateByDays = averageSpeedByType(activitiesByDay, InlineSkate),
                 year
             )
+            buildEddingtonNumberPlotByType(row = 6, width = 6, activities, Run)
+            buildEddingtonNumberPlotByType(row = 6, width = 6, activities, Ride)
         }.makeFile()
     }
 

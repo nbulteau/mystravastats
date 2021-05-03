@@ -28,7 +28,10 @@ internal class EddingtonStatistic(
                 .mapValues { entry: Map.Entry<String, Double> -> entry.value.toInt() }
                 .toMap()
 
-            val counts = List(activeDaysList.maxOf { it.value }) { 0 }.toMutableList()
+            // counts = total up the number of days that you have ridden each distance
+            val counts: MutableList<Int> = // init to 0
+                List(activeDaysList.maxOf { entry: Map.Entry<String, Int> -> entry.value }) { 0 }.toMutableList()
+
             activeDaysList.forEach { entry: Map.Entry<String, Int> ->
                 for (day in entry.value downTo 1) {
                     counts[day - 1] += 1

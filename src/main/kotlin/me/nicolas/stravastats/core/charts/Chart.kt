@@ -1,8 +1,8 @@
 package me.nicolas.stravastats.core.charts
 
-import kscience.plotly.models.Bar
-import kscience.plotly.models.LineShape
-import kscience.plotly.models.Scatter
+import kscience.plotly.PlotGrid
+import kscience.plotly.layout
+import kscience.plotly.models.*
 import me.nicolas.stravastats.business.Activity
 import java.time.LocalDate
 import java.time.Month
@@ -75,16 +75,16 @@ abstract class Chart {
         fun buildLineByType(activities: Map<String, Double>, type: String) = Scatter {
             x.set(activities.keys)
             y.set(activities.values)
-            line.shape= LineShape.spline
-            connectgaps=true
+            line.shape = LineShape.spline
+            connectgaps = true
             name = type
         }
 
         fun buildLineByYear(activities: Map<String, Double>, year: Int) = Scatter {
             x.set(activities.keys)
             y.set(activities.values)
-            line.shape= LineShape.spline
-            connectgaps=true
+            line.shape = LineShape.spline
+            connectgaps = true
             name = "$year"
         }
 
@@ -125,10 +125,106 @@ abstract class Chart {
             activities.mapValues { (_, activities) ->
                 activities
                     .filter { activity -> activity.type == type }
-                    .map { activity -> activity.averageSpeed * 3.6}
+                    .map { activity -> activity.averageSpeed * 3.6 }
                     .average()
             }
 
+    }
+
+    fun PlotGrid.buildEddingtonNumberPlotByType(
+        row: Int,
+        width: Int,
+        activities: List<Activity>,
+        activityType: String
+    ) {
+
+        val activeDaysList = activities
+            .filter { activity -> activity.type == activityType }
+            .groupBy { activity -> activity.startDateLocal.substringBefore('T') }
+            .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance / 1000 } }
+            .mapValues { entry -> entry.value.toInt() }
+            .toMap()
+
+        if(activeDaysList.isEmpty()) {
+            return
+        }
+
+        // counts = number of time we reach a distance
+        val counts: MutableList<Int> = // init to 0
+            activeDaysList.maxOf { entry -> entry.value }.let { List(it) { 0 }.toMutableList() }
+
+        var eddingtonNumber = 0
+        activeDaysList.forEach { entry: Map.Entry<String, Int> ->
+            for (day in entry.value downTo 1) {
+                counts[day - 1] += 1
+            }
+        }
+
+        for (day in counts.size downTo 1) {
+            if (counts[day - 1] >= day) {
+                eddingtonNumber = day
+                break
+            }
+        }
+
+        val eddingtonBar = Bar {
+            x.set(listOf(eddingtonNumber))
+            y.set(listOf(eddingtonNumber))
+            name = "Eddington"
+        }
+
+        val eddingtonScatter = Scatter {
+            x.set(listOf(0, counts.size))
+            y.set(listOf(0, counts.size))
+            line.shape = LineShape.linear
+            showlegend = false
+            line {
+                cliponaxis = true
+                color("orange")
+            }
+        }
+
+        val eddingtonText = Text {
+            xref = "x"
+            yref = "y"
+            position(eddingtonNumber, eddingtonNumber)
+            text = "Eddington number : $eddingtonNumber"
+            font {
+                family = "Arial"
+                size = 12
+                color("black")
+            }
+            showarrow = true
+        }
+
+        plot(row = row, width = width) {
+            traces(
+                Bar {
+                    x.set((1..counts.size).toList())
+                    y.set(counts)
+                    name = "Times completed"
+                },
+                eddingtonBar,
+                eddingtonScatter
+            )
+
+            layout {
+                barmode = BarMode.overlay
+                title = "$activityType Eddington number : $eddingtonNumber km"
+
+                xaxis {
+                    title = "Km"
+                    type = AxisType.linear
+                    range = 0.0.rangeTo(counts.size.toDouble())
+                }
+
+                legend {
+                    bgcolor("#E2E2E2")
+                    traceorder = TraceOrder.normal
+                }
+                annotation(eddingtonText)
+            }
+        }
     }
 
     abstract fun build()
