@@ -10,6 +10,7 @@ import java.time.LocalDate
 import java.time.Month
 import java.time.format.TextStyle
 import java.util.*
+import kotlin.math.abs
 
 abstract class Chart {
 
@@ -179,10 +180,13 @@ abstract class Chart {
             x.set((0..counts.size).toList())
             y.set((0..counts.size).toList())
             val stringsBefore =
-                (0 until eddingtonNumber + 1).map { i -> "On ${counts[i]} days you covered at least $i km." }
+                (0 until (eddingtonNumber + 1).coerceAtMost(counts.size - 1)).map { i -> "On ${counts[i] + 1} days you covered at least $i km." }
                     .toList()
             val stringsAfter =
-                (eddingtonNumber - 1 until counts.size).map { i -> "On ${counts[i]} days you covered at least $i km.\n\rYou need ${i - counts[i] + 2} more days (of ${i + 2} km or more) to achieve an Eddington number of ${i + 2}" }
+                (eddingtonNumber - 1 until counts.size - 1).map { i ->
+                    "On ${counts[i] + 1} days you covered at least ${i + 1} km." +
+                            "You need ${abs(i - counts[i] + 1)} more days (of ${i + 1} km or more) to achieve an Eddington number of ${i + 1}"
+                }
                     .toList()
             text(*(stringsBefore + stringsAfter).toTypedArray())
 
@@ -191,7 +195,6 @@ abstract class Chart {
             marker {
                 color("Orange")
             }
-
         }
 
         val eddingtonText = Text {
