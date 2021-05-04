@@ -1,10 +1,10 @@
 package me.nicolas.stravastats.core.charts
 
-import kscience.plotly.*
-import kscience.plotly.models.AxisType
-import kscience.plotly.models.BarMode
-import kscience.plotly.models.TraceOrder
-import kscience.plotly.models.XAnchor
+import space.kscience.plotly.*
+import space.kscience.plotly.models.AxisType
+import space.kscience.plotly.models.BarMode
+import space.kscience.plotly.models.TraceOrder
+import space.kscience.plotly.models.XAnchor
 import me.nicolas.stravastats.business.*
 
 internal class ForAYearChart(val activities: List<Activity>, val year: Int) : Chart() {
@@ -15,7 +15,7 @@ internal class ForAYearChart(val activities: List<Activity>, val year: Int) : Ch
 
     override fun build() {
         Plotly.grid {
-            buildBarModeGroupPlot(
+            buildBarModeGroupByDistanceMonthsPlot(
                 xAxis = "months",
                 yAxis = "Distance",
                 unit = "km/h",
@@ -25,7 +25,7 @@ internal class ForAYearChart(val activities: List<Activity>, val year: Int) : Ch
                 hikeByMonths = sumDistanceByType(activitiesByMonth, Hike),
                 year
             )
-            buildBarModeStackByDayPlot(
+            buildBarModeStackDistanceByDayPlot(
                 xAxis = "days",
                 yAxis = "Distance",
                 unit = "km/h",
@@ -35,7 +35,7 @@ internal class ForAYearChart(val activities: List<Activity>, val year: Int) : Ch
                 hikeByDays = sumDistanceByType(activitiesByDay, Hike),
                 year
             )
-            buildBarModeGroupPlot(
+            buildBarModeGroupByDistanceMonthsPlot(
                 xAxis = "months",
                 yAxis = "Elevation",
                 unit = "m",
@@ -58,7 +58,7 @@ internal class ForAYearChart(val activities: List<Activity>, val year: Int) : Ch
         }.makeFile()
     }
 
-    private fun PlotGrid.buildBarModeGroupPlot(
+    private fun PlotGrid.buildBarModeGroupByDistanceMonthsPlot(
         xAxis: String,
         yAxis: String,
         unit: String,
@@ -95,7 +95,7 @@ internal class ForAYearChart(val activities: List<Activity>, val year: Int) : Ch
         }
     }
 
-    private fun PlotGrid.buildBarModeStackByDayPlot(
+    private fun PlotGrid.buildBarModeStackDistanceByDayPlot(
         xAxis: String,
         yAxis: String,
         unit: String,

@@ -1,11 +1,12 @@
 package me.nicolas.stravastats.core.charts
 
-import kscience.plotly.*
-import kscience.plotly.models.*
+import space.kscience.plotly.*
+import space.kscience.plotly.models.*
 import me.nicolas.stravastats.business.*
-import hep.dataforge.values.Value
+import space.kscience.dataforge.values.Value
 import java.time.LocalDate
 
+@UnstablePlotlyAPI
 internal class ByYearsChart(val activities: List<Activity>) : Chart() {
 
     private val activitiesByYear = groupActivitiesByYear(activities)

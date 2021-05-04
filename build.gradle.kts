@@ -21,9 +21,7 @@ plugins {
 repositories {
     mavenCentral()
     jcenter()
-    maven("https://dl.bintray.com/mipt-npm/dataforge")
-    maven("https://dl.bintray.com/mipt-npm/kscience")
-    maven("https://dl.bintray.com/mipt-npm/dev")
+    maven("https://repo.kotlin.link")
 }
 
 
@@ -43,7 +41,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
     implementation("org.slf4j:slf4j-nop:1.7.30")
 
-    implementation("kscience.plotlykt:plotlykt-server:0.3.1") {
+    implementation("space.kscience:plotlykt-server:0.4.0") {
         exclude("ch.qos.logback", "logback-classic")
     }
 

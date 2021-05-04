@@ -1,9 +1,11 @@
 package me.nicolas.stravastats.core.charts
 
-import kscience.plotly.PlotGrid
-import kscience.plotly.layout
-import kscience.plotly.models.*
+import io.javalin.plugin.openapi.annotations.toFormattedString
+import space.kscience.plotly.PlotGrid
+import space.kscience.plotly.layout
+import space.kscience.plotly.models.*
 import me.nicolas.stravastats.business.Activity
+import space.kscience.dataforge.values.Value
 import java.time.LocalDate
 import java.time.Month
 import java.time.format.TextStyle
@@ -145,8 +147,8 @@ abstract class Chart {
             .mapValues { entry -> entry.value.toInt() }
             .toMap()
 
-        if(activeDaysList.isEmpty()) {
-            return
+        if (activeDaysList.isEmpty()) {
+            return // No Plot
         }
 
         // counts = number of time we reach a distance
@@ -170,18 +172,26 @@ abstract class Chart {
         val eddingtonBar = Bar {
             x.set(listOf(eddingtonNumber))
             y.set(listOf(eddingtonNumber))
-            name = "Eddington"
+            showlegend = false
         }
 
         val eddingtonScatter = Scatter {
-            x.set(listOf(0, counts.size))
-            y.set(listOf(0, counts.size))
+            x.set((0..counts.size).toList())
+            y.set((0..counts.size).toList())
+            val stringsBefore =
+                (0 until eddingtonNumber + 1).map { i -> "On ${counts[i]} days you covered at least $i km." }
+                    .toList()
+            val stringsAfter =
+                (eddingtonNumber - 1 until counts.size).map { i -> "On ${counts[i]} days you covered at least $i km.\n\rYou need ${i - counts[i] + 2} more days (of ${i + 2} km or more) to achieve an Eddington number of ${i + 2}" }
+                    .toList()
+            text(*(stringsBefore + stringsAfter).toTypedArray())
+
+            name = "Eddington"
             line.shape = LineShape.linear
-            showlegend = false
-            line {
-                cliponaxis = true
-                color("orange")
+            marker {
+                color("Orange")
             }
+
         }
 
         val eddingtonText = Text {
@@ -203,6 +213,7 @@ abstract class Chart {
                     x.set((1..counts.size).toList())
                     y.set(counts)
                     name = "Times completed"
+                    hoverinfo = "skip"
                 },
                 eddingtonBar,
                 eddingtonScatter
@@ -216,6 +227,10 @@ abstract class Chart {
                     title = "Km"
                     type = AxisType.linear
                     range = 0.0.rangeTo(counts.size.toDouble())
+                }
+
+                yaxis {
+                    type = AxisType.linear
                 }
 
                 legend {

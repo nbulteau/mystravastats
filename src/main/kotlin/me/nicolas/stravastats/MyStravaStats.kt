@@ -78,11 +78,11 @@ private fun disableWarning() {
 
 fun main(incomingArgs: Array<String>) {
     disableWarning()
-    //try {
+    try {
         MyStravaStats(incomingArgs).run()
-    //}  catch (throwable: Throwable) {
-     //   println("\n${throwable.message}")
-   // }
+    }  catch (throwable: Throwable) {
+        println("\n${throwable.message ?: ""}")
+    }
 }
 
 
