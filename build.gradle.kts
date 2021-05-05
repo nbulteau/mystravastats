@@ -16,6 +16,7 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application.
     application
+    id("org.openjfx.javafxplugin") version "0.0.10"
 }
 
 repositories {
@@ -45,6 +46,9 @@ dependencies {
         exclude("ch.qos.logback", "logback-classic")
     }
 
+    implementation("no.tornado:tornadofx:1.7.20")
+
+
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
 }
 
@@ -52,6 +56,11 @@ application {
     // Define the main class for the application.
     mainClass.set("me.nicolas.stravastats.MyStravaStatsKt")
     applicationDefaultJvmArgs = listOf("-Xmx2048m")
+}
+
+javafx {
+    version = "16"
+    modules = listOf("javafx.controls", "javafx.media", "javafx.fxml")
 }
 
 tasks.withType<Test> {
