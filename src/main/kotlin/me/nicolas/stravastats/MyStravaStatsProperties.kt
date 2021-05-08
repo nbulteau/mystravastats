@@ -17,10 +17,4 @@ class MyStravaStatsProperties {
      * standing still at a red light or stopping to look at a map.
      */
     val removingNonMovingSections = false
-
-    /**
-     * Set this flag to true to save activities on disk.
-     */
-    val saveActivitiesOnDisk = true
-
 }
