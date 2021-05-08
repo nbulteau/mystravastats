@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.Tab
+import javafx.scene.control.TextField
 import javafx.scene.layout.BorderPane
 import javafx.scene.text.Text
 import tornadofx.*
@@ -16,6 +17,8 @@ class MainView : View("MyStravaStats") {
         FXCollections.observableArrayList((LocalDate.now().year downTo 2010).toList())
     private var selectedYear = SimpleIntegerProperty(LocalDate.now().year)
 
+    private var clientIdTextField: TextField by singleAssign()
+
     var rideStatsTab: Tab by singleAssign()
     var commuteRideStatsTab: Tab by singleAssign()
     var runsStatsTab: Tab by singleAssign()
@@ -24,6 +27,25 @@ class MainView : View("MyStravaStats") {
 
     init {
         with(root) {
+            top {
+                form {
+                    hbox {
+                        fieldset("Strava") {
+                            label("Client Id")
+                            textfield("Client Id") {
+                                clientIdTextField = this
+                            }
+                        }
+                        fieldset("Year") {
+                            combobox(property = selectedYear, values = years) {
+                                selectionModel.selectedItemProperty().onChange {
+                                    updateStatistics()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             center {
                 tabpane {
                     tab("Ride stats") {
@@ -49,18 +71,6 @@ class MainView : View("MyStravaStats") {
                         inlineSkateStatsTab = this
 
                         text("InlineSkate stats for ${selectedYear.value}")
-                    }
-                }
-            }
-
-            left {
-                form {
-                    fieldset("Year") {
-                        combobox(property = selectedYear, values = years) {
-                            selectionModel.selectedItemProperty().onChange {
-                                updateStatistics()
-                            }
-                        }
                     }
                 }
             }
