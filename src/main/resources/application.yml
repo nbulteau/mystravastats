@@ -3,7 +3,6 @@ strava:
   pagesize: 100
 
 removingNonMovingSections: false
-saveActivitiesOnDisk: true
 
 
 

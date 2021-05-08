@@ -43,74 +43,88 @@ internal class ActivityService(
     fun loadActivities(clientId: String, clientSecret: String?, year: Int?): List<Activity> {
         val activities = mutableListOf<Activity>()
         if (year != null) {
-            activities.addAll(loadActivities(clientId, clientSecret, year))
+            activities.addAll(loadActivitiesForAYear(clientId, clientSecret, year))
         } else {
             for (currentYear in LocalDate.now().year downTo 2010) {
-                activities.addAll(loadActivities(clientId, clientSecret, currentYear))
+                activities.addAll(loadActivitiesForAYear(clientId, clientSecret, currentYear))
             }
         }
         return activities
     }
 
-    private fun loadActivities(
+    private fun loadActivitiesForAYear(
         clientId: String,
         clientSecret: String?,
         year: Int
     ): List<Activity> {
 
-        // get accessToken
+        // get accessToken using client secret
         if (clientSecret != null && this.accessToken == null) {
-            println()
-            println("To grant MyStravaStats to read your Strava activities data: copy paste this URL in a browser")
-            val url =
-                "http://www.strava.com/api/v3/oauth/authorize" +
-                        "?client_id=${clientId}" +
-                        "&response_type=code" +
-                        "&redirect_uri=http://localhost:8080/exchange_token" +
-                        "&approval_prompt=auto" +
-                        "&scope=read_all,activity:read_all"
-            println(url)
-            Desktop.getDesktop().browse(URI(url))
-            println()
-
-            runBlocking {
-                val channel = Channel<String>()
-
-                // Start a web server
-                val app = Javalin.create().start(8080)
-                // GET /exchange_token to get code
-                app.get("/exchange_token") { ctx ->
-                    val authorizationCode = ctx.req.getParameter("code")
-                    ctx.result("Access granted to read activities of clientId: $clientId.")
-
-                    launch {
-                        // Get authorisation token with the code
-                        val token = stravaApi.getToken(clientId, clientSecret, authorizationCode)
-                        channel.send(token.accessToken)
-                        // stop de web server
-                        app.stop()
-                    }
-                }
-
-                println("Waiting for your agreement to allow MyStravaStats to access to your Strava data ...")
-                val accessTokenFromToken = channel.receive()
-                print(" access granted.")
-                setAccessToken(accessTokenFromToken)
-            }
+            setAccessToken(clientId, clientSecret)
         }
 
         return if (this.accessToken == null) {
-            getActivitiesFromFile(clientId, year)
+            getActivitiesFromCache(clientId, year)
         } else {
             try {
-                getActivitiesWithAccessToken(clientId, year, this.accessToken!!)
+                getActivitiesFromStrava(clientId, year)
             } catch (connectException: ConnectException) {
                 throw ParameterException("Unable to connect to Strava API : ${connectException.message}")
             }
         }
     }
 
-    private fun getActivitiesFromFile(
+    private fun setAccessToken(clientId: String, clientSecret: String) {
+        println()
+        println("To grant MyStravaStats to read your Strava activities data: copy paste this URL in a browser")
+        val url =
+            "http://www.strava.com/api/v3/oauth/authorize" +
+                    "?client_id=${clientId}" +
+                    "&response_type=code" +
+                    "&redirect_uri=http://localhost:8080/exchange_token" +
+                    "&approval_prompt=auto" +
+                    "&scope=read_all,activity:read_all"
+        println(url)
+        Desktop.getDesktop().browse(URI(url))
+        println()
+
+        runBlocking {
+            val channel = Channel<String>()
+
+            // Start a web server
+            val app = Javalin.create().start(8080)
+            // GET /exchange_token to get code
+            app.get("/exchange_token") { ctx ->
+                val authorizationCode = ctx.req.getParameter("code")
+                ctx.result("Access granted to read activities of clientId: $clientId.")
+
+                launch {
+                    // Get authorisation token with the code
+                    val token = stravaApi.getToken(clientId, clientSecret, authorizationCode)
+                    channel.send(token.accessToken)
+                    // stop de web server
+                    app.stop()
+                }
+            }
+
+            println("Waiting for your agreement to allow MyStravaStats to access to your Strava data ...")
+            val accessTokenFromToken = channel.receive()
+            print(" access granted.")
+            setAccessToken(accessTokenFromToken)
+        }
+    }
+
+    private fun getActivitiesFromStrava(
+        clientId: String,
+        year: Int
+    ): List<Activity> {
+        val yearActivitiesDirectory = getYearActivitiesDirectory(clientId, year)
+        val activities = loadActivitiesAndSaveIntoCache(clientId, year, this.accessToken!!, yearActivitiesDirectory)
+        loadActivitiesStreamsAndSaveIntoCache(activities, yearActivitiesDirectory, this.accessToken!!)
+        return activities
+    }
+
+    private fun getActivitiesFromCache(
         clientId: String,
         year: Int
     ): List<Activity> {
@@ -133,14 +147,18 @@ internal class ActivityService(
             println("done")
 
             // Load activities streams
-            loadActivitiesStreams(activities, yearActivitiesDirectory)
+            loadActivitiesStreamsAndSaveIntoCache(activities, yearActivitiesDirectory)
         }
 
         return activities
     }
 
-    private fun getActivitiesWithAccessToken(clientId: String, year: Int, accessToken: String): List<Activity> {
-
+    private fun loadActivitiesAndSaveIntoCache(
+        clientId: String,
+        year: Int,
+        accessToken: String,
+        yearActivitiesDirectory: File
+    ): List<Activity> {
         // only get activities of type (Run, Bike and Hike)
         print("Load activities of clientId=$clientId for year $year ... ")
         val activities = stravaApi.getActivities(
@@ -148,40 +166,32 @@ internal class ActivityService(
             before = LocalDateTime.of(year, 12, 31, 23, 59),
             after = LocalDateTime.of(year, 1, 1, 0, 0)
         ).filterActivities()
-
         println("done")
 
-        println("Load ${activities.size} activities streams ... ")
-        if (myStravaStatsProperties.saveActivitiesOnDisk) {
-            val activitiesDirectoryName = getActivitiesDirectoryName(clientId)
-            val yearActivitiesDirectoryName = getYearActivitiesDirectoryName(clientId, year)
-
-            val yearActivitiesDirectory = File(activitiesDirectoryName, yearActivitiesDirectoryName)
-            yearActivitiesDirectory.mkdirs()
-
-            val prettyWriter: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
-            prettyWriter.writeValue(
-                File(yearActivitiesDirectory, getYearActivitiesJsonFileName(clientId, year)),
-                activities
-            )
-
-            // Load activities streams
-            loadActivitiesStreams(activities, yearActivitiesDirectory, accessToken)
-        } else {
-            // Load all activities streams
-            activities.forEach { activity ->
-                activity.stream = stravaApi.getActivityStream(accessToken, activity)
-            }
-        }
-
+        val prettyWriter: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
+        prettyWriter.writeValue(
+            File(yearActivitiesDirectory, getYearActivitiesJsonFileName(clientId, year)),
+            activities
+        )
         return activities
     }
 
-    private fun loadActivitiesStreams(
+    private fun getYearActivitiesDirectory(clientId: String, year: Int): File {
+        val activitiesDirectoryName = getActivitiesDirectoryName(clientId)
+        val yearActivitiesDirectoryName = getYearActivitiesDirectoryName(clientId, year)
+
+        val yearActivitiesDirectory = File(activitiesDirectoryName, yearActivitiesDirectoryName)
+        yearActivitiesDirectory.mkdirs()
+        return yearActivitiesDirectory
+    }
+
+    private fun loadActivitiesStreamsAndSaveIntoCache(
         activities: List<Activity>,
         activitiesDirectory: File,
         accessToken: String
     ) {
+        println("Load ${activities.size} activities streams ... ")
+
         var index = 0.0
         val writer: ObjectWriter = objectMapper.writer()
         activities.forEach { activity ->
@@ -202,7 +212,7 @@ internal class ActivityService(
         println()
     }
 
-    private fun loadActivitiesStreams(
+    private fun loadActivitiesStreamsAndSaveIntoCache(
         activities: List<Activity>,
         activitiesDirectory: File
     ) {
