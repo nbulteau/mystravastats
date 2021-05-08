@@ -41,5 +41,27 @@ data class Athlete(
     @JsonProperty("updated_at")
     val updatedAt: String?,
     @JsonProperty("username")
-    val username: String?
+    val username: String?,
+    @JsonProperty("athlete_type")
+    val athleteType: Int?,
+    @JsonProperty("bikes")
+    val bikes: List<Bike>?,
+    @JsonProperty("clubs")
+    val clubs: List<Any>?,
+    @JsonProperty("date_preference")
+    val datePreference: String?,
+    @JsonProperty("follower_count")
+    val followerCount: Int?,
+    @JsonProperty("friend_count")
+    val friendCount: Int?,
+    @JsonProperty("ftp")
+    val ftp: Any?,
+    @JsonProperty("measurement_preference")
+    val measurementPreference: String?,
+    @JsonProperty("mutual_friend_count")
+    val mutualFriendCount: Int?,
+    @JsonProperty("shoes")
+    val shoes: List<Shoe>?,
+    @JsonProperty("weight")
+    val weight: Int?
 )

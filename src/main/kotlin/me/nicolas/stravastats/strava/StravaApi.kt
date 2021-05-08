@@ -7,6 +7,7 @@ import khttp.get
 import khttp.post
 import me.nicolas.stravastats.MyStravaStatsProperties
 import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.business.Stream
 import me.nicolas.stravastats.business.Token
 import org.eclipse.jetty.http.HttpStatus
@@ -20,6 +21,20 @@ internal class StravaApi(
 ) {
 
     private val mapper = jacksonObjectMapper()
+
+
+    fun getLoggedInAthlete(accessToken: String): Athlete {
+
+        val url = "${properties.strava.url}/api/v3/athletes"
+
+        val requestHeaders = buildRequestHeaders(accessToken)
+        val response = get(url, requestHeaders)
+        if (response.statusCode == 200) {
+            return mapper.readValue(response.content, Athlete::class.java)
+        } else {
+            throw RuntimeException("Something was wrong with Strava API ${response.text}")
+        }
+    }
 
     fun getActivities(accessToken: String, before: LocalDateTime, after: LocalDateTime): List<Activity> {
 
