@@ -20,12 +20,11 @@ internal open class BestEffortTimeStatistic(
         activity = bestActivityEffort?.activity
     }
 
-    override fun toString(): String =
-        super.toString() + if (bestActivityEffort != null) {
-            result(bestActivityEffort) + bestActivityEffort.activity
-        } else {
-            "Not available"
-        }
+    override fun display(): String = if (bestActivityEffort != null) {
+        result(bestActivityEffort) + bestActivityEffort.activity
+    } else {
+        "Not available"
+    }
 
     protected open fun result(bestActivityEffort: ActivityEffort) =
         if (bestActivityEffort.distance > 1000) {
@@ -42,7 +41,7 @@ internal open class BestEffortTimeStatistic(
 fun Activity.calculateBestDistanceForTime(seconds: Int): ActivityEffort? {
 
     // no stream -> return null
-    if(stream == null || stream?.distance == null|| stream?.time == null || stream?.altitude == null) {
+    if (stream == null || stream?.distance == null || stream?.time == null || stream?.altitude == null) {
         return null
     }
 

@@ -13,14 +13,12 @@ internal class MostActiveMonthStatistic(
     private val mostActiveMonth =
         activities.groupBy { activity -> activity.startDateLocal.substringBeforeLast('-') }
             .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance } }
-            .maxByOrNull { entry: Map.Entry<String, Double> ->  entry.value }
+            .maxByOrNull { entry: Map.Entry<String, Double> -> entry.value }
 
-    override fun toString(): String {
-        return super.toString() + if (mostActiveMonth != null) {
-            "%s with %.2f km".format(formatMonth(mostActiveMonth.key), mostActiveMonth.value.div(1000))
-        } else {
-            "Not available"
-        }
+    override fun display() = if (mostActiveMonth != null) {
+        "%s with %.2f km".format(formatMonth(mostActiveMonth.key), mostActiveMonth.value.div(1000))
+    } else {
+        "Not available"
     }
 
     private fun formatMonth(input: String): String {

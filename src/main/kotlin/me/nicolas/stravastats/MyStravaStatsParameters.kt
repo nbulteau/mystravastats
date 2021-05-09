@@ -3,7 +3,7 @@ package me.nicolas.stravastats
 import com.beust.jcommander.Parameter
 
 
-class Parameters {
+class MyStravaStatsParameters {
 
     @Parameter(names = ["-clientId"], required = true, description = "clientId")
     var clientId: String = "clientId"

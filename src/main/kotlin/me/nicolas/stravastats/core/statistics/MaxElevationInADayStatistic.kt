@@ -14,11 +14,9 @@ internal class MaxElevationInADayStatistic(
             .mapValues { (_, activities) -> activities.sumOf { activity -> activity.totalElevationGain } }
             .maxByOrNull { it.value }
 
-    override fun toString(): String {
-        return super.toString() + if (mostActiveDay != null) {
-            "%.2f m - %s".format(mostActiveDay.value, LocalDate.parse(mostActiveDay.key).format(dateFormatter))
-        } else {
-            "Not available"
-        }
+    override fun display() = if (mostActiveDay != null) {
+        "%.2f m - %s".format(mostActiveDay.value, LocalDate.parse(mostActiveDay.key).format(dateFormatter))
+    } else {
+        "Not available"
     }
 }

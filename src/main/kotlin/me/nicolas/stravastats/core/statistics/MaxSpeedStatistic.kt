@@ -11,12 +11,9 @@ internal class MaxSpeedStatistic(
         activity = activities.maxByOrNull { activity -> activity.maxSpeed }
     }
 
-    override fun toString(): String {
-
-        return super.toString() + if (activity != null) {
-            "%.02f km/h%s".format(activity?.maxSpeed?.times(3.6), activity)
-        } else {
-            " Not available"
-        }
+    override fun display() = if (activity != null) {
+        "%.02f km/h%s".format(activity?.maxSpeed?.times(3.6), activity)
+    } else {
+        " Not available"
     }
 }
