@@ -9,9 +9,7 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
-import javafx.scene.control.TableView
 import javafx.scene.layout.BorderPane
-import javafx.scene.text.Text
 import javafx.stage.Stage
 import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.core.statistics.Statistic
@@ -77,31 +75,32 @@ class MainView : View("MyStravaStats") {
     }
 
     private fun updateStatistics() {
-        globalStatsTab.content = tableview(mainController.getStatisticsDisplay("Global")) {
+
+        globalStatsTab.content = tableview(mainController.getStatisticsDisplay("Global", selectedYear.value)) {
             readonlyColumn("name", StatisticDisplay::label)
             readonlyColumn("value", StatisticDisplay::value)
         }
-        rideStatsTab.content =tableview(mainController.getStatisticsDisplay("Ride")) {
-            readonlyColumn("name", StatisticDisplay::label)
-            readonlyColumn("value", StatisticDisplay::value)
-            readonlyColumn("activity", StatisticDisplay::activity)
-        }
-        commuteRideStatsTab.content = tableview(mainController.getStatisticsDisplay("Commute ride")) {
+        rideStatsTab.content = tableview(mainController.getStatisticsDisplay("Ride", selectedYear.value)) {
             readonlyColumn("name", StatisticDisplay::label)
             readonlyColumn("value", StatisticDisplay::value)
             readonlyColumn("activity", StatisticDisplay::activity)
         }
-        runStatsTab.content = tableview(mainController.getStatisticsDisplay("Run")) {
+        commuteRideStatsTab.content = tableview(mainController.getStatisticsDisplay("Commute ride", selectedYear.value)) {
             readonlyColumn("name", StatisticDisplay::label)
             readonlyColumn("value", StatisticDisplay::value)
             readonlyColumn("activity", StatisticDisplay::activity)
         }
-        hikeStatsTab.content = tableview(mainController.getStatisticsDisplay("Hike")) {
+        runStatsTab.content = tableview(mainController.getStatisticsDisplay("Run", selectedYear.value)) {
             readonlyColumn("name", StatisticDisplay::label)
             readonlyColumn("value", StatisticDisplay::value)
             readonlyColumn("activity", StatisticDisplay::activity)
         }
-        inlineSkateStatsTab.content = tableview(mainController.getStatisticsDisplay("InlineSkate")) {
+        hikeStatsTab.content = tableview(mainController.getStatisticsDisplay("Hike", selectedYear.value)) {
+            readonlyColumn("name", StatisticDisplay::label)
+            readonlyColumn("value", StatisticDisplay::value)
+            readonlyColumn("activity", StatisticDisplay::activity)
+        }
+        inlineSkateStatsTab.content = tableview(mainController.getStatisticsDisplay("InlineSkate", selectedYear.value)) {
             readonlyColumn("name", StatisticDisplay::label)
             readonlyColumn("", StatisticDisplay::value)
             readonlyColumn("activity", StatisticDisplay::activity)
@@ -125,9 +124,6 @@ class MainController : Controller() {
         MyStravaStatsApp.myStravaStatsParameters.year
     )
 
-    private val stravaStatistics = statsService.computeStatistics(activities)
-
-
     fun getLoggedInAthlete(): Athlete? {
         return stravaService.getLoggedInAthlete(
             MyStravaStatsApp.myStravaStatsParameters.clientId,
@@ -135,7 +131,11 @@ class MainController : Controller() {
         )
     }
 
-    fun getStatisticsDisplay(type: String): ObservableList<StatisticDisplay> {
+    fun getStatisticsDisplay(type: String, year: Int): ObservableList<StatisticDisplay> {
+
+        val stravaStatistics = statsService.computeStatistics(activities.filter { activity ->
+            activity.startDateLocal.subSequence(0, 4).toString().toInt() == year
+        })
         val statistics = when (type) {
             "Run" -> stravaStatistics.runsStats
             "Ride" -> stravaStatistics.sportRideStats
@@ -156,7 +156,7 @@ class MainController : Controller() {
                     StatisticDisplay(
                         statistic.name,
                         statistic.value,
-                        if(statistic.activity != null) statistic.activity.toString() else ""
+                        if (statistic.activity != null) statistic.activity.toString() else ""
                     )
                 }
                 else -> StatisticDisplay(statistic.name, statistic.toString(), "")
