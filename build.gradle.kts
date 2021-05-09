@@ -1,5 +1,5 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 
 buildscript {
@@ -48,7 +48,6 @@ dependencies {
 
     implementation("no.tornado:tornadofx:1.7.20")
 
-
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
 }
 
@@ -60,7 +59,7 @@ application {
 
 javafx {
     version = "16"
-    modules = listOf("javafx.controls", "javafx.media", "javafx.fxml")
+    modules = listOf("javafx.controls", "javafx.media", "javafx.fxml", "javafx.graphics")
 }
 
 tasks.withType<Test> {

@@ -2,13 +2,17 @@ package me.nicolas.stravastats.ihm
 
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.FXCollections
+import javafx.event.EventTarget
+import javafx.scene.chart.*
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import javafx.scene.layout.BorderPane
+import javafx.scene.layout.StackPane
 import me.nicolas.stravastats.MyStravaStatsApp
-import me.nicolas.stravastats.business.Athlete
+import me.nicolas.stravastats.business.*
 import tornadofx.*
 import java.time.LocalDate
+
 
 class MainView : View("MyStravaStats") {
     override val root = BorderPane()
@@ -80,31 +84,117 @@ class MainView : View("MyStravaStats") {
                 readonlyColumn("Statistic", StatisticDisplay::label)
                 readonlyColumn("Value", StatisticDisplay::value)
             }
+            drawer {
+                item("Distance by months", expanded = true) {
+                    barchart("Distance by months for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
+                        series(Run, mainController.buildDistanceByMonthsSeries(Run, selectedYear.value))
+                        series(Ride, mainController.buildDistanceByMonthsSeries(Ride, selectedYear.value))
+                        series(InlineSkate, mainController.buildDistanceByMonthsSeries(InlineSkate, selectedYear.value))
+                        series(Hike, mainController.buildDistanceByMonthsSeries(Hike, selectedYear.value))
+                        verticalGridLinesVisible = false
+                    }
+                }
+                item("Distance by months") {
+                    stackedbarchart(
+                        "Distance by months for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
+                        series(Run, mainController.buildDistanceByMonthsSeries(Run, selectedYear.value))
+                        series(Ride, mainController.buildDistanceByMonthsSeries(Ride, selectedYear.value))
+                        series(InlineSkate, mainController.buildDistanceByMonthsSeries(InlineSkate, selectedYear.value))
+                        series(Hike, mainController.buildDistanceByMonthsSeries(Hike, selectedYear.value))
+                        verticalGridLinesVisible = false
+                    }
+                }
+            }
         }
-        sportRideStatsTab.content = tableview(statisticsToDisplay.sportRideStatistics) {
-            readonlyColumn("Statistic", StatisticDisplay::label)
-            readonlyColumn("Value", StatisticDisplay::value)
-            readonlyColumn("Activity", StatisticDisplay::activity)
+        sportRideStatsTab.content = vbox {
+            tableview(statisticsToDisplay.sportRideStatistics) {
+                readonlyColumn("Statistic", StatisticDisplay::label)
+                readonlyColumn("Value", StatisticDisplay::value)
+                readonlyColumn("Activity", StatisticDisplay::activity)
+            }
+            drawer {
+                item("Distance by months", expanded = true) {
+                    barchart("Distance by months for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
+                        series(Ride, mainController.buildDistanceByMonthsSeries(Ride, selectedYear.value))
+                        verticalGridLinesVisible = false
+                    }
+                }
+                item("Distance by days") {
+                    barchart("Distance by days for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
+                        series(Ride, mainController.buildDistanceByDaysSeries(Ride, selectedYear.value))
+                        verticalGridLinesVisible = false
+                    }
+                }
+            }
         }
-        commuteRideStatsTab.content = tableview(statisticsToDisplay.commuteRideStatistics) {
-            readonlyColumn("Statistic", StatisticDisplay::label)
-            readonlyColumn("Value", StatisticDisplay::value)
-            readonlyColumn("Activity", StatisticDisplay::activity)
+        commuteRideStatsTab.content =
+            tableview(statisticsToDisplay.commuteRideStatistics) {
+                readonlyColumn("Statistic", StatisticDisplay::label)
+                readonlyColumn("Value", StatisticDisplay::value)
+                readonlyColumn("Activity", StatisticDisplay::activity)
+            }
+        runStatsTab.content = vbox {
+            tableview(statisticsToDisplay.runStatistics) {
+                readonlyColumn("Statistic", StatisticDisplay::label)
+                readonlyColumn("Value", StatisticDisplay::value)
+                readonlyColumn("Activity", StatisticDisplay::activity)
+            }
+            drawer {
+                item("Distance by months", expanded = true) {
+                    barchart("Distance by months for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
+                        series(Run, mainController.buildDistanceByMonthsSeries(Run, selectedYear.value))
+                        verticalGridLinesVisible = false
+                    }
+                }
+                item("Distance by days") {
+                    barchart("Distance by days for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
+                        series(Run, mainController.buildDistanceByDaysSeries(Run, selectedYear.value))
+                        verticalGridLinesVisible = false
+                    }
+                }
+            }
         }
-        runStatsTab.content = tableview(statisticsToDisplay.runStatistics) {
-            readonlyColumn("Statistic", StatisticDisplay::label)
-            readonlyColumn("Value", StatisticDisplay::value)
-            readonlyColumn("Activity", StatisticDisplay::activity)
+        hikeStatsTab.content = vbox {
+            tableview(statisticsToDisplay.hikeStatics) {
+                readonlyColumn("Statistic", StatisticDisplay::label)
+                readonlyColumn("Value", StatisticDisplay::value)
+                readonlyColumn("Activity", StatisticDisplay::activity)
+            }
+            drawer {
+                item("Distance by months", expanded = true) {
+                    barchart("Distance by months for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
+                        series(Hike, mainController.buildDistanceByMonthsSeries(Hike, selectedYear.value))
+                        verticalGridLinesVisible = false
+                    }
+                }
+                item("Distance by days") {
+                    barchart("Distance by days for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
+                        series(Hike, mainController.buildDistanceByDaysSeries(Hike, selectedYear.value))
+                        verticalGridLinesVisible = false
+                    }
+                }
+            }
         }
-        hikeStatsTab.content = tableview(statisticsToDisplay.hikeStatics) {
-            readonlyColumn("Statistic", StatisticDisplay::label)
-            readonlyColumn("Value", StatisticDisplay::value)
-            readonlyColumn("Activity", StatisticDisplay::activity)
-        }
-        inlineSkateStatsTab.content = tableview(statisticsToDisplay.inlineSkateStatistics) {
-            readonlyColumn("Statistic", StatisticDisplay::label)
-            readonlyColumn("Value", StatisticDisplay::value)
-            readonlyColumn("Activity", StatisticDisplay::activity)
+        inlineSkateStatsTab.content = vbox {
+            tableview(statisticsToDisplay.inlineSkateStatistics) {
+                readonlyColumn("Statistic", StatisticDisplay::label)
+                readonlyColumn("Value", StatisticDisplay::value)
+                readonlyColumn("Activity", StatisticDisplay::activity)
+            }
+            drawer {
+                item("Distance by months", expanded = true) {
+                    barchart("Distance by months for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
+                        series(InlineSkate, mainController.buildDistanceByMonthsSeries(InlineSkate, selectedYear.value))
+                        verticalGridLinesVisible = false
+                    }
+                }
+                item("Distance by days") {
+                    barchart("Distance by days for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
+                        series(InlineSkate, mainController.buildDistanceByDaysSeries(InlineSkate, selectedYear.value))
+                        verticalGridLinesVisible = false
+                    }
+                }
+            }
         }
     }
 }
