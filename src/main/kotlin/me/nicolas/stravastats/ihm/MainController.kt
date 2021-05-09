@@ -10,7 +10,9 @@ import me.nicolas.stravastats.MyStravaStatsApp
 import me.nicolas.stravastats.MyStravaStatsProperties
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
-import me.nicolas.stravastats.service.ActivityHelper
+import me.nicolas.stravastats.service.*
+import me.nicolas.stravastats.service.CSVService
+import me.nicolas.stravastats.service.ChartsService
 import me.nicolas.stravastats.service.StatisticsService
 import me.nicolas.stravastats.service.StravaService
 import me.nicolas.stravastats.service.charts.Chart
@@ -27,11 +29,23 @@ class MainController : Controller() {
 
     private val statsService = StatisticsService()
 
+    private val chartsService = ChartsService()
+
+    private val csvService = CSVService()
+
     private val activities = stravaService.loadActivities(
         MyStravaStatsApp.myStravaStatsParameters.clientId,
         MyStravaStatsApp.myStravaStatsParameters.clientSecret,
         MyStravaStatsApp.myStravaStatsParameters.year
     )
+
+    fun generateCSV() {
+        csvService.exportCSV(MyStravaStatsApp.myStravaStatsParameters.clientId, activities, MyStravaStatsApp.myStravaStatsParameters.filter)
+    }
+
+    fun generateCharts() {
+        chartsService.buildCharts(activities)
+    }
 
     fun getLoggedInAthlete(): Athlete? {
         return stravaService.getLoggedInAthlete(
@@ -102,6 +116,4 @@ class MainController : Controller() {
         val inputStream = javaClass.getResourceAsStream("/application.yml")
         return mapper.readValue(inputStream, MyStravaStatsProperties::class.java)
     }
-
-
 }

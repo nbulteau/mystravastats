@@ -38,7 +38,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.3")
 
-    implementation("io.javalin:javalin:3.13.6")
+    implementation("io.javalin:javalin:3.13.7")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
     implementation("org.slf4j:slf4j-nop:1.7.30")
 
@@ -53,13 +53,13 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass.set("me.nicolas.stravastats.MyStravaStatsKt")
+    mainClass.set("me.nicolas.stravastats.MyStravaStatsAppKt")
     applicationDefaultJvmArgs = listOf("-Xmx2048m")
 }
 
 javafx {
     version = "16"
-    modules = listOf("javafx.controls", "javafx.media", "javafx.fxml", "javafx.graphics")
+    modules = listOf("javafx.controls", "javafx.media", "javafx.graphics")
 }
 
 tasks.withType<Test> {

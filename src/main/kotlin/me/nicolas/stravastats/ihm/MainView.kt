@@ -7,7 +7,6 @@ import javafx.scene.chart.*
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import javafx.scene.layout.BorderPane
-import javafx.scene.layout.StackPane
 import me.nicolas.stravastats.MyStravaStatsApp
 import me.nicolas.stravastats.business.*
 import tornadofx.*
@@ -55,6 +54,18 @@ class MainView : View("MyStravaStats") {
                             } else {
                                 textfield(value = MyStravaStatsApp.myStravaStatsParameters.year.toString()) {
                                     isEditable = false
+                                }
+                            }
+                        }
+                        field("Generate") {
+                            button("Generate CSV") {
+                                action {
+                                    mainController.generateCSV()
+                                }
+                            }
+                            button("Generate Charts") {
+                                action {
+                                    mainController.generateCharts()
                                 }
                             }
                         }
