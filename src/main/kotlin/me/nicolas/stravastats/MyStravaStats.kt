@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import me.nicolas.stravastats.business.StravaStatistics
-import me.nicolas.stravastats.core.StravaService
-import me.nicolas.stravastats.core.CSVService
-import me.nicolas.stravastats.core.ChartsService
-import me.nicolas.stravastats.core.StatisticsService
+import me.nicolas.stravastats.service.StravaService
+import me.nicolas.stravastats.service.CSVService
+import me.nicolas.stravastats.service.ChartsService
+import me.nicolas.stravastats.service.StatisticsService
 import me.nicolas.stravastats.strava.StravaApi
 
 
