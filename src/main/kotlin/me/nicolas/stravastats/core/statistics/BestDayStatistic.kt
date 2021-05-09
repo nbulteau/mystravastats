@@ -12,10 +12,10 @@ internal class BestDayStatistic(
     private val function: (List<Activity>) -> Pair<String, Number>?
 ) : Statistic(name, activities) {
 
-    override fun toString(): String {
+    override fun display(): String {
 
         val pair = function(activities)
-        return super.toString() + if (pair != null) {
+        return if (pair != null) {
             val date = LocalDate.parse(pair.first)
             formatString.format(date.format(dateFormatter), pair.second)
         } else {

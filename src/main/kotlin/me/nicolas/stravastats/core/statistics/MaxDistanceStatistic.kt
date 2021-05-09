@@ -11,11 +11,9 @@ internal class MaxDistanceStatistic(
         activity = activities.maxByOrNull { activity -> activity.distance }
     }
 
-    override fun toString(): String {
-        return super.toString() + if (activity != null) {
-            "%.2f km".format(activity?.distance?.div(1000)) + activity
-        } else {
-            "Not available"
-        }
+    override fun display() = if (activity != null) {
+        "%.2f km".format(activity?.distance?.div(1000)) + activity
+    } else {
+        "Not available"
     }
 }

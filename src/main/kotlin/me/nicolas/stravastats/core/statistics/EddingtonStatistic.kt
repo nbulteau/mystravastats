@@ -12,9 +12,7 @@ internal class EddingtonStatistic(
 
     val eddingtonNumber = processEddingtonNumber()
 
-    override fun toString(): String {
-        return super.toString() + "$eddingtonNumber km"
-    }
+    override fun display() = "$eddingtonNumber km"
 
     private fun processEddingtonNumber(): Int {
 

@@ -20,13 +20,10 @@ internal open class BestElevationDistanceStatistic(
         activity = bestActivityEffort?.activity
     }
 
-    override fun toString(): String {
-
-        return super.toString() + if (bestActivityEffort != null) {
-            bestActivityEffort.getFormattedSlope() + bestActivityEffort.activity
-        } else {
-            "Not available"
-        }
+    override fun display() = if (bestActivityEffort != null) {
+        bestActivityEffort.getFormattedSlope() + bestActivityEffort.activity
+    } else {
+        "Not available"
     }
 }
 
@@ -37,7 +34,7 @@ internal open class BestElevationDistanceStatistic(
 fun Activity.calculateBestElevationForDistance(distance: Double): ActivityEffort? {
 
     // no stream -> return null
-    if(stream == null || stream?.distance == null|| stream?.time == null || stream?.altitude == null) {
+    if (stream == null || stream?.distance == null || stream?.time == null || stream?.altitude == null) {
         return null
     }
 

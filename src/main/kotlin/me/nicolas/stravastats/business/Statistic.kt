@@ -1,12 +1,14 @@
 package me.nicolas.stravastats.business
 
 abstract class Statistic(
-    private val name: String,
+    val name: String,
     protected val activities: List<Activity>
 ) {
-    override fun toString(): String {
+    fun displayName(): String {
         return "${name.padEnd(30)} : "
     }
+
+    abstract fun display(): String
 }
 
 internal class GlobalStatistic(
@@ -16,8 +18,8 @@ internal class GlobalStatistic(
     private val function: (List<Activity>) -> Number
 ) : Statistic(name, activities) {
 
-    override fun toString(): String {
-        return super.toString() + formatString.format(function(activities))
+    override fun display(): String {
+        return formatString.format(function(activities))
     }
 }
 

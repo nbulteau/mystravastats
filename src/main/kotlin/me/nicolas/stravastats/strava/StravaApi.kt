@@ -25,7 +25,7 @@ internal class StravaApi(
 
     fun getLoggedInAthlete(accessToken: String): Athlete {
 
-        val url = "${properties.strava.url}/api/v3/athletes"
+        val url = "${properties.strava.url}/api/v3/athlete"
 
         val requestHeaders = buildRequestHeaders(accessToken)
         val response = get(url, requestHeaders)

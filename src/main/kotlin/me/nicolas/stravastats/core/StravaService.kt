@@ -21,10 +21,7 @@ import java.net.URI
 import java.time.LocalDate
 
 
-internal class ActivityService(
-    private val myStravaStatsProperties: MyStravaStatsProperties,
-    private val stravaApi: StravaApi
-) {
+internal class StravaService(private val stravaApi: StravaApi) {
 
     private val objectMapper = jacksonObjectMapper()
 
@@ -33,6 +30,9 @@ internal class ActivityService(
     private fun getYearActivitiesDirectoryName(clientId: String, year: Int) = "strava-$clientId-$year"
 
     private fun getYearActivitiesJsonFileName(clientId: String, year: Int) = "activities-$clientId-$year.json"
+
+    private fun getAthleteJsonFileName(clientId: String) = "athlete-$clientId.json"
+
 
     private var accessToken: String? = null
 
@@ -51,6 +51,58 @@ internal class ActivityService(
         }
         return activities
     }
+
+    fun getLoggedInAthlete(
+        clientId: String,
+        clientSecret: String?,
+    ): Athlete? {
+        // get accessToken using client secret
+        if (clientSecret != null && this.accessToken == null) {
+            setAccessToken(clientId, clientSecret)
+        }
+
+        return if (this.accessToken == null) {
+            getLoggedInAthleteFromCache(clientId)
+        } else {
+            try {
+                getLoggedInAthleteFromStrava(clientId)
+            } catch (connectException: ConnectException) {
+                throw ParameterException("Unable to connect to Strava API : ${connectException.message}")
+            }
+        }
+    }
+
+    private fun getLoggedInAthleteFromCache(clientId: String): Athlete? {
+        var athlete: Athlete? = null
+        val activitiesDirectoryName = getActivitiesDirectoryName(clientId)
+        val athleteJsonFileName = getAthleteJsonFileName(clientId)
+
+        val activitiesDirectory = File(activitiesDirectoryName)
+        val athleteJsonFile = File(activitiesDirectory, athleteJsonFileName)
+
+        if (athleteJsonFile.exists()) {
+            athlete = ObjectMapper().readValue(athleteJsonFile, Athlete::class.java)
+        }
+
+        return athlete
+    }
+
+    private fun getLoggedInAthleteFromStrava(clientId: String): Athlete {
+        val activitiesDirectoryName = getActivitiesDirectoryName(clientId)
+
+        print("\nLoad athlete description of clientId=$clientId... ")
+        val athlete = stravaApi.getLoggedInAthlete(this.accessToken!!)
+        println("done")
+
+        val prettyWriter: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
+        prettyWriter.writeValue(
+            File(activitiesDirectoryName, getAthleteJsonFileName(activitiesDirectoryName)),
+            athlete
+        )
+
+        return athlete
+    }
+
 
     private fun loadActivitiesForAYear(
         clientId: String,
@@ -83,7 +135,7 @@ internal class ActivityService(
                     "&response_type=code" +
                     "&redirect_uri=http://localhost:8080/exchange_token" +
                     "&approval_prompt=auto" +
-                    "&scope=read_all,activity:read_all"
+                    "&scope=read_all,activity:read_all,profile:read_all"
         println(url)
         Desktop.getDesktop().browse(URI(url))
         println()
@@ -109,7 +161,7 @@ internal class ActivityService(
 
             println("Waiting for your agreement to allow MyStravaStats to access to your Strava data ...")
             val accessTokenFromToken = channel.receive()
-            print(" access granted.")
+            println(" access granted.")
             setAccessToken(accessTokenFromToken)
         }
     }
@@ -140,8 +192,7 @@ internal class ActivityService(
 
         if (yearActivitiesJsonFile.exists()) {
             print("\nLoad activities of clientId=$clientId for year $year ... ")
-            val objectMapper = ObjectMapper()
-            activities = objectMapper.readValue(yearActivitiesJsonFile, Array<Activity>::class.java)
+            activities = ObjectMapper().readValue(yearActivitiesJsonFile, Array<Activity>::class.java)
                 .toList()
                 .filterActivities()
             println("done")

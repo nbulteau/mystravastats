@@ -11,11 +11,9 @@ internal class MaxElevationStatistic(
         activity = activities.maxByOrNull { activity -> activity.totalElevationGain }
     }
 
-    override fun toString(): String {
-        return super.toString() + if (activity != null) {
-            "%.2f m".format(activity?.totalElevationGain) + activity
-        } else {
-            "Not available"
-        }
+    override fun display() = if (activity != null) {
+        "%.2f m".format(activity?.totalElevationGain) + activity
+    } else {
+        "Not available"
     }
 }

@@ -33,8 +33,6 @@ internal class MaxStreakStatistic(
         maxStreak = maxLen
     }
 
-    override fun toString(): String {
-        return super.toString() + maxStreak
-    }
+    override fun display() = maxStreak.toString()
 }
 

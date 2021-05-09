@@ -12,16 +12,14 @@ internal class MaxDistanceInADayStatistic(
     private val mostActiveDay: Map.Entry<String, Double>? =
         activities.groupBy { activity -> activity.startDateLocal.substringBefore('T') }
             .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance } }
-            .maxByOrNull { entry: Map.Entry<String, Double> ->  entry.value }
+            .maxByOrNull { entry: Map.Entry<String, Double> -> entry.value }
 
-    override fun toString(): String {
-        return super.toString() + if (mostActiveDay != null) {
-            "%.2f km - %s".format(
-                mostActiveDay.value.div(1000),
-                LocalDate.parse(mostActiveDay.key).format(dateFormatter)
-            )
-        } else {
-            "Not available"
-        }
+    override fun display() = if (mostActiveDay != null) {
+        "%.2f km - %s".format(
+            mostActiveDay.value.div(1000),
+            LocalDate.parse(mostActiveDay.key).format(dateFormatter)
+        )
+    } else {
+        "Not available"
     }
 }

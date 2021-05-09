@@ -4,7 +4,8 @@ import com.beust.jcommander.JCommander
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import me.nicolas.stravastats.core.ActivityService
+import me.nicolas.stravastats.business.StravaStatistics
+import me.nicolas.stravastats.core.StravaService
 import me.nicolas.stravastats.core.CSVService
 import me.nicolas.stravastats.core.ChartsService
 import me.nicolas.stravastats.core.StatisticsService
@@ -13,23 +14,21 @@ import me.nicolas.stravastats.strava.StravaApi
 
 internal class MyStravaStats(incomingArgs: Array<String>) {
 
-    private val stravaStatsProperties = loadPropertiesFromFile()
+    private val myStravaStatsProperties = loadPropertiesFromFile()
 
-    private val stravaApi = StravaApi(stravaStatsProperties)
+    private val stravaService = StravaService(StravaApi(myStravaStatsProperties))
 
-    private val activityLoader = ActivityService(stravaStatsProperties, stravaApi)
+    private val statisticsService = StatisticsService()
 
-    private val statsBuilder = StatisticsService()
+    private val chartsService = ChartsService()
 
-    private val chartsBuilder = ChartsService()
+    private val csvService = CSVService()
 
-    private val csvExporter = CSVService()
-
-    private val parameters = Parameters()
+    private val myStravaStatsParameters = MyStravaStatsParameters()
 
     init {
         JCommander.newBuilder()
-            .addObject(parameters)
+            .addObject(myStravaStatsParameters)
             .programName("My Strava Stats")
             .build().parse(*incomingArgs)
     }
@@ -37,21 +36,21 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
     fun run() {
         val startTime = System.currentTimeMillis()
 
-        val activities = activityLoader.loadActivities(parameters.clientId, parameters.clientSecret, parameters.year)
+        val activities = stravaService.loadActivities(myStravaStatsParameters.clientId, myStravaStatsParameters.clientSecret, myStravaStatsParameters.year)
 
-        if (stravaStatsProperties.removingNonMovingSections) {
+        if (myStravaStatsProperties.removingNonMovingSections) {
             activities.forEach { activity -> activity.removeNonMoving() }
         }
 
-        val stravaStats = statsBuilder.computeStatistics(activities)
+        val stravaStats: StravaStatistics = statisticsService.computeStatistics(activities)
         println(stravaStats)
 
-        if (parameters.csv) {
-            csvExporter.exportCSV(parameters.clientId, activities, parameters.filter)
+        if (myStravaStatsParameters.csv) {
+            csvService.exportCSV(myStravaStatsParameters.clientId, activities, myStravaStatsParameters.filter)
         }
 
-        if (parameters.charts) {
-            chartsBuilder.buildCharts(activities)
+        if (myStravaStatsParameters.charts) {
+            chartsService.buildCharts(activities)
         }
 
         println()
