@@ -2,8 +2,6 @@ package me.nicolas.stravastats.ihm
 
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.FXCollections
-import javafx.scene.chart.CategoryAxis
-import javafx.scene.chart.NumberAxis
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import javafx.scene.layout.BorderPane
