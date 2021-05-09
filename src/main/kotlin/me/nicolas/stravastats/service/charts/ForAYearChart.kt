@@ -6,12 +6,13 @@ import space.kscience.plotly.models.BarMode
 import space.kscience.plotly.models.TraceOrder
 import space.kscience.plotly.models.XAnchor
 import me.nicolas.stravastats.business.*
+import me.nicolas.stravastats.service.ActivityHelper
 
 internal class ForAYearChart(val activities: List<Activity>, val year: Int) : Chart() {
 
-    private val activitiesByMonth = groupActivitiesByMonth(activities)
+    private val activitiesByMonth = ActivityHelper.groupActivitiesByMonth(activities)
 
-    private val activitiesByDay = groupActivitiesByDay(activities, year)
+    private val activitiesByDay = ActivityHelper.groupActivitiesByDay(activities, year)
 
     override fun build() {
         Plotly.grid {
@@ -19,38 +20,38 @@ internal class ForAYearChart(val activities: List<Activity>, val year: Int) : Ch
                 xAxis = "months",
                 yAxis = "Distance",
                 unit = "km/h",
-                runByMonths = sumDistanceByType(activitiesByMonth, Run),
-                rideByMonths = sumDistanceByType(activitiesByMonth, Ride),
-                inLineSkateByMonths = sumDistanceByType(activitiesByMonth, InlineSkate),
-                hikeByMonths = sumDistanceByType(activitiesByMonth, Hike),
+                runByMonths = ActivityHelper.sumDistanceByType(activitiesByMonth, Run),
+                rideByMonths = ActivityHelper.sumDistanceByType(activitiesByMonth, Ride),
+                inLineSkateByMonths = ActivityHelper.sumDistanceByType(activitiesByMonth, InlineSkate),
+                hikeByMonths = ActivityHelper.sumDistanceByType(activitiesByMonth, Hike),
                 year
             )
             buildBarModeStackDistanceByDayPlot(
                 xAxis = "days",
                 yAxis = "Distance",
                 unit = "km/h",
-                runByDays = sumDistanceByType(activitiesByDay, Run),
-                rideByDays = sumDistanceByType(activitiesByDay, Ride),
-                inLineSkateByDays = sumDistanceByType(activitiesByDay, InlineSkate),
-                hikeByDays = sumDistanceByType(activitiesByDay, Hike),
+                runByDays = ActivityHelper.sumDistanceByType(activitiesByDay, Run),
+                rideByDays = ActivityHelper.sumDistanceByType(activitiesByDay, Ride),
+                inLineSkateByDays = ActivityHelper.sumDistanceByType(activitiesByDay, InlineSkate),
+                hikeByDays = ActivityHelper.sumDistanceByType(activitiesByDay, Hike),
                 year
             )
             buildBarModeGroupByDistanceMonthsPlot(
                 xAxis = "months",
                 yAxis = "Elevation",
                 unit = "m",
-                runByMonths = sumElevationByType(activitiesByMonth, Run),
-                rideByMonths = sumElevationByType(activitiesByMonth, Ride),
-                inLineSkateByMonths = sumElevationByType(activitiesByMonth, InlineSkate),
-                hikeByMonths = sumElevationByType(activitiesByMonth, Hike),
+                runByMonths = ActivityHelper.sumElevationByType(activitiesByMonth, Run),
+                rideByMonths = ActivityHelper.sumElevationByType(activitiesByMonth, Ride),
+                inLineSkateByMonths = ActivityHelper.sumElevationByType(activitiesByMonth, InlineSkate),
+                hikeByMonths = ActivityHelper.sumElevationByType(activitiesByMonth, Hike),
                 year
             )
             buildLineByDayPlot(
                 xAxis = "days",
                 yAxis = "Average speed",
                 unit = "km/h",
-                runByDays = averageSpeedByType(activitiesByDay, Run),
-                inLineSkateByDays = averageSpeedByType(activitiesByDay, InlineSkate),
+                runByDays = ActivityHelper.averageSpeedByType(activitiesByDay, Run),
+                inLineSkateByDays = ActivityHelper.averageSpeedByType(activitiesByDay, InlineSkate),
                 year
             )
             buildEddingtonNumberPlotByType(row = 6, width = 6, activities, Run)

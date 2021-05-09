@@ -3,19 +3,20 @@ package me.nicolas.stravastats.service.charts
 import space.kscience.plotly.*
 import space.kscience.plotly.models.*
 import me.nicolas.stravastats.business.*
+import me.nicolas.stravastats.service.ActivityHelper
 import space.kscience.dataforge.values.Value
 import java.time.LocalDate
 
 @UnstablePlotlyAPI
 internal class ByYearsChart(val activities: List<Activity>) : Chart() {
 
-    private val activitiesByYear = groupActivitiesByYear(activities)
+    private val activitiesByYear = ActivityHelper.groupActivitiesByYear(activities)
 
     override fun build() {
-        val runByYears = sumDistanceByType(activitiesByYear, Run)
-        val rideByYears = sumDistanceByType(activitiesByYear, Ride)
-        val inLineSkateByYears = sumDistanceByType(activitiesByYear, InlineSkate)
-        val hikeByYears = sumDistanceByType(activitiesByYear, Hike)
+        val runByYears = ActivityHelper.sumDistanceByType(activitiesByYear, Run)
+        val rideByYears = ActivityHelper.sumDistanceByType(activitiesByYear, Ride)
+        val inLineSkateByYears = ActivityHelper.sumDistanceByType(activitiesByYear, InlineSkate)
+        val hikeByYears = ActivityHelper.sumDistanceByType(activitiesByYear, Hike)
 
         val plot = Plotly.grid {
             buildBarModeStackPlot(row = 1, width = 6, runByYears, rideByYears, inLineSkateByYears, hikeByYears)
@@ -112,10 +113,10 @@ internal class ByYearsChart(val activities: List<Activity>) : Chart() {
     ) {
         val annotationsList = mutableListOf<Text>()
 
-        val cumulativeRun = cumulativeValue(runByYears)
-        val cumulativeRide = cumulativeValue(bikeByYears)
-        val cumulativeInlineSkate = cumulativeValue(inLineSkateByYears)
-        val cumulativeHike = cumulativeValue(hikeByYears)
+        val cumulativeRun = ActivityHelper.cumulativeValue(runByYears)
+        val cumulativeRide = ActivityHelper.cumulativeValue(bikeByYears)
+        val cumulativeInlineSkate = ActivityHelper.cumulativeValue(inLineSkateByYears)
+        val cumulativeHike = ActivityHelper.cumulativeValue(hikeByYears)
 
         plot(row = row, width = width) {
             traces(
@@ -167,8 +168,8 @@ internal class ByYearsChart(val activities: List<Activity>) : Chart() {
                 } else {
                     continue
                 }
-                val activitiesByDay = groupActivitiesByDay(activities, year)
-                val cumulativeDistance = cumulativeDistance(activitiesByDay)
+                val activitiesByDay = ActivityHelper.groupActivitiesByDay(activities, year)
+                val cumulativeDistance = ActivityHelper.cumulativeDistance(activitiesByDay)
 
                 traces(
                     buildLineByYear(cumulativeDistance, year)
@@ -226,8 +227,8 @@ internal class ByYearsChart(val activities: List<Activity>) : Chart() {
                 } else {
                     continue
                 }
-                val activitiesByDay = groupActivitiesByDay(activities, year)
-                val cumulativeElevation = cumulativeElevation(activitiesByDay)
+                val activitiesByDay = ActivityHelper.groupActivitiesByDay(activities, year)
+                val cumulativeElevation = ActivityHelper.cumulativeElevation(activitiesByDay)
 
                 traces(
                     buildLineByYear(cumulativeElevation, year)
