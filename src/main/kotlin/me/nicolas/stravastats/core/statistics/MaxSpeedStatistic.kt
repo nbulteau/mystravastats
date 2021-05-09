@@ -1,7 +1,7 @@
 package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.ActivityStatistic
+import me.nicolas.stravastats.core.formatSeconds
 
 internal class MaxSpeedStatistic(
     activities: List<Activity>
@@ -11,9 +11,10 @@ internal class MaxSpeedStatistic(
         activity = activities.maxByOrNull { activity -> activity.maxSpeed }
     }
 
-    override fun display() = if (activity != null) {
-        "%.02f km/h%s".format(activity?.maxSpeed?.times(3.6), activity)
-    } else {
-        " Not available"
-    }
+    override val value: String
+        get() = if (activity != null) {
+            "%.02f km/h".format(activity?.maxSpeed?.times(3.6))
+        } else {
+            "Not available"
+        }
 }

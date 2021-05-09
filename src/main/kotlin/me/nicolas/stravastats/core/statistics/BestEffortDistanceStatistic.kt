@@ -2,7 +2,6 @@ package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.ActivityEffort
-import me.nicolas.stravastats.business.ActivityStatistic
 import me.nicolas.stravastats.core.formatSeconds
 
 
@@ -21,15 +20,12 @@ internal open class BestEffortDistanceStatistic(
         activity = bestActivityEffort?.activity
     }
 
-    override fun display() = if (bestActivityEffort != null) {
-        "%s => %s%s".format(
-            bestActivityEffort.seconds.formatSeconds(),
-            bestActivityEffort.getFormattedSpeed(),
-            bestActivityEffort.activity
-        )
-    } else {
-        "Not available"
-    }
+    override val value: String
+        get() = if (bestActivityEffort != null) {
+            "${bestActivityEffort.seconds.formatSeconds()} => ${bestActivityEffort.getFormattedSpeed()}"
+        } else {
+            "Not available"
+        }
 }
 
 /**

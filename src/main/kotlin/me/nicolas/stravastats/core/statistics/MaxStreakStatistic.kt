@@ -1,12 +1,11 @@
 package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.ActivityStatistic
 import java.time.LocalDate
 
 internal class MaxStreakStatistic(
     activities: List<Activity>
-) : ActivityStatistic("Max streak", activities) {
+) : Statistic("Max streak", activities) {
 
     private val maxStreak: Int
 
@@ -33,6 +32,9 @@ internal class MaxStreakStatistic(
         maxStreak = maxLen
     }
 
-    override fun display() = maxStreak.toString()
+    override val value: String
+        get() = maxStreak.toString()
+
+    override fun toString() = value
 }
 

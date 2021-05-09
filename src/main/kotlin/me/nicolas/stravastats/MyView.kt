@@ -8,12 +8,16 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.Tab
+import javafx.scene.control.TabPane
+import javafx.scene.control.TableView
 import javafx.scene.layout.BorderPane
 import javafx.scene.text.Text
+import javafx.stage.Stage
 import me.nicolas.stravastats.business.Athlete
-import me.nicolas.stravastats.business.Statistic
+import me.nicolas.stravastats.core.statistics.Statistic
 import me.nicolas.stravastats.core.StravaService
 import me.nicolas.stravastats.core.StatisticsService
+import me.nicolas.stravastats.core.statistics.ActivityStatistic
 import me.nicolas.stravastats.strava.StravaApi
 import tornadofx.*
 import java.time.LocalDate
@@ -28,18 +32,22 @@ class MainView : View("MyStravaStats") {
 
     private val athlete: Athlete? = mainController.getLoggedInAthlete()
 
-    var globalStatsTab: Tab by singleAssign()
-    var rideStatsTab: Tab by singleAssign()
-    var commuteRideStatsTab: Tab by singleAssign()
-    var runsStatsTab: Tab by singleAssign()
-    var hikesStatsTab: Tab by singleAssign()
-    var inlineSkateStatsTab: Tab by singleAssign()
+    private var globalStatsTab: Tab by singleAssign()
+    private var rideStatsTab: Tab by singleAssign()
+    private var commuteRideStatsTab: Tab by singleAssign()
+    private var runStatsTab: Tab by singleAssign()
+    private var hikeStatsTab: Tab by singleAssign()
+    private var inlineSkateStatsTab: Tab by singleAssign()
 
     init {
         with(root) {
             top {
                 form {
                     hbox {
+                        style {
+                            spacing = 5.px
+                            padding = box(20.px)
+                        }
                         fieldset("Athlete") {
                             label("${athlete?.firstname} ${athlete?.lastname}")
                         }
@@ -55,63 +63,53 @@ class MainView : View("MyStravaStats") {
             }
             center {
                 tabpane {
-                    tab("Global") {
-                        globalStatsTab = this
-                        tableview(mainController.getDisplayStatistics("Global")) {
-                            readonlyColumn("name", StatisticDisplay::label)
-                            readonlyColumn("", StatisticDisplay::value)
-                        }
-                    }
-                    tab("Ride stats") {
-                        rideStatsTab = this
-                        tableview(mainController.getDisplayStatistics("Ride")) {
-                            readonlyColumn("name", StatisticDisplay::label)
-                            readonlyColumn("", StatisticDisplay::value)
-                        }
-                    }
-                    tab("Commute ride stats") {
-                        commuteRideStatsTab = this
-                        tableview(mainController.getDisplayStatistics("Commute ride")) {
-                            readonlyColumn("name", StatisticDisplay::label)
-                            readonlyColumn("", StatisticDisplay::value)
-                        }
-                    }
-                    tab("Run stats") {
-                        runsStatsTab = this
-                        tableview(mainController.getDisplayStatistics("Run")) {
-                            readonlyColumn("name", StatisticDisplay::label)
-                            readonlyColumn("", StatisticDisplay::value)
-                        }
-                    }
-                    tab("Hike ride stats") {
-                        hikesStatsTab = this
-                        tableview(mainController.getDisplayStatistics("Hike")) {
-                            readonlyColumn("name", StatisticDisplay::label)
-                            readonlyColumn("", StatisticDisplay::value)
-                        }
-                    }
-                    tab("InlineSkate stats") {
-                        inlineSkateStatsTab = this
-                        tableview(mainController.getDisplayStatistics("InlineSkate")) {
-                            readonlyColumn("name", StatisticDisplay::label)
-                            readonlyColumn("", StatisticDisplay::value)
-                        }
-                    }
+                    tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                    tab("Global") { globalStatsTab = this }
+                    tab("Ride stats") { rideStatsTab = this }
+                    tab("Commute ride stats") { commuteRideStatsTab = this }
+                    tab("Run stats") { runStatsTab = this }
+                    tab("Hike ride stats") { hikeStatsTab = this }
+                    tab("InlineSkate stats") { inlineSkateStatsTab = this }
                 }
             }
         }
+        updateStatistics()
     }
 
     private fun updateStatistics() {
-        rideStatsTab.content = Text("Ride for ${selectedYear.value}")
-        commuteRideStatsTab.content = Text("Run for ${selectedYear.value}")
-        runsStatsTab.content = Text("Ride for ${selectedYear.value}")
-        hikesStatsTab.content = Text("Run for ${selectedYear.value}")
-        inlineSkateStatsTab.content = Text("Ride for ${selectedYear.value}")
+        globalStatsTab.content = tableview(mainController.getStatisticsDisplay("Global")) {
+            readonlyColumn("name", StatisticDisplay::label)
+            readonlyColumn("value", StatisticDisplay::value)
+        }
+        rideStatsTab.content =tableview(mainController.getStatisticsDisplay("Ride")) {
+            readonlyColumn("name", StatisticDisplay::label)
+            readonlyColumn("value", StatisticDisplay::value)
+            readonlyColumn("activity", StatisticDisplay::activity)
+        }
+        commuteRideStatsTab.content = tableview(mainController.getStatisticsDisplay("Commute ride")) {
+            readonlyColumn("name", StatisticDisplay::label)
+            readonlyColumn("value", StatisticDisplay::value)
+            readonlyColumn("activity", StatisticDisplay::activity)
+        }
+        runStatsTab.content = tableview(mainController.getStatisticsDisplay("Run")) {
+            readonlyColumn("name", StatisticDisplay::label)
+            readonlyColumn("value", StatisticDisplay::value)
+            readonlyColumn("activity", StatisticDisplay::activity)
+        }
+        hikeStatsTab.content = tableview(mainController.getStatisticsDisplay("Hike")) {
+            readonlyColumn("name", StatisticDisplay::label)
+            readonlyColumn("value", StatisticDisplay::value)
+            readonlyColumn("activity", StatisticDisplay::activity)
+        }
+        inlineSkateStatsTab.content = tableview(mainController.getStatisticsDisplay("InlineSkate")) {
+            readonlyColumn("name", StatisticDisplay::label)
+            readonlyColumn("", StatisticDisplay::value)
+            readonlyColumn("activity", StatisticDisplay::activity)
+        }
     }
 }
 
-data class StatisticDisplay(val label: String, val value: String)
+data class StatisticDisplay(val label: String, val value: String, val activity: String)
 
 class MainController : Controller() {
 
@@ -137,7 +135,7 @@ class MainController : Controller() {
         )
     }
 
-    fun getDisplayStatistics(type: String): ObservableList<StatisticDisplay> {
+    fun getStatisticsDisplay(type: String): ObservableList<StatisticDisplay> {
         val statistics = when (type) {
             "Run" -> stravaStatistics.runsStats
             "Ride" -> stravaStatistics.sportRideStats
@@ -148,15 +146,25 @@ class MainController : Controller() {
             else -> emptyList()
         }
 
-        return getDisplayStatistics(statistics)
+        return getStatisticsDisplay(statistics)
     }
 
-    fun getDisplayStatistics(statistics: List<Statistic>): ObservableList<StatisticDisplay> {
+    private fun getStatisticsDisplay(statistics: List<Statistic>): ObservableList<StatisticDisplay> {
         val activityStatistics = statistics.map { statistic ->
-            StatisticDisplay(statistic.name, statistic.display())
+            when (statistic) {
+                is ActivityStatistic -> {
+                    StatisticDisplay(
+                        statistic.name,
+                        statistic.value,
+                        if(statistic.activity != null) statistic.activity.toString() else ""
+                    )
+                }
+                else -> StatisticDisplay(statistic.name, statistic.toString(), "")
+            }
         }
         return FXCollections.observableArrayList(activityStatistics)
     }
+
 
     /**
      * Load properties from application.yml
@@ -175,6 +183,12 @@ class MyStravaStatsApp : App(MainView::class) {
 
     companion object {
         val myStravaStatsParameters = MyStravaStatsParameters()
+    }
+
+    override fun start(stage: Stage) {
+        super.start(stage)
+        stage.width = 1024.0
+        stage.height = 768.0
     }
 
     override fun init() {

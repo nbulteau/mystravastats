@@ -2,7 +2,7 @@ package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.ActivityEffort
-import me.nicolas.stravastats.business.ActivityStatistic
+import me.nicolas.stravastats.core.formatSeconds
 
 
 internal open class BestElevationDistanceStatistic(
@@ -20,11 +20,8 @@ internal open class BestElevationDistanceStatistic(
         activity = bestActivityEffort?.activity
     }
 
-    override fun display() = if (bestActivityEffort != null) {
-        bestActivityEffort.getFormattedSlope() + bestActivityEffort.activity
-    } else {
-        "Not available"
-    }
+    override val value: String
+        get() = bestActivityEffort?.getFormattedSlope() ?: "Not available"
 }
 
 /**

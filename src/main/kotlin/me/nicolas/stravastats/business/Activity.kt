@@ -166,7 +166,7 @@ data class Activity(
         stream = streamWithoutNonMovingData
     }
 
-    override fun toString() = " - $name (${startDateLocal.formatDate()})"
+    override fun toString() = "${name.trim()} (${startDateLocal.formatDate()})"
 
     fun getFormattedSpeed(): String {
         return if (type == "Run") {

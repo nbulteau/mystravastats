@@ -14,7 +14,7 @@ data class ActivityEffort(
 ) {
     fun getFormattedSpeed(): String {
         return if (activity.type == "Run") {
-            "%s/km".format((seconds * 1000 / distance).formatSeconds())
+            "${(seconds * 1000 / distance).formatSeconds()}/km"
         } else {
             "%.02f km/h".format(distance / seconds * 3600 / 1000)
         }
@@ -22,7 +22,7 @@ data class ActivityEffort(
 
     fun getSpeed(): String {
         return if (activity.type == "Run") {
-            "%s".format((seconds * 1000 / distance).formatSeconds())
+            (seconds * 1000 / distance).formatSeconds()
         } else {
             "%.02f".format(distance / seconds * 3600 / 1000)
         }
