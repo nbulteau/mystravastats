@@ -1,7 +1,6 @@
 package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.Statistic
 import me.nicolas.stravastats.core.dateFormatter
 import java.time.LocalDate
 
@@ -14,9 +13,10 @@ internal class MaxElevationInADayStatistic(
             .mapValues { (_, activities) -> activities.sumOf { activity -> activity.totalElevationGain } }
             .maxByOrNull { it.value }
 
-    override fun display() = if (mostActiveDay != null) {
-        "%.2f m - %s".format(mostActiveDay.value, LocalDate.parse(mostActiveDay.key).format(dateFormatter))
-    } else {
-        "Not available"
-    }
+    override val value: String
+        get() = if (mostActiveDay != null) {
+            "%.2f m - ${LocalDate.parse(mostActiveDay.key).format(dateFormatter)}".format(mostActiveDay.value)
+        } else {
+            "Not available"
+        }
 }

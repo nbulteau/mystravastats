@@ -1,7 +1,6 @@
 package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.Statistic
 
 /**
  * https://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling
@@ -12,7 +11,10 @@ internal class EddingtonStatistic(
 
     val eddingtonNumber = processEddingtonNumber()
 
-    override fun display() = "$eddingtonNumber km"
+    override val value: String
+        get() = "$eddingtonNumber km"
+
+    override fun toString() = value
 
     private fun processEddingtonNumber(): Int {
 

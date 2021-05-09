@@ -1,7 +1,7 @@
 package me.nicolas.stravastats.core
 
 import me.nicolas.stravastats.business.*
-import me.nicolas.stravastats.business.GlobalStatistic
+import me.nicolas.stravastats.core.statistics.GlobalStatistic
 import me.nicolas.stravastats.business.StravaStatistics
 import me.nicolas.stravastats.core.statistics.*
 

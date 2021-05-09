@@ -1,5 +1,7 @@
 package me.nicolas.stravastats.business
 
+import me.nicolas.stravastats.core.statistics.Statistic
+
 internal data class StravaStatistics(
     val globalStatistic: List<Statistic>,
     val commuteRideStats: List<Statistic>,
@@ -13,22 +15,22 @@ internal data class StravaStatistics(
         val result = StringBuilder("\n\n* Statistics\n\n")
 
         result.append(globalStatistic.joinToString("\n", "\n** Overview\n", "\n")
-        { statistic -> statistic.displayName() + statistic.display() })
+        { statistic -> "${statistic.name.padEnd(30)} : $statistic" })
 
         result.append(commuteRideStats.joinToString("\n", "\n** Rides (commute)\n", "\n")
-        { statistic -> statistic.displayName() + statistic.display() })
+        { statistic -> "${statistic.name.padEnd(30)} : $statistic" })
 
         result.append(sportRideStats.joinToString("\n", "\n** Rides (sport)\n", "\n")
-        { statistic -> statistic.displayName() + statistic.display() })
+        { statistic -> "${statistic.name.padEnd(30)} : $statistic" })
 
         result.append(runsStats.joinToString("\n", "\n** Runs\n", "\n")
-        { statistic -> statistic.displayName() + statistic.display() })
+        { statistic -> "${statistic.name.padEnd(30)} : $statistic" })
 
         result.append(inlineSkateStats.joinToString("\n", "\n** InlineSkate\n", "\n")
-        { statistic -> statistic.displayName() + statistic.display() })
+        { statistic -> "${statistic.name.padEnd(30)} : $statistic" })
 
         result.append(hikesStats.joinToString("\n", "\n** Hikes\n", "\n")
-        { statistic -> statistic.displayName() + statistic.display() })
+        { statistic -> "${statistic.name.padEnd(30)} : $statistic" })
 
         result.append("\n")
 

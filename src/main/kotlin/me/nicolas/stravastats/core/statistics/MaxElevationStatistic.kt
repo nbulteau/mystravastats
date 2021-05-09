@@ -1,7 +1,6 @@
 package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.ActivityStatistic
 
 internal class MaxElevationStatistic(
     activities: List<Activity>
@@ -11,9 +10,10 @@ internal class MaxElevationStatistic(
         activity = activities.maxByOrNull { activity -> activity.totalElevationGain }
     }
 
-    override fun display() = if (activity != null) {
-        "%.2f m".format(activity?.totalElevationGain) + activity
-    } else {
-        "Not available"
-    }
+    override val value: String
+        get() = if (activity != null) {
+            "%.2f m".format(activity?.totalElevationGain)
+        } else {
+            "Not available"
+        }
 }

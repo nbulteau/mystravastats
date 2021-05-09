@@ -1,7 +1,6 @@
 package me.nicolas.stravastats.core.statistics
 
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.ActivityStatistic
 
 internal class MaxDistanceStatistic(
     activities: List<Activity>
@@ -11,9 +10,10 @@ internal class MaxDistanceStatistic(
         activity = activities.maxByOrNull { activity -> activity.distance }
     }
 
-    override fun display() = if (activity != null) {
-        "%.2f km".format(activity?.distance?.div(1000)) + activity
-    } else {
-        "Not available"
-    }
+    override val value: String
+        get() = if (activity != null) {
+            "%.2f km".format(activity?.distance?.div(1000))
+        } else {
+            "Not available"
+        }
 }
