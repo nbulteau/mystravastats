@@ -2,8 +2,8 @@ package me.nicolas.stravastats.ihm
 
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.FXCollections
-import javafx.event.EventTarget
-import javafx.scene.chart.*
+import javafx.scene.chart.CategoryAxis
+import javafx.scene.chart.NumberAxis
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import javafx.scene.layout.BorderPane
@@ -32,55 +32,53 @@ class MainView : View("MyStravaStats") {
 
     init {
         with(root) {
-            top {
-                form {
-                    fieldset {
-                        style {
-                            spacing = 5.px
-                            padding = box(20.px)
-                        }
-                        field("Athlete") {
-                            textfield("${athlete?.firstname} ${athlete?.lastname}") {
-                                isEditable = false
+            left {
+                vbox {
+                    prefWidth = 180.0
+                    style {
+                        spacing = 5.px
+                        padding = box(5.px)
+                    }
+                    textfield("${athlete?.firstname} ${athlete?.lastname}") {
+                        isEditable = false
+                        maxWidth = Double.MAX_VALUE
+                    }
+                    if (MyStravaStatsApp.myStravaStatsParameters.year == null) {
+                        combobox(property = selectedYear, values = years) {
+                            selectionModel.selectedItemProperty().onChange {
+                                updateStatistics()
                             }
+                            maxWidth = Double.MAX_VALUE
                         }
-                        field("Year") {
-                            if (MyStravaStatsApp.myStravaStatsParameters.year == null) {
-                                combobox(property = selectedYear, values = years) {
-                                    selectionModel.selectedItemProperty().onChange {
-                                        updateStatistics()
-                                    }
-                                }
-                            } else {
-                                textfield(value = MyStravaStatsApp.myStravaStatsParameters.year.toString()) {
-                                    isEditable = false
-                                }
-                            }
+                    } else {
+                        textfield(value = MyStravaStatsApp.myStravaStatsParameters.year.toString()) {
+                            isEditable = false
+                            maxWidth = Double.MAX_VALUE
                         }
-                        field("Generate") {
-                            button("Generate CSV") {
-                                action {
-                                    mainController.generateCSV()
-                                }
-                            }
-                            button("Generate Charts") {
-                                action {
-                                    mainController.generateCharts()
-                                }
-                            }
+                    }
+                    button("Generate CSV") {
+                        action {
+                            mainController.generateCSV()
                         }
+                        maxWidth = Double.MAX_VALUE
+                    }
+                    button("Generate Charts") {
+                        action {
+                            mainController.generateCharts()
+                        }
+                        maxWidth = Double.MAX_VALUE
                     }
                 }
             }
             center {
                 tabpane {
                     tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-                    tab("Global") { globalStatsTab = this }
-                    tab("Ride stats") { sportRideStatsTab = this }
-                    tab("Commute ride stats") { commuteRideStatsTab = this }
-                    tab("Run stats") { runStatsTab = this }
-                    tab("Hike ride stats") { hikeStatsTab = this }
-                    tab("InlineSkate stats") { inlineSkateStatsTab = this }
+                    tab("Global statistics") { globalStatsTab = this }
+                    tab("Ride statistics") { sportRideStatsTab = this }
+                    tab("Commute ride statistics") { commuteRideStatsTab = this }
+                    tab("Run statistics") { runStatsTab = this }
+                    tab("Hike ride statistics") { hikeStatsTab = this }
+                    tab("InlineSkate statistics") { inlineSkateStatsTab = this }
                 }
             }
         }
@@ -107,7 +105,8 @@ class MainView : View("MyStravaStats") {
                 }
                 item("Distance by months") {
                     stackedbarchart(
-                        "Distance by months for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
+                        "Distance by months for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()
+                    ) {
                         series(Run, mainController.buildDistanceByMonthsSeries(Run, selectedYear.value))
                         series(Ride, mainController.buildDistanceByMonthsSeries(Ride, selectedYear.value))
                         series(InlineSkate, mainController.buildDistanceByMonthsSeries(InlineSkate, selectedYear.value))
