@@ -1,5 +1,5 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 
 buildscript {
@@ -16,6 +16,7 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application.
     application
+    id("org.openjfx.javafxplugin") version "0.0.10"
 }
 
 repositories {
@@ -37,7 +38,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.3")
 
-    implementation("io.javalin:javalin:3.13.6")
+    implementation("io.javalin:javalin:3.13.7")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
     implementation("org.slf4j:slf4j-nop:1.7.30")
 
@@ -45,13 +46,20 @@ dependencies {
         exclude("ch.qos.logback", "logback-classic")
     }
 
+    implementation("no.tornado:tornadofx:1.7.20")
+
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
 }
 
 application {
     // Define the main class for the application.
-    mainClass.set("me.nicolas.stravastats.MyStravaStatsKt")
+    mainClass.set("me.nicolas.stravastats.MyStravaStatsAppKt")
     applicationDefaultJvmArgs = listOf("-Xmx2048m")
+}
+
+javafx {
+    version = "16"
+    modules = listOf("javafx.controls", "javafx.media", "javafx.fxml", "javafx.web")
 }
 
 tasks.withType<Test> {

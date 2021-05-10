@@ -3,8 +3,8 @@ package me.nicolas.stravastats.business
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import me.nicolas.stravastats.core.formatDate
-import me.nicolas.stravastats.core.formatSeconds
+import me.nicolas.stravastats.service.formatDate
+import me.nicolas.stravastats.service.formatSeconds
 
 const val Run = "Run"
 const val Ride = "Ride"
@@ -166,7 +166,7 @@ data class Activity(
         stream = streamWithoutNonMovingData
     }
 
-    override fun toString() = " - $name (${startDateLocal.formatDate()})"
+    override fun toString() = "${name.trim()} (${startDateLocal.formatDate()})"
 
     fun getFormattedSpeed(): String {
         return if (type == "Run") {
