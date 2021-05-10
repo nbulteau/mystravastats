@@ -103,7 +103,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
     }
 
 
-    private fun loadActivitiesForAYear(
+    fun loadActivitiesForAYear(
         clientId: String,
         clientSecret: String?,
         year: Int
