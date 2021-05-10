@@ -13,17 +13,17 @@ class MyStravaStatsApp : App(MainView::class) {
         val myStravaStatsParameters = MyStravaStatsParameters()
     }
 
-    override fun start(stage: Stage) {
-        super.start(stage)
-        stage.width = 1024.0
-        stage.height = 768.0
-    }
-
     override fun init() {
         JCommander.newBuilder()
             .addObject(myStravaStatsParameters)
             .programName("My Strava Stats")
             .build().parse(*parameters.raw.toTypedArray())
+    }
+
+    override fun start(stage: Stage) {
+        super.start(stage)
+        stage.width = 1024.0
+        stage.height = 768.0
     }
 }
 

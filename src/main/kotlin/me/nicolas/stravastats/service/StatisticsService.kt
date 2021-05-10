@@ -1,8 +1,6 @@
 package me.nicolas.stravastats.service
 
 import me.nicolas.stravastats.business.*
-import me.nicolas.stravastats.service.statistics.GlobalStatistic
-import me.nicolas.stravastats.business.StravaStatistics
 import me.nicolas.stravastats.service.statistics.*
 
 
@@ -15,8 +13,6 @@ internal class StatisticsService {
     fun computeStatistics(activities: List<Activity>): StravaStatistics {
 
         val globalStatistics = computeGlobalStats(activities)
-
-        println("Nb activities used to compute statistics (with streams) : ${activities.size}")
 
         val commuteRideStats =
             computeCommuteBikeStats(activities.filter { activity -> activity.type == Ride && activity.commute })
@@ -33,8 +29,8 @@ internal class StatisticsService {
         return listOf(
             GlobalStatistic("Nb activities", activities, "%d", List<Activity>::size),
             GlobalStatistic("Nb actives days", activities, "%d")
-            { activityList: List<Activity> ->
-                activityList
+            { activities ->
+                activities
                     .map { activity -> activity.startDateLocal.substringBefore('T') }
                     .toSet()
                     .size
@@ -164,17 +160,17 @@ internal class StatisticsService {
                 BestDayStatistic("Max distance in a day", activities, "%s => %.02f km")
                 {
                     activities
-                        .groupBy { activity: Activity ->  activity.startDateLocal.substringBefore('T') }
+                        .groupBy { activity: Activity -> activity.startDateLocal.substringBefore('T') }
                         .mapValues { it.value.sumOf { activity -> activity.distance / 1000 } }
-                        .maxByOrNull { entry: Map.Entry<String, Double> ->  entry.value }
+                        .maxByOrNull { entry: Map.Entry<String, Double> -> entry.value }
                         ?.toPair()
                 },
                 BestDayStatistic("Max elevation in a day", activities, "%s => %.02f m")
                 {
                     activities
-                        .groupBy { activity: Activity ->  activity.startDateLocal.substringBefore('T') }
+                        .groupBy { activity: Activity -> activity.startDateLocal.substringBefore('T') }
                         .mapValues { it.value.sumOf { activity -> activity.totalElevationGain } }
-                        .maxByOrNull { entry: Map.Entry<String, Double> ->  entry.value }
+                        .maxByOrNull { entry: Map.Entry<String, Double> -> entry.value }
                         ?.toPair()
                 }
             )
