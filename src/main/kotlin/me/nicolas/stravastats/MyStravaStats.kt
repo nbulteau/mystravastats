@@ -43,6 +43,7 @@ internal class MyStravaStats(incomingArgs: Array<String>) {
         }
 
         val stravaStats: StravaStatistics = statisticsService.computeStatistics(activities)
+        println("Nb activities used to compute statistics (with streams) : ${activities.size}")
         println(stravaStats)
 
         if (myStravaStatsParameters.csv) {
