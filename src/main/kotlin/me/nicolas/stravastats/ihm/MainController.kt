@@ -1,31 +1,20 @@
 package me.nicolas.stravastats.ihm
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.chart.XYChart
 import me.nicolas.stravastats.MyStravaStatsApp
-import me.nicolas.stravastats.MyStravaStatsProperties
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
-import me.nicolas.stravastats.service.*
+import me.nicolas.stravastats.service.ActivityHelper
 import me.nicolas.stravastats.service.CSVService
 import me.nicolas.stravastats.service.ChartsService
 import me.nicolas.stravastats.service.StatisticsService
-import me.nicolas.stravastats.service.StravaService
-import me.nicolas.stravastats.service.charts.Chart
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
-import me.nicolas.stravastats.strava.StravaApi
 import tornadofx.Controller
 
-class MainController : Controller() {
-
-    private val myStravaStatsProperties = loadPropertiesFromFile()
-
-    private val stravaService = StravaService(StravaApi(myStravaStatsProperties))
+class MainController(private val activities: ObservableList<Activity>) : Controller() {
 
     private val statsService = StatisticsService()
 
@@ -33,25 +22,16 @@ class MainController : Controller() {
 
     private val csvService = CSVService()
 
-    private val activities = stravaService.loadActivities(
-        MyStravaStatsApp.myStravaStatsParameters.clientId,
-        MyStravaStatsApp.myStravaStatsParameters.clientSecret,
-        MyStravaStatsApp.myStravaStatsParameters.year
-    )
-
     fun generateCSV() {
-        csvService.exportCSV(MyStravaStatsApp.myStravaStatsParameters.clientId, activities, MyStravaStatsApp.myStravaStatsParameters.filter)
+        csvService.exportCSV(
+            MyStravaStatsApp.myStravaStatsParameters.clientId,
+            activities,
+            MyStravaStatsApp.myStravaStatsParameters.filter
+        )
     }
 
     fun generateCharts() {
         chartsService.buildCharts(activities)
-    }
-
-    fun getLoggedInAthlete(): Athlete? {
-        return stravaService.getLoggedInAthlete(
-            MyStravaStatsApp.myStravaStatsParameters.clientId,
-            MyStravaStatsApp.myStravaStatsParameters.clientSecret
-        )
     }
 
     fun getStatisticsToDisplay(year: Int?): StatisticsToDisplay {
@@ -104,16 +84,5 @@ class MainController : Controller() {
             }
         }
         return FXCollections.observableArrayList(activityStatistics)
-    }
-
-    /**
-     * Load properties from application.yml
-     */
-    private fun loadPropertiesFromFile(): MyStravaStatsProperties {
-        val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
-        mapper.registerModule(KotlinModule()) // Enable Kotlin support
-
-        val inputStream = javaClass.getResourceAsStream("/application.yml")
-        return mapper.readValue(inputStream, MyStravaStatsProperties::class.java)
     }
 }

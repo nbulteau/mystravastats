@@ -2,26 +2,26 @@ package me.nicolas.stravastats.ihm
 
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.NumberAxis
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
-import javafx.scene.layout.BorderPane
 import me.nicolas.stravastats.MyStravaStatsApp
 import me.nicolas.stravastats.business.*
 import tornadofx.*
 import java.time.LocalDate
 
 
-class MainView : View("MyStravaStats") {
-    override val root = BorderPane()
+class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("MyStravaStats") {
+    override val root = borderpane {
+        setPrefSize(1024.0, 768.0)
+    }
 
-    private val mainController: MainController by inject()
+    private val mainController: MainController = MainController(activities)
 
     private val years = FXCollections.observableArrayList((LocalDate.now().year downTo 2010).toList())
     private var selectedYear = SimpleIntegerProperty(LocalDate.now().year)
-
-    private val athlete: Athlete? = mainController.getLoggedInAthlete()
 
     private var globalStatsTab: Tab by singleAssign()
     private var sportRideStatsTab: Tab by singleAssign()

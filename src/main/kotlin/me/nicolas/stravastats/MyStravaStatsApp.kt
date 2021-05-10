@@ -2,12 +2,12 @@ package me.nicolas.stravastats
 
 import com.beust.jcommander.JCommander
 import javafx.stage.Stage
-import me.nicolas.stravastats.ihm.MainView
+import me.nicolas.stravastats.ihm.SplashScreenView
 import tornadofx.App
 import tornadofx.launch
 
 
-class MyStravaStatsApp : App(MainView::class) {
+internal class MyStravaStatsApp : App(SplashScreenView::class) {
 
     companion object {
         val myStravaStatsParameters = MyStravaStatsParameters()
@@ -21,9 +21,8 @@ class MyStravaStatsApp : App(MainView::class) {
     }
 
     override fun start(stage: Stage) {
-        super.start(stage)
         stage.width = 1024.0
-        stage.height = 768.0
+        super.start(stage)
     }
 }
 
