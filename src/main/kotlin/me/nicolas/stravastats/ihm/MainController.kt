@@ -34,6 +34,16 @@ class MainController(private val activities: ObservableList<Activity>) : Control
         chartsService.buildCharts(activities)
     }
 
+    fun getActiveDaysByActivityTypeByYear(activityType: String, year: Int): Map<String, Int> {
+        return activities
+            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+            .filter { activity -> activity.type == activityType }
+            .groupBy { activity -> activity.startDateLocal.substringBefore('T') }
+            .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance / 1000 } }
+            .mapValues { entry -> entry.value.toInt() }
+            .toMap()
+    }
+
     fun getActiveDaysByActivityType(activityType: String): Map<String, Int> {
         return activities
             .filter { activity -> activity.type == activityType }

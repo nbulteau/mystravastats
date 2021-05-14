@@ -42,6 +42,13 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
 
     private var eddingtonNumber: Int = 0
 
+    val title: Node
+        get() {
+            val label = Label("Eddington number : $eddingtonNumber km")
+            label.style = "-fx-padding: 0 10 20 10"
+            return label
+        }
+
     init {
         // counts = number of time we reach a distance
         activeByDaysMap.forEach { entry: Map.Entry<String, Int> ->
@@ -69,7 +76,6 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
 
     private fun createEddingtonBar(counts: List<Int>, eddingtonNumber: Int): BarChart<String, Number> {
         val eddingtonBar = BarChart(createXAxis(), createYAxis(counts.maxOf { it }))
-        //eddingtonBar.title = "Eddington number : $eddingtonNumber"
 
         val barElements = FXCollections.observableArrayList<XYChart.Data<String, Number>>((counts.indices + 1).map {
             XYChart.Data(it.toString(), counts[it])
@@ -324,7 +330,8 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
                 seriesName.style = "-fx-font-weight: bold"
             }
             val index = xValue.toInt()
-            val label = "Your Eddington number is $eddingtonNumber. \nOn ${counts[index] + 1} days you covered at least ${index + 1} km."
+            val label =
+                "Your Eddington number is $eddingtonNumber. \nOn ${counts[index] + 1} days you covered at least ${index + 1} km."
 
             return HBox(10.0, seriesName, Label(label))
         }
@@ -346,5 +353,4 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
             return null
         }
     }
-
 }
