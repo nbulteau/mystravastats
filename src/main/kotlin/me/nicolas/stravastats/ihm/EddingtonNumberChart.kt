@@ -3,12 +3,16 @@ package me.nicolas.stravastats.ihm
 import javafx.collections.FXCollections
 import javafx.event.EventHandler
 import javafx.event.EventTarget
+import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.Node
 import javafx.scene.chart.*
 import javafx.scene.control.Label
 import javafx.scene.input.MouseEvent
-import javafx.scene.layout.*
+import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.HBox
+import javafx.scene.layout.StackPane
+import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.shape.Line
 import tornadofx.attachTo
@@ -30,14 +34,14 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
 
     private val detailsWindow: AnchorPane
 
+    private val yAxisWidth = 25.0
+
+    private val counts: MutableList<Int> = activeByDaysMap
+        .maxOf { entry -> entry.value }
+        .let { List(it) { 0 }.toMutableList() }
 
     init {
         // counts = number of time we reach a distance
-        val counts: MutableList<Int> = // init to 0
-            activeByDaysMap
-                .maxOf { entry -> entry.value }
-                .let { List(it) { 0 }.toMutableList() }
-
         activeByDaysMap.forEach { entry: Map.Entry<String, Int> ->
             for (day in entry.value downTo 1) {
                 counts[day - 1] += 1
@@ -53,27 +57,27 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         }
 
         eddingtonBar = createEddingtonBar(counts, eddingtonNumber)
-        eddingtonScatter = createEddingtonScatter(counts)
-
+        eddingtonScatter = createEddingtonScatter(counts, eddingtonNumber)
         detailsWindow = AnchorPane()
-        bindMouseEvents(eddingtonBar, 1.5)
 
-        this.children.addAll(eddingtonBar)
+        bindMouseEvents()
+
+        this.children.addAll(eddingtonBar, eddingtonScatter)
+        rebuildChart()
     }
 
     private fun createEddingtonBar(counts: List<Int>, eddingtonNumber: Int): BarChart<String, Number> {
         val eddingtonBar = BarChart(createXAxis(), createYAxis(counts.maxOf { it }))
+        //eddingtonBar.title = "Eddington number : $eddingtonNumber"
+
         val barElements = FXCollections.observableArrayList<XYChart.Data<String, Number>>((counts.indices + 1).map {
             XYChart.Data(it.toString(), counts[it])
         })
-        eddingtonBar.title = "Eddington number : $eddingtonNumber"
         eddingtonBar.series("Eddington number", barElements)
-        setDefaultChartProperties(eddingtonBar)
 
+        setDefaultChartProperties(eddingtonBar)
         eddingtonBar.isAlternativeColumnFillVisible = false
         eddingtonBar.verticalGridLinesVisible = false
-
-        //eddingtonBar.isHorizontalGridLinesVisible = true
 
         for (node in eddingtonBar.lookupAll(".default-color0.chart-bar")) {
             node.style = "-fx-bar-fill: blue;"
@@ -83,7 +87,7 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         return eddingtonBar
     }
 
-    private fun createEddingtonScatter(counts: List<Int>): LineChart<String, Number> {
+    private fun createEddingtonScatter(counts: List<Int>, eddingtonNumber: Int): LineChart<String, Number> {
 
         val eddingtonScatter = object : LineChart<String, Number>(createXAxis(), createYAxis(counts.maxOf { it })) {
             init {
@@ -92,10 +96,13 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
                 chartChildren.remove(yAxis)
             }
         }
+        //eddingtonScatter.title = "Eddington number : $eddingtonNumber"
+
         val scatterElements = FXCollections.observableArrayList<XYChart.Data<String, Number>>((counts.indices + 1).map {
             XYChart.Data(it.toString(), it)
         })
-        eddingtonScatter.series("", scatterElements)
+        eddingtonScatter.series("Eddington", scatterElements)
+
         setDefaultChartProperties(eddingtonScatter)
         configureEddingtonScatter(eddingtonScatter)
 
@@ -118,12 +125,12 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
 
     private fun createYAxis(upperBound: Int): NumberAxis {
         val axis = NumberAxis(0.0, upperBound.toDouble(), 50.0)
-        axis.minWidth = 35.0
-        axis.prefWidth = 35.0
-        axis.maxWidth = 35.0
-        axis.minHeight = 35.0
-        axis.prefHeight = 35.0
-        axis.maxHeight = 35.0
+        axis.minWidth = yAxisWidth
+        axis.prefWidth = yAxisWidth
+        axis.maxWidth = yAxisWidth
+        axis.minHeight = yAxisWidth
+        axis.prefHeight = yAxisWidth
+        axis.maxHeight = yAxisWidth
 
         axis.minorTickCount = 10
         axis.tickLabelFormatter = object : NumberAxis.DefaultFormatter(axis) {
@@ -136,12 +143,12 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
 
     private fun createXAxis(): CategoryAxis {
         val axis = CategoryAxis()
-        axis.minWidth = 35.0
-        axis.prefWidth = 35.0
-        axis.maxWidth = 35.0
-        axis.minHeight = 35.0
-        axis.prefHeight = 35.0
-        axis.maxHeight = 35.0
+        axis.minWidth = yAxisWidth
+        axis.prefWidth = yAxisWidth
+        axis.maxWidth = yAxisWidth
+        axis.minHeight = yAxisWidth
+        axis.prefHeight = yAxisWidth
+        axis.maxHeight = yAxisWidth
 
         return axis
     }
@@ -151,21 +158,71 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         chart.animated = false
     }
 
+    private fun rebuildChart() {
+        children.clear()
+        children.add(resizeEddigtonBarChart())
+        children.add(resizeEddingtonScatter())
+        children.add(detailsWindow)
+    }
 
-    private fun bindMouseEvents(baseChart: BarChart<String, Number>, strokeWidth: Double) {
+    private fun resizeEddigtonBarChart(): Node {
+
+        val hBox = HBox(eddingtonBar)
+        hBox.alignment = Pos.CENTER_LEFT
+        hBox.minHeightProperty().bind(heightProperty())
+        hBox.prefHeightProperty().bind(heightProperty())
+        hBox.maxHeightProperty().bind(heightProperty())
+
+        hBox.minWidthProperty().bind(widthProperty())
+        hBox.prefWidthProperty().bind(widthProperty())
+        hBox.maxWidthProperty().bind(widthProperty())
+
+        eddingtonBar.minWidthProperty().bind(widthProperty())//.subtract(yAxisWidth + yAxisSeparation))
+        eddingtonBar.prefWidthProperty().bind(widthProperty())//.subtract(yAxisWidth + yAxisSeparation))
+        eddingtonBar.maxWidthProperty().bind(widthProperty())//.subtract(yAxisWidth + yAxisSeparation))
+
+        return eddingtonBar
+    }
+
+    private fun resizeEddingtonScatter(): Node {
+
+        val hBox = HBox(eddingtonScatter)
+        hBox.alignment = Pos.CENTER_LEFT
+        hBox.minHeightProperty().bind(heightProperty())
+        hBox.prefHeightProperty().bind(heightProperty())
+        hBox.maxHeightProperty().bind(heightProperty())
+
+        hBox.minWidthProperty().bind(widthProperty())
+        hBox.prefWidthProperty().bind(widthProperty())
+        hBox.maxWidthProperty().bind(widthProperty())
+
+        hBox.isMouseTransparent = true
+
+        eddingtonScatter.minWidthProperty().bind(widthProperty())//.subtract(yAxisWidth + yAxisSeparation))
+        eddingtonScatter.prefWidthProperty().bind(widthProperty())//.subtract(yAxisWidth + yAxisSeparation))
+        eddingtonScatter.maxWidthProperty().bind(widthProperty())//.subtract(yAxisWidth + yAxisSeparation))
+
+        //eddingtonScatter.translateXProperty().bind(eddingtonBar.yAxis.widthProperty())
+        //eddingtonScatter.yAxis.translateX = (yAxisWidth)
+
+        return hBox
+    }
+
+    private fun bindMouseEvents(strokeWidth: Double = 1.5) {
 
         val detailsPopup = DetailsPopup()
         children.add(detailsWindow)
         detailsWindow.children.add(detailsPopup)
         detailsWindow.prefHeightProperty().bind(heightProperty())
         detailsWindow.prefWidthProperty().bind(widthProperty())
+
         detailsWindow.isMouseTransparent = true
 
         onMouseMoved = null
         isMouseTransparent = false
 
-        val xAxis = baseChart.xAxis
-        val yAxis = baseChart.yAxis
+        val xAxis = eddingtonBar.xAxis
+        val yAxis = eddingtonBar.yAxis
 
         val xLine = Line()
         val yLine = Line()
@@ -176,7 +233,8 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         xLine.isVisible = false
         yLine.isVisible = false
 
-        val chartBackground = baseChart.lookup(".chart-plot-background")
+        val chartBackground = eddingtonBar.lookup(".chart-plot-background")
+
         for (node in chartBackground.parent.childrenUnmodifiable) {
             if (node !== chartBackground && node !== xAxis && node !== yAxis) {
                 node.isMouseTransparent = true
@@ -207,18 +265,25 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
             yLine.endX = x + 5
             yLine.startY = 10.0
             yLine.endY = detailsWindow.height - 10
-            detailsPopup.showChartDescription(event)
 
-            if (y + detailsPopup.height + 10 < height) {
-                AnchorPane.setTopAnchor(detailsPopup, y + 10)
-            } else {
-                AnchorPane.setTopAnchor(detailsPopup, y - 10 - detailsPopup.height)
-            }
+            if (eddingtonBar.xAxis.getValueForDisplay(event.x) != null) {
 
-            if (x + detailsPopup.width + 10 < width) {
-                AnchorPane.setLeftAnchor(detailsPopup, x + 10)
+                detailsPopup.showChartDescription(event.x, event.y)
+
+                if (y + detailsPopup.height + 10 < height) {
+                    AnchorPane.setTopAnchor(detailsPopup, y + 10)
+                } else {
+                    AnchorPane.setTopAnchor(detailsPopup, y - 10 - detailsPopup.height)
+                }
+
+                if (x + detailsPopup.width + 10 < width) {
+                    AnchorPane.setLeftAnchor(detailsPopup, x + 10)
+                } else {
+                    AnchorPane.setLeftAnchor(detailsPopup, x - 10 - detailsPopup.width)
+                }
+                detailsPopup.isVisible = true
             } else {
-                AnchorPane.setLeftAnchor(detailsPopup, x - 10 - detailsPopup.width)
+                detailsPopup.isVisible = false
             }
         }
     }
@@ -231,22 +296,22 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
             isVisible = false
         }
 
-        fun showChartDescription(event: MouseEvent) {
+        fun showChartDescription(displayPosition: Double, yValue: Double) {
             children.clear()
-            val xValue: String? = eddingtonBar.xAxis.getValueForDisplay(event.x)
-            val baseChartPopupRow = buildPopupRow(event, xValue, eddingtonBar)
+            val xValue: String = eddingtonBar.xAxis.getValueForDisplay(displayPosition)
+            val baseChartPopupRow = buildPopupRow(xValue, yValue, eddingtonBar)
             if (baseChartPopupRow != null) {
                 children.add(baseChartPopupRow)
             }
         }
 
-        private fun buildPopupRow(event: MouseEvent, xValue: String?, lineChart: BarChart<String, Number>): HBox? {
+        private fun buildPopupRow(xValue: String, yValue: Double, lineChart: BarChart<String, Number>): HBox? {
             val seriesName = Label(lineChart.yAxis.label)
             seriesName.textFill = Color.BLUE
             val yValueForChart = getYValueForX(eddingtonBar, xValue) ?: return null
-            val yValueLower: Number = normalizeYValue(eddingtonBar, event.y - 10).roundToInt()
-            val yValueUpper: Number = normalizeYValue(eddingtonBar, event.y + 10).roundToInt()
-            val yValueUnderMouse: Number = eddingtonBar.yAxis.getValueForDisplay(event.y).toDouble().roundToInt()
+            val yValueLower: Number = normalizeYValue(eddingtonBar, yValue - 10).roundToInt()
+            val yValueUpper: Number = normalizeYValue(eddingtonBar, yValue + 10).roundToInt()
+            val yValueUnderMouse: Number = eddingtonBar.yAxis.getValueForDisplay(yValue).toDouble().roundToInt()
 
             // make series name bold when mouse is near given chart's line
             if (isMouseNearLine(
@@ -257,7 +322,10 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
             ) {
                 seriesName.style = "-fx-font-weight: bold"
             }
-            return HBox(10.0, seriesName, Label("[$yValueForChart]"))
+            val index = xValue.toInt()
+            val label = "On ${counts[index] + 1} days you covered at least ${index + 1} km."
+
+            return HBox(10.0, seriesName, Label(label))
         }
 
         private fun normalizeYValue(lineChart: BarChart<String, Number>, value: Double): Double {
@@ -269,9 +337,7 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         }
 
         fun getYValueForX(chart: BarChart<String, Number>, xValue: String?): Number? {
-            val dataList =
-                chart.data[0].data //(chart.data[0] as Series<String, Number>).data as List<XYChart.Data<String, Number>>
-            for (data in dataList) {
+            for (data in chart.data[0].data) {
                 if (data.xValue == xValue) {
                     return data.yValue as Number
                 }
