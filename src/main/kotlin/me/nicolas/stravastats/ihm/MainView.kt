@@ -114,14 +114,14 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
                 readonlyColumn("Activity", StatisticDisplay::activity)
             }
             drawer {
-                item("Distance/months", expanded = true) {
+                item("Distance by months", expanded = true) {
                     barchart("Distance by months for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
                         series(Ride, mainController.buildDistanceByMonthsSeries(Ride, selectedYear.value))
                         verticalGridLinesVisible = false
                         isLegendVisible = false
                     }
                 }
-                item("Distance/days") {
+                item("Distance by days") {
                     barchart("Distance by days for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
                         series(Ride, mainController.buildDistanceByDaysSeries(Ride, selectedYear.value))
                         verticalGridLinesVisible = false
