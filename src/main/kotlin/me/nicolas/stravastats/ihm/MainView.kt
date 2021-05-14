@@ -9,6 +9,7 @@ import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
+import javafx.scene.layout.BorderPane
 import me.nicolas.stravastats.MyStravaStatsApp
 import me.nicolas.stravastats.business.*
 import me.nicolas.stravastats.service.ActivityHelper
@@ -18,7 +19,7 @@ import java.time.LocalDate
 
 class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("MyStravaStats") {
     override val root = borderpane {
-        setPrefSize(1024.0, 768.0)
+        setPrefSize(1200.0, 800.0)
     }
 
     private val mainController: MainController = MainController(activities)
@@ -31,6 +32,7 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
     private var runStatsTab: Tab by singleAssign()
     private var hikeStatsTab: Tab by singleAssign()
     private var inlineSkateStatsTab: Tab by singleAssign()
+    private var overYearsTab: Tab? by singleAssign()
 
     init {
         with(root) {
@@ -81,6 +83,9 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
                     tab("Run statistics") { runStatsTab = this }
                     tab("Hike ride statistics") { hikeStatsTab = this }
                     tab("InlineSkate statistics") { inlineSkateStatsTab = this }
+                    if (MyStravaStatsApp.myStravaStatsParameters.year == null) {
+                        tab("Over years") { overYearsTab = this }
+                    }
                 }
             }
         }
@@ -129,7 +134,7 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
                     }
                 }
                 item("Eddington number") {
-                    eddingtonNumberChart(mainController.getActiveDaysByActivityType(Ride))
+                    eddingtonNumberChart(mainController.getActiveDaysByActivityTypeByYear(Ride, selectedYear.value))
                 }
             }
             commuteRideStatsTab.content =
@@ -160,7 +165,7 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
                         }
                     }
                     item("Eddington number") {
-                        eddingtonNumberChart(mainController.getActiveDaysByActivityType(Run))
+                        eddingtonNumberChart(mainController.getActiveDaysByActivityTypeByYear(Run, selectedYear.value))
                     }
                 }
             }
@@ -184,9 +189,6 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
                             verticalGridLinesVisible = false
                             isLegendVisible = false
                         }
-                    }
-                    item("Eddington number") {
-                        eddingtonNumberChart(mainController.getActiveDaysByActivityType(Hike))
                     }
                 }
             }
@@ -218,12 +220,41 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
                         }
                     }
                     item("Eddington number") {
-                        eddingtonNumberChart(mainController.getActiveDaysByActivityType(InlineSkate))
+                        eddingtonNumberChart(
+                            mainController.getActiveDaysByActivityTypeByYear(
+                                InlineSkate,
+                                selectedYear.value
+                            )
+                        )
                     }
                 }
             }
+            overYearsTab?.content = drawer {
+                item("Ride Eddington number", expanded = true) {
+                    eddingtonNumberChart(mainController.getActiveDaysByActivityType(Ride))
+                }
+                item("Run Eddington number") {
+                    eddingtonNumberChart(mainController.getActiveDaysByActivityType(Run))
+                }
+                item("InlineSkate Eddington number") {
+                    eddingtonNumberChart(mainController.getActiveDaysByActivityType(InlineSkate))
+                }
+                /*
+                TODO : debug multipleAxesLineChart
+                item("multipleAxesLineChart") {
+                    val multipleAxesLineChart = multipleAxesLineChart()
+                    borderpane {
+                        center {
+                            multipleAxesLineChart.attachTo(this)
+                        }
+                    }
+                }
+                */
+            }
         }
     }
+
+    private var maxOfAll: Double = 0.0
 
     private fun multipleAxesLineChart(): MultipleAxesLineChart {
 
@@ -240,21 +271,50 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
             val data = cumulativeDistance.entries.map { entry ->
                 XYChart.Data<String, Number>(entry.key, entry.value)
             }.toObservable()
-            allSeries.add(XYChart.Series(data))
+            allSeries.add(XYChart.Series(year.toString(), data))
+
+            maxOfAll = maxOf(maxOfAll, cumulativeDistance.values.maxOf { it } )
         }
 
-        val yAxis = NumberAxis().apply {
-            title = "Distance (km)"
-            side = Side.LEFT
-
-        }
-        val baseChart = LineChart(CategoryAxis(), yAxis)
+        val baseChart = LineChart(createXAxis(), createYAxis(maxOfAll.toInt()))
         baseChart.data.add(allSeries.removeFirst())
         val multipleAxesLineChart = MultipleAxesLineChart(baseChart)
-        allSeries.map { series ->
+        allSeries.forEach { series ->
             multipleAxesLineChart.addSeries(series)
         }
 
         return multipleAxesLineChart
     }
+    private val yAxisWidth = 25.0
+
+    private fun createYAxis(upperBound: Int): NumberAxis {
+        val axis = NumberAxis(0.0, upperBound.toDouble(), 50.0)
+        axis.minWidth = yAxisWidth
+        axis.prefWidth = yAxisWidth
+        axis.maxWidth = yAxisWidth
+        axis.minHeight = yAxisWidth
+        axis.prefHeight = yAxisWidth
+        axis.maxHeight = yAxisWidth
+
+        axis.minorTickCount = 10
+        axis.tickLabelFormatter = object : NumberAxis.DefaultFormatter(axis) {
+            override fun toString(number: Number): String {
+                return String.format("%d", number.toInt())
+            }
+        }
+        return axis
+    }
+
+    private fun createXAxis(): CategoryAxis {
+        val axis = CategoryAxis()
+        axis.minWidth = yAxisWidth
+        axis.prefWidth = yAxisWidth
+        axis.maxWidth = yAxisWidth
+        axis.minHeight = yAxisWidth
+        axis.prefHeight = yAxisWidth
+        axis.maxHeight = yAxisWidth
+
+        return axis
+    }
+
 }
