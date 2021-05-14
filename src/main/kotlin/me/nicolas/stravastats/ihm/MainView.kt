@@ -1,14 +1,17 @@
 package me.nicolas.stravastats.ihm
 
 import javafx.beans.property.SimpleIntegerProperty
-import javafx.collections.FXCollections
 import javafx.collections.ObservableList
+import javafx.geometry.Side
 import javafx.scene.chart.CategoryAxis
+import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
+import javafx.scene.chart.XYChart
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import me.nicolas.stravastats.MyStravaStatsApp
 import me.nicolas.stravastats.business.*
+import me.nicolas.stravastats.service.ActivityHelper
 import tornadofx.*
 import java.time.LocalDate
 
@@ -20,7 +23,6 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
 
     private val mainController: MainController = MainController(activities)
 
-    private val years = FXCollections.observableArrayList((LocalDate.now().year downTo 2010).toList())
     private var selectedYear = SimpleIntegerProperty(LocalDate.now().year)
 
     private var globalStatsTab: Tab by singleAssign()
@@ -44,9 +46,9 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
                         maxWidth = Double.MAX_VALUE
                     }
                     if (MyStravaStatsApp.myStravaStatsParameters.year == null) {
-                        combobox(property = selectedYear, values = years) {
+                        combobox(property = selectedYear, values = (LocalDate.now().year downTo 2010).toList()) {
                             selectionModel.selectedItemProperty().onChange {
-                                updateStatistics()
+                                updateTabs()
                             }
                             maxWidth = Double.MAX_VALUE
                         }
@@ -82,10 +84,10 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
                 }
             }
         }
-        updateStatistics()
+        updateTabs()
     }
 
-    private fun updateStatistics() {
+    private fun updateTabs() {
         val statisticsToDisplay = mainController.getStatisticsToDisplay(selectedYear.value)
 
         globalStatsTab.content = vbox {
@@ -95,18 +97,7 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
             }
             drawer {
                 item("Distance by months", expanded = true) {
-                    barchart("Distance by months for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
-                        series(Run, mainController.buildDistanceByMonthsSeries(Run, selectedYear.value))
-                        series(Ride, mainController.buildDistanceByMonthsSeries(Ride, selectedYear.value))
-                        series(InlineSkate, mainController.buildDistanceByMonthsSeries(InlineSkate, selectedYear.value))
-                        series(Hike, mainController.buildDistanceByMonthsSeries(Hike, selectedYear.value))
-                        verticalGridLinesVisible = false
-                    }
-                }
-                item("Distance by months") {
-                    stackedbarchart(
-                        "Distance by months for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()
-                    ) {
+                    barchart("Distance by months for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
                         series(Run, mainController.buildDistanceByMonthsSeries(Run, selectedYear.value))
                         series(Ride, mainController.buildDistanceByMonthsSeries(Ride, selectedYear.value))
                         series(InlineSkate, mainController.buildDistanceByMonthsSeries(InlineSkate, selectedYear.value))
@@ -123,88 +114,147 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
                 readonlyColumn("Activity", StatisticDisplay::activity)
             }
             drawer {
-                item("Distance by months", expanded = true) {
-                    barchart("Distance by months for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
+                item("Distance/months", expanded = true) {
+                    barchart("Distance by months for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
                         series(Ride, mainController.buildDistanceByMonthsSeries(Ride, selectedYear.value))
                         verticalGridLinesVisible = false
+                        isLegendVisible = false
                     }
                 }
-                item("Distance by days") {
-                    barchart("Distance by days for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
+                item("Distance/days") {
+                    barchart("Distance by days for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
                         series(Ride, mainController.buildDistanceByDaysSeries(Ride, selectedYear.value))
                         verticalGridLinesVisible = false
+                        isLegendVisible = false
+                    }
+                }
+                item("Eddington number") {
+                    eddingtonNumberChart(mainController.getActiveDaysByActivityType(Ride))
+                }
+            }
+            commuteRideStatsTab.content =
+                tableview(statisticsToDisplay.commuteRideStatistics) {
+                    readonlyColumn("Statistic", StatisticDisplay::label)
+                    readonlyColumn("Value", StatisticDisplay::value)
+                    readonlyColumn("Activity", StatisticDisplay::activity)
+                }
+            runStatsTab.content = vbox {
+                tableview(statisticsToDisplay.runStatistics) {
+                    readonlyColumn("Statistic", StatisticDisplay::label)
+                    readonlyColumn("Value", StatisticDisplay::value)
+                    readonlyColumn("Activity", StatisticDisplay::activity)
+                }
+                drawer {
+                    item("Distance by months", expanded = true) {
+                        barchart("Distance by months for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
+                            series(Run, mainController.buildDistanceByMonthsSeries(Run, selectedYear.value))
+                            verticalGridLinesVisible = false
+                            isLegendVisible = false
+                        }
+                    }
+                    item("Distance by days") {
+                        barchart("Distance by days for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
+                            series(Run, mainController.buildDistanceByDaysSeries(Run, selectedYear.value))
+                            verticalGridLinesVisible = false
+                            isLegendVisible = false
+                        }
+                    }
+                    item("Eddington number") {
+                        eddingtonNumberChart(mainController.getActiveDaysByActivityType(Run))
+                    }
+                }
+            }
+            hikeStatsTab.content = vbox {
+                tableview(statisticsToDisplay.hikeStatics) {
+                    readonlyColumn("Statistic", StatisticDisplay::label)
+                    readonlyColumn("Value", StatisticDisplay::value)
+                    readonlyColumn("Activity", StatisticDisplay::activity)
+                }
+                drawer {
+                    item("Distance by months", expanded = true) {
+                        barchart("Distance by months for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
+                            series(Hike, mainController.buildDistanceByMonthsSeries(Hike, selectedYear.value))
+                            verticalGridLinesVisible = false
+                            isLegendVisible = false
+                        }
+                    }
+                    item("Distance by days") {
+                        barchart("Distance by days for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
+                            series(Hike, mainController.buildDistanceByDaysSeries(Hike, selectedYear.value))
+                            verticalGridLinesVisible = false
+                            isLegendVisible = false
+                        }
+                    }
+                    item("Eddington number") {
+                        eddingtonNumberChart(mainController.getActiveDaysByActivityType(Hike))
+                    }
+                }
+            }
+            inlineSkateStatsTab.content = vbox {
+                tableview(statisticsToDisplay.inlineSkateStatistics) {
+                    readonlyColumn("Statistic", StatisticDisplay::label)
+                    readonlyColumn("Value", StatisticDisplay::value)
+                    readonlyColumn("Activity", StatisticDisplay::activity)
+                }
+                drawer {
+                    item("Distance by months", expanded = true) {
+                        barchart("Distance by months for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
+                            series(
+                                InlineSkate,
+                                mainController.buildDistanceByMonthsSeries(InlineSkate, selectedYear.value)
+                            )
+                            verticalGridLinesVisible = false
+                            isLegendVisible = false
+                        }
+                    }
+                    item("Distance by days") {
+                        barchart("Distance by days for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
+                            series(
+                                InlineSkate,
+                                mainController.buildDistanceByDaysSeries(InlineSkate, selectedYear.value)
+                            )
+                            verticalGridLinesVisible = false
+                            isLegendVisible = false
+                        }
+                    }
+                    item("Eddington number") {
+                        eddingtonNumberChart(mainController.getActiveDaysByActivityType(InlineSkate))
                     }
                 }
             }
         }
-        commuteRideStatsTab.content =
-            tableview(statisticsToDisplay.commuteRideStatistics) {
-                readonlyColumn("Statistic", StatisticDisplay::label)
-                readonlyColumn("Value", StatisticDisplay::value)
-                readonlyColumn("Activity", StatisticDisplay::activity)
+    }
+
+    private fun multipleAxesLineChart(): MultipleAxesLineChart {
+
+        val activitiesByYear = mainController.getActivitiesByYear()
+        val allSeries = mutableListOf<XYChart.Series<String, Number>>()
+        for (year in 2010..LocalDate.now().year) {
+            val activities = if (activitiesByYear[year.toString()] != null) {
+                activitiesByYear[year.toString()]?.filter { activity -> activity.type == Ride }!!
+            } else {
+                continue
             }
-        runStatsTab.content = vbox {
-            tableview(statisticsToDisplay.runStatistics) {
-                readonlyColumn("Statistic", StatisticDisplay::label)
-                readonlyColumn("Value", StatisticDisplay::value)
-                readonlyColumn("Activity", StatisticDisplay::activity)
-            }
-            drawer {
-                item("Distance by months", expanded = true) {
-                    barchart("Distance by months for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
-                        series(Run, mainController.buildDistanceByMonthsSeries(Run, selectedYear.value))
-                        verticalGridLinesVisible = false
-                    }
-                }
-                item("Distance by days") {
-                    barchart("Distance by days for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
-                        series(Run, mainController.buildDistanceByDaysSeries(Run, selectedYear.value))
-                        verticalGridLinesVisible = false
-                    }
-                }
-            }
+            val activitiesByDay = ActivityHelper.groupActivitiesByDay(activities, year)
+            val cumulativeDistance = ActivityHelper.cumulativeDistance(activitiesByDay)
+            val data = cumulativeDistance.entries.map { entry ->
+                XYChart.Data<String, Number>(entry.key, entry.value)
+            }.toObservable()
+            allSeries.add(XYChart.Series(data))
         }
-        hikeStatsTab.content = vbox {
-            tableview(statisticsToDisplay.hikeStatics) {
-                readonlyColumn("Statistic", StatisticDisplay::label)
-                readonlyColumn("Value", StatisticDisplay::value)
-                readonlyColumn("Activity", StatisticDisplay::activity)
-            }
-            drawer {
-                item("Distance by months", expanded = true) {
-                    barchart("Distance by months for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
-                        series(Hike, mainController.buildDistanceByMonthsSeries(Hike, selectedYear.value))
-                        verticalGridLinesVisible = false
-                    }
-                }
-                item("Distance by days") {
-                    barchart("Distance by days for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
-                        series(Hike, mainController.buildDistanceByDaysSeries(Hike, selectedYear.value))
-                        verticalGridLinesVisible = false
-                    }
-                }
-            }
+
+        val yAxis = NumberAxis().apply {
+            title = "Distance (km)"
+            side = Side.LEFT
+
         }
-        inlineSkateStatsTab.content = vbox {
-            tableview(statisticsToDisplay.inlineSkateStatistics) {
-                readonlyColumn("Statistic", StatisticDisplay::label)
-                readonlyColumn("Value", StatisticDisplay::value)
-                readonlyColumn("Activity", StatisticDisplay::activity)
-            }
-            drawer {
-                item("Distance by months", expanded = true) {
-                    barchart("Distance by months for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
-                        series(InlineSkate, mainController.buildDistanceByMonthsSeries(InlineSkate, selectedYear.value))
-                        verticalGridLinesVisible = false
-                    }
-                }
-                item("Distance by days") {
-                    barchart("Distance by days for ${selectedYear.value} (km/h)", CategoryAxis(), NumberAxis()) {
-                        series(InlineSkate, mainController.buildDistanceByDaysSeries(InlineSkate, selectedYear.value))
-                        verticalGridLinesVisible = false
-                    }
-                }
-            }
+        val baseChart = LineChart(CategoryAxis(), yAxis)
+        baseChart.data.add(allSeries.removeFirst())
+        val multipleAxesLineChart = MultipleAxesLineChart(baseChart)
+        allSeries.map { series ->
+            multipleAxesLineChart.addSeries(series)
         }
+
+        return multipleAxesLineChart
     }
 }

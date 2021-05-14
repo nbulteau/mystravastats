@@ -43,7 +43,7 @@ abstract class Chart {
         activityType: String
     ) {
 
-        val activeDaysList = activities
+        val activeDaysList: Map<String, Int> = activities
             .filter { activity -> activity.type == activityType }
             .groupBy { activity -> activity.startDateLocal.substringBefore('T') }
             .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance / 1000 } }

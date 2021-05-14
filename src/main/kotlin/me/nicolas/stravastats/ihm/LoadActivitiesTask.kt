@@ -22,7 +22,11 @@ internal class LoadActivitiesTask : Task<Pair<Athlete?, List<Activity>>>() {
     private val stravaService = StravaService(StravaApi(loadPropertiesFromFile()))
 
     override fun call(): Pair<Athlete?, List<Activity>> {
-        updateMessage("Waiting for your agreement to allow MyStravaStats to access to your Strava data ...")
+        if ( MyStravaStatsApp.myStravaStatsParameters.year != null) {
+            updateMessage("Waiting for your agreement to allow MyStravaStats to access to your Strava data ...")
+        }
+
+        updateMessage("Loading athlete activities ${MyStravaStatsApp.myStravaStatsParameters.clientId} ...")
         val athlete = stravaService.getLoggedInAthlete(
             MyStravaStatsApp.myStravaStatsParameters.clientId,
             MyStravaStatsApp.myStravaStatsParameters.clientSecret

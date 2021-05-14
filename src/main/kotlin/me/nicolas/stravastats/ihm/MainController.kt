@@ -5,7 +5,6 @@ import javafx.collections.ObservableList
 import javafx.scene.chart.XYChart
 import me.nicolas.stravastats.MyStravaStatsApp
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.service.ActivityHelper
 import me.nicolas.stravastats.service.CSVService
 import me.nicolas.stravastats.service.ChartsService
@@ -13,6 +12,7 @@ import me.nicolas.stravastats.service.StatisticsService
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
 import tornadofx.Controller
+import java.time.LocalDate
 
 class MainController(private val activities: ObservableList<Activity>) : Controller() {
 
@@ -33,6 +33,17 @@ class MainController(private val activities: ObservableList<Activity>) : Control
     fun generateCharts() {
         chartsService.buildCharts(activities)
     }
+
+    fun getActiveDaysByActivityType(activityType: String): Map<String, Int> {
+        return activities
+            .filter { activity -> activity.type == activityType }
+            .groupBy { activity -> activity.startDateLocal.substringBefore('T') }
+            .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance / 1000 } }
+            .mapValues { entry -> entry.value.toInt() }
+            .toMap()
+    }
+
+    fun getActivitiesByYear() = ActivityHelper.groupActivitiesByYear(activities)
 
     fun getStatisticsToDisplay(year: Int?): StatisticsToDisplay {
         val stravaStatistics = statsService.computeStatistics(activities.filter { activity ->
