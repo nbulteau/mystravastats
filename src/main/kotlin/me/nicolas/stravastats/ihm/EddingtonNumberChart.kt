@@ -40,6 +40,8 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         .maxOf { entry -> entry.value }
         .let { List(it) { 0 }.toMutableList() }
 
+    private var eddingtonNumber: Int = 0
+
     init {
         // counts = number of time we reach a distance
         activeByDaysMap.forEach { entry: Map.Entry<String, Int> ->
@@ -48,7 +50,6 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
             }
         }
 
-        var eddingtonNumber = 0
         for (day in counts.size downTo 1) {
             if (counts[day - 1] >= day) {
                 eddingtonNumber = day
@@ -323,7 +324,7 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
                 seriesName.style = "-fx-font-weight: bold"
             }
             val index = xValue.toInt()
-            val label = "On ${counts[index] + 1} days you covered at least ${index + 1} km."
+            val label = "Your Eddington number is $eddingtonNumber. \nOn ${counts[index] + 1} days you covered at least ${index + 1} km."
 
             return HBox(10.0, seriesName, Label(label))
         }
