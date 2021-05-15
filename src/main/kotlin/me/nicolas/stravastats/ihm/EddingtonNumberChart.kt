@@ -1,8 +1,10 @@
 package me.nicolas.stravastats.ihm
 
+import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.event.EventHandler
 import javafx.event.EventTarget
+import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.Node
@@ -15,6 +17,7 @@ import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.shape.Line
+import javafx.scene.text.Text
 import tornadofx.attachTo
 import tornadofx.series
 import kotlin.math.abs
@@ -29,23 +32,14 @@ internal fun EventTarget.eddingtonNumberChart(
 internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPane() {
 
     private val eddingtonBar: BarChart<String, Number>
-
     private val eddingtonScatter: LineChart<String, Number>
-
     private val detailsWindow: AnchorPane
+    private val titleWindow: VBox
 
     private val yAxisWidth = 25.0
 
     private val counts = IntArray(activeByDaysMap.maxOf { entry -> entry.value }) { 0 }.toMutableList()
-
     private var eddingtonNumber: Int = 0
-
-    val title: Node
-        get() {
-            val label = Label("Eddington number : $eddingtonNumber km")
-            label.style = "-fx-padding: 0 10 20 10"
-            return label
-        }
 
     init {
         // counts = number of time we reach a distance
@@ -62,8 +56,10 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
             }
         }
 
-        eddingtonBar = createEddingtonBar(counts, eddingtonNumber)
-        eddingtonScatter = createEddingtonScatter(counts, eddingtonNumber)
+        eddingtonBar = createEddingtonBar(counts)
+        eddingtonScatter = createEddingtonScatter(counts)
+
+        titleWindow = buildTitle("Eddington number $eddingtonNumber")
         detailsWindow = AnchorPane()
 
         bindMouseEvents()
@@ -72,13 +68,13 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         rebuildChart()
     }
 
-    private fun createEddingtonBar(counts: List<Int>, eddingtonNumber: Int): BarChart<String, Number> {
+    private fun createEddingtonBar(counts: List<Int>): BarChart<String, Number> {
         val eddingtonBar = BarChart(createXAxis(), createYAxis(counts.maxOf { it }))
 
         val barElements = FXCollections.observableArrayList<XYChart.Data<String, Number>>((counts.indices + 1).map {
             XYChart.Data(it.toString(), counts[it])
         })
-        eddingtonBar.series("Eddington number", barElements)
+        eddingtonBar.series("Eddington number : ", barElements)
 
         setDefaultChartProperties(eddingtonBar)
         eddingtonBar.isAlternativeColumnFillVisible = false
@@ -92,7 +88,7 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         return eddingtonBar
     }
 
-    private fun createEddingtonScatter(counts: List<Int>, eddingtonNumber: Int): LineChart<String, Number> {
+    private fun createEddingtonScatter(counts: List<Int>): LineChart<String, Number> {
 
         val eddingtonScatter = object : LineChart<String, Number>(createXAxis(), createYAxis(counts.maxOf { it })) {
             init {
@@ -101,8 +97,6 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
                 chartChildren.remove(yAxis)
             }
         }
-        //eddingtonScatter.title = "Eddington number : $eddingtonNumber"
-
         val scatterElements = FXCollections.observableArrayList<XYChart.Data<String, Number>>((counts.indices + 1).map {
             XYChart.Data(it.toString(), it)
         })
@@ -158,6 +152,20 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         return axis
     }
 
+    private fun buildTitle(title: String): VBox {
+
+        val text = Text(title)
+        val vBox = VBox(text)
+        vBox.alignment = Pos.TOP_CENTER
+        vBox.isMouseTransparent = true
+        vBox.padding = Insets(20.0)
+        vBox.style = "-fx-fill-width: false; -fx-background-color: transparent;"
+        vBox.focusTraversableProperty().bind(Platform.accessibilityActiveProperty())
+        text.styleClass.add("chart-title")
+
+        return vBox
+    }
+
     private fun setDefaultChartProperties(chart: XYChart<String, Number>) {
         chart.isLegendVisible = false
         chart.animated = false
@@ -168,6 +176,7 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         children.add(resizeEddigtonBarChart())
         children.add(resizeEddingtonScatter())
         children.add(detailsWindow)
+        children.add(titleWindow)
     }
 
     private fun resizeEddigtonBarChart(): Node {
