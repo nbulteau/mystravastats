@@ -33,9 +33,10 @@ Due to rate limitations (100 requests every 15 minutes, with up to 1,000 request
 Note : If you do not use the -clientSecret parameters MyStravaStats will use locally downloaded activities.
 
 *Optional parameters*
-* -year: the year you request (default value is the current year).
+* -year: the year you request (default value is from 2010 to the current year).
 
-A URL will be displayed copy/past it in a browser to get allow mystravastats to access your Strava data.
+A browser will open a browser on the Strava consent screen. 
+If browser does not open, copy/past URL from your terminal in a browser to allow mystravastats to access your Strava data.
 This URL will look like :
 ```
 http://www.strava.com/api/v3/oauth/authorize?client_id=[YOUR_CLIENT_ID]&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=read_all,profile:read_all,activity:read_all
