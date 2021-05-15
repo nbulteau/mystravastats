@@ -11,6 +11,9 @@ https://fr.wikipedia.org/wiki/Test_de_Cooper
 https://en.wikipedia.org/wiki/VVO2max
 * ...
 
+## IHM
+![Charts](https://github.com/nbulteau/mystravastats/blob/main/docs/MyStravaStats_IHM.png)
+
 ## Launch mystravastats
 
 ### Stava access
@@ -31,11 +34,6 @@ Note : If you do not use the -clientSecret parameters MyStravaStats will use loc
 
 *Optional parameters*
 * -year: the year you request (default value is the current year).
-* -csv : to export all activities in a CSV file.
-* -charts : generate some charts.
-
-*Experimental*
-* -filter: to filter exported activities on a specific distance in meters. For example : -csv -filter 10000 will display all the activities around 10000 m (+/- 5 %)
 
 A URL will be displayed copy/past it in a browser to get allow mystravastats to access your Strava data.
 This URL will look like :
@@ -45,45 +43,23 @@ http://www.strava.com/api/v3/oauth/authorize?client_id=[YOUR_CLIENT_ID]&response
 Login to Strava then click 'Authorize' and tick the required permissions if needed.
 
 ### Some examples
-
 Download activities from 2010 to now from Strava, then display statistics.
 ```
 ./gradlew run --args="-clientId [clientId] -clientSecret [clientSecret]"    
 ```
-
 Display statistics for current year using locally downloaded activities (No further download).
 ```
 ./gradlew run --args="-clientId [clientId]"
 ```
-
 Display statistics for specified year using locally downloaded activities.
 ```
 ./gradlew run --args="-clientId [clientId] -year 2019"
 ```
 
-Export activities in a CSV file using locally downloaded activities (year by year) :
-```
-./gradlew run --args="-clientId [clientId] -csv"
-```
-
-Export activities in a CSV file using locally downloaded activities for year 2019 :
-```
-./gradlew run --args="-clientId [clientId] -csv -year 2019"
-```
-
-Display statistics for specified year using locally downloaded activities, then display charts:
-```
-./gradlew run --args="-clientId [clientId] -charts -year 2020"
-```
-
-![Charts](https://github.com/nbulteau/mystravastats/blob/main/docs/ride_distance_by_years.png?raw=true)
-![Charts](https://github.com/nbulteau/mystravastats/blob/main/docs/kilometers_by_years.png?raw=true)
-
-
-Display export activities in a CSV file with a filter using locally downloaded activities (current year) :
-```
-./gradlew run --args="-clientId [clientId] -csv -filter 10000"
-```
+### Ride distance by year chart
+![Charts](https://github.com/nbulteau/mystravastats/blob/main/docs/ride_distance_by_years_chart.png?raw=true)
+### Distance by year chart
+![Charts](https://github.com/nbulteau/mystravastats/blob/main/docs/distance_by_years_chart.png?raw=true)
 
 ## Provided Statistics
 ### Global Statistics
