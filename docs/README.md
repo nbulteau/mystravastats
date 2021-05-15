@@ -3,7 +3,7 @@
 A tool to calculates and displays many statistics about Strava activities.
 
 This tool scans through activities :
-* Looks for the best effort for distance or time span fastest consecutive 1 km, 5 km, 10 km you've run, or the fastest 2 hours, 3 hours in ride activities.
+* Looks for best effort for a distance or time span fastest consecutive 1 km, 5 km, 10 km you've run, or the fastest 2 hours, 3 hours in ride activities.
 * Calculate Eddington number for rides, runs, inline skate and hikes. Eddington number is the largest number, E, such that you have ridden at least E km on at least E days. https://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling
 * Calculate the best Cooper (12 min) : In the original form, the point of the test is to run as far as possible within 12 minutes. MyStravaStats look for with a 'sliding window' the best effort for the given time (12 minutes) on running activities. 
 https://fr.wikipedia.org/wiki/Test_de_Cooper
