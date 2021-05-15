@@ -41,7 +41,7 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
                         spacing = 5.px
                         padding = box(5.px)
                     }
-                    textfield("${athlete?.firstname} ${athlete?.lastname}") {
+                    textfield("${athlete?.firstname ?: ""} ${athlete?.lastname ?: ""}") {
                         isEditable = false
                         maxWidth = Double.MAX_VALUE
                     }
