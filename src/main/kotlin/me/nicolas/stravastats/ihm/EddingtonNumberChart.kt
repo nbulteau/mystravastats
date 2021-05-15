@@ -68,7 +68,7 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         eddingtonBar = createEddingtonBar(counts, upperBound)
         eddingtonScatter = createEddingtonScatter(counts, upperBound)
 
-        titleWindow = buildTitle("Eddington number $eddingtonNumber")
+        titleWindow = buildTitle("Eddington number : $eddingtonNumber km")
         detailsWindow = AnchorPane()
 
         bindMouseEvents()
