@@ -16,11 +16,13 @@ class ActivityHelper {
                 }.toMutableMap()
 
             // Add years without activities
-            val min = activitiesByYear.keys.minOf { it.toInt() }
-            val max = activitiesByYear.keys.maxOf { it.toInt() }
-            for (year in min..max) {
-                if (!activitiesByYear.contains("$year")) {
-                    activitiesByYear["$year"] = emptyList()
+            if(activitiesByYear.isNotEmpty()) {
+                val min = activitiesByYear.keys.minOf { it.toInt() }
+                val max = activitiesByYear.keys.maxOf { it.toInt() }
+                for (year in min..max) {
+                    if (!activitiesByYear.contains("$year")) {
+                        activitiesByYear["$year"] = emptyList()
+                    }
                 }
             }
             return activitiesByYear.toSortedMap()

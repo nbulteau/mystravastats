@@ -38,26 +38,35 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
 
     private val yAxisWidth = 25.0
 
-    private val counts = IntArray(activeByDaysMap.maxOf { entry -> entry.value }) { 0 }.toMutableList()
+    private val counts: MutableList<Int>
+
     private var eddingtonNumber: Int = 0
 
     init {
-        // counts = number of time we reach a distance
-        activeByDaysMap.forEach { entry: Map.Entry<String, Int> ->
-            for (day in entry.value downTo 1) {
-                counts[day - 1] += 1
+        var upperBound = 0
+
+        if (activeByDaysMap.isEmpty()) {
+            counts = mutableListOf()
+        } else {
+            counts = IntArray(activeByDaysMap.maxOf { entry -> entry.value }) { 0 }.toMutableList()
+            // counts = number of time we reach a distance
+            activeByDaysMap.forEach { entry: Map.Entry<String, Int> ->
+                for (day in entry.value downTo 1) {
+                    counts[day - 1] += 1
+                }
             }
+
+            for (day in counts.size downTo 1) {
+                if (counts[day - 1] >= day) {
+                    eddingtonNumber = day
+                    break
+                }
+            }
+            upperBound = counts[0]
         }
 
-        for (day in counts.size downTo 1) {
-            if (counts[day - 1] >= day) {
-                eddingtonNumber = day
-                break
-            }
-        }
-
-        eddingtonBar = createEddingtonBar(counts)
-        eddingtonScatter = createEddingtonScatter(counts)
+        eddingtonBar = createEddingtonBar(counts, upperBound)
+        eddingtonScatter = createEddingtonScatter(counts, upperBound)
 
         titleWindow = buildTitle("Eddington number $eddingtonNumber")
         detailsWindow = AnchorPane()
@@ -68,14 +77,15 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         rebuildChart()
     }
 
-    private fun createEddingtonBar(counts: List<Int>): BarChart<String, Number> {
-        val eddingtonBar = BarChart(createXAxis(), createYAxis(counts.maxOf { it }))
+    private fun createEddingtonBar(counts: List<Int>, upperBound: Int): BarChart<String, Number> {
+        val eddingtonBar = BarChart(createXAxis(), createYAxis(upperBound))
 
-        val barElements = FXCollections.observableArrayList<XYChart.Data<String, Number>>((counts.indices + 1).map {
-            XYChart.Data(it.toString(), counts[it])
-        })
-        eddingtonBar.series("Eddington number : ", barElements)
-
+        if(counts.isNotEmpty()) {
+            val barElements = FXCollections.observableArrayList<XYChart.Data<String, Number>>((counts.indices + 1).map {
+                XYChart.Data(it.toString(), counts[it])
+            })
+            eddingtonBar.series("Eddington number : ", barElements)
+        }
         setDefaultChartProperties(eddingtonBar)
         eddingtonBar.isAlternativeColumnFillVisible = false
         eddingtonBar.verticalGridLinesVisible = false
@@ -88,9 +98,9 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         return eddingtonBar
     }
 
-    private fun createEddingtonScatter(counts: List<Int>): LineChart<String, Number> {
+    private fun createEddingtonScatter(counts: List<Int>, upperBound: Int): LineChart<String, Number> {
 
-        val eddingtonScatter = object : LineChart<String, Number>(createXAxis(), createYAxis(counts.maxOf { it })) {
+        val eddingtonScatter = object : LineChart<String, Number>(createXAxis(), createYAxis(upperBound)) {
             init {
                 // hide axis in constructor, since not public
                 chartChildren.remove(xAxis)
@@ -215,9 +225,6 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         eddingtonScatter.prefWidthProperty().bind(widthProperty())
         eddingtonScatter.maxWidthProperty().bind(widthProperty())
 
-        //eddingtonScatter.translateXProperty().bind(eddingtonBar.yAxis.widthProperty())
-        //eddingtonScatter.yAxis.translateX = (yAxisWidth)
-
         return hBox
     }
 
@@ -261,7 +268,7 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
             yLine.isVisible = true
             detailsWindow.children.addAll(xLine, yLine)
         }
-        chartBackground.onMouseExited = EventHandler { event: MouseEvent ->
+        chartBackground.onMouseExited = EventHandler {
             detailsPopup.isVisible = false
             xLine.isVisible = false
             yLine.isVisible = false

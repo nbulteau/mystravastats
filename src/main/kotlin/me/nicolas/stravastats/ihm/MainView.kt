@@ -2,6 +2,7 @@ package me.nicolas.stravastats.ihm
 
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.ObservableList
+import javafx.event.EventTarget
 import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
@@ -227,21 +228,14 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
                 }
             }
             overYearsTab?.content = drawer {
+
                 item("Ride distance by years", expanded = true) {
                     val multipleAxesLineChart = distanceByYears(Ride)
-                    borderpane {
-                        center {
-                            multipleAxesLineChart.attachTo(this)
-                        }
-                    }
+                    multipleAxesLineChart.attachTo(this)
                 }
                 item("Run distance by years") {
                     val multipleAxesLineChart = distanceByYears(Run)
-                    borderpane {
-                        center {
-                            multipleAxesLineChart.attachTo(this)
-                        }
-                    }
+                    multipleAxesLineChart.attachTo(this)
                 }
                 item("Ride Eddington number") {
                     eddingtonNumberChart(mainController.getActiveDaysByActivityType(Ride))
