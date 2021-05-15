@@ -1,10 +1,9 @@
 package me.nicolas.stravastats.ihm
 
-import javafx.beans.Observable
-import javafx.collections.FXCollections
+import javafx.application.Platform
 import javafx.event.EventHandler
+import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.geometry.Side
 import javafx.scene.Cursor
 import javafx.scene.Node
 import javafx.scene.chart.CategoryAxis
@@ -20,12 +19,13 @@ import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.shape.Line
+import javafx.scene.text.Text
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-internal class MultipleAxesLineChart(
-    private val baseChart: LineChart<String, Number>,
-    lineColor: Color = Color.RED,
+internal class MultipleLineChart(
+    title: String,
+    seriesList: List<Series<String, Number>>,
     private val strokeWidth: Double = 1.5
 ) : StackPane() {
 
@@ -38,38 +38,105 @@ internal class MultipleAxesLineChart(
             Color.ORANGE,
             Color.INDIGO,
             Color.DEEPPINK,
-            Color.LEMONCHIFFON,
-            Color.MEDIUMTURQUOISE,
+            Color.DARKBLUE,
+            Color.TOMATO,
             Color.SIENNA,
-            Color.SKYBLUE
+            Color.CYAN,
+            Color.CRIMSON
         )
     }
 
-    private var colorIndex = 0
-    private val backgroundCharts = FXCollections.observableArrayList<LineChart<String, Number>>()
-    private val chartColorMap: MutableMap<LineChart<String, Number>, Color> = mutableMapOf()
-    private val yAxisWidth = 25.0
+    private val baseChart: LineChart<String, Number>
+    private val backgroundCharts = mutableListOf<LineChart<String, Number>>()
+    private val chartColorMap = mutableMapOf<LineChart<String, Number>, Color>()
+
+    private val yAxisWidth = 35.0
     private val detailsWindow: AnchorPane
+    private val titleWindow: VBox
+
 
     init {
-        chartColorMap[baseChart] = lineColor
-        styleBaseChart(baseChart)
-        styleChartLine(baseChart, lineColor)
-        setFixedAxisWidth(baseChart)
-        baseChart.isAlternativeColumnFillVisible = false
-        baseChart.verticalGridLinesVisible = false
+        // find upper bound of all series
+        var upperBound = 0
+        seriesList.forEach { series ->
+            upperBound = maxOf(upperBound, series.data.maxOf { data -> data.yValue.toInt() })
+        }
 
-        alignment = Pos.CENTER_LEFT
-        backgroundCharts.addListener { _: Observable? -> rebuildChart() }
+        baseChart = buildBaseChart(seriesList.first(), upperBound)
+
+        seriesList.filterIndexed { index, _ -> index != 0 }.forEach { series ->
+            backgroundCharts.add(buildBackgroundCharts(series, upperBound))
+        }
+
+        titleWindow = buildTitle(title)
         detailsWindow = AnchorPane()
+
         bindMouseEvents(baseChart, this.strokeWidth)
         rebuildChart()
     }
 
-    private fun bindMouseEvents(baseChart: LineChart<String, Number>, strokeWidth: Double) {
+    private fun buildBaseChart(series: Series<String, Number>, upperBound: Int): LineChart<String, Number> {
+        val xAxis = createXAxis()
+        val yAxis = createYAxis(upperBound)
+
+        // create chart
+        val lineChart = LineChart(xAxis, yAxis)
+        lineChart.data.add(series)
+
+        val lineColor: Color = COLORS[chartColorMap.size]
+        chartColorMap[lineChart] = lineColor
+
+        styleChartLine(lineChart, lineColor)
+        setFixedAxisWidth(lineChart)
+
+        lineChart.isAlternativeColumnFillVisible = false
+        lineChart.verticalGridLinesVisible = false
+        lineChart.isLegendVisible = false
+
+        return lineChart
+    }
+
+    private fun buildBackgroundCharts(series: Series<String, Number>, upperBound: Int): LineChart<String, Number> {
+        val xAxis = createXAxis()
+        val yAxis = createYAxis(upperBound)
+
+        val lineChart = object : LineChart<String, Number>(xAxis, yAxis) {
+            init { // hide xAxis in constructor, since not public
+                chartChildren.remove(yAxis)
+                chartChildren.remove(xAxis)
+            }
+        }
+        lineChart.data.add(series)
+
+        val lineColor: Color = COLORS[chartColorMap.size]
+        chartColorMap[lineChart] = lineColor
+
+        styleChartLine(lineChart, lineColor)
+        setFixedAxisWidth(lineChart)
+        styleBackgroundChart(lineChart)
+
+        return lineChart
+    }
+
+    private fun buildTitle(title: String): VBox {
+
+        val text = Text(title)
+        val vBox = VBox(text)
+        vBox.alignment = Pos.TOP_CENTER
+        vBox.isMouseTransparent = true
+        vBox.padding = Insets(20.0)
+        vBox.style = "-fx-fill-width: false; -fx-background-color: transparent;"
+        vBox.focusTraversableProperty().bind(Platform.accessibilityActiveProperty())
+        text.styleClass.add("chart-title")
+
+        return vBox
+    }
+
+    private fun bindMouseEvents(lineChart: LineChart<String, Number>, strokeWidth: Double) {
+
+        children.add(detailsWindow)
 
         val detailsPopup = DetailsPopup()
-        children.add(detailsWindow)
         detailsWindow.children.add(detailsPopup)
         detailsWindow.prefHeightProperty().bind(heightProperty())
         detailsWindow.prefWidthProperty().bind(widthProperty())
@@ -78,8 +145,8 @@ internal class MultipleAxesLineChart(
         onMouseMoved = null
         isMouseTransparent = false
 
-        val xAxis = baseChart.xAxis
-        val yAxis = baseChart.yAxis
+        val xAxis = lineChart.xAxis
+        val yAxis = lineChart.yAxis
 
         val xLine = Line()
         val yLine = Line()
@@ -90,13 +157,15 @@ internal class MultipleAxesLineChart(
         xLine.isVisible = false
         yLine.isVisible = false
 
-        val chartBackground = baseChart.lookup(".chart-plot-background")
+        val chartBackground = lineChart.lookup(".chart-plot-background")
         for (node in chartBackground.parent.childrenUnmodifiable) {
             if (node !== chartBackground && node !== xAxis && node !== yAxis) {
                 node.isMouseTransparent = true
             }
         }
+
         chartBackground.cursor = Cursor.CROSSHAIR
+
         chartBackground.onMouseEntered = EventHandler { event: MouseEvent ->
             chartBackground.onMouseMoved.handle(event)
             detailsPopup.isVisible = true
@@ -104,12 +173,14 @@ internal class MultipleAxesLineChart(
             yLine.isVisible = true
             detailsWindow.children.addAll(xLine, yLine)
         }
-        chartBackground.onMouseExited = EventHandler { event: MouseEvent ->
+
+        chartBackground.onMouseExited = EventHandler {
             detailsPopup.isVisible = false
             xLine.isVisible = false
             yLine.isVisible = false
             detailsWindow.children.removeAll(xLine, yLine)
         }
+
         chartBackground.onMouseMoved = EventHandler { event: MouseEvent ->
             val x = event.x + chartBackground.layoutX
             val y = event.y + chartBackground.layoutY
@@ -121,7 +192,8 @@ internal class MultipleAxesLineChart(
             yLine.endX = x + 5
             yLine.startY = 10.0
             yLine.endY = detailsWindow.height - 10
-            if (baseChart.xAxis.getValueForDisplay(event.x) != null) {
+
+            if (lineChart.xAxis.getValueForDisplay(event.x) != null) {
 
                 detailsPopup.showChartDescription(event.x, event.y)
 
@@ -140,16 +212,7 @@ internal class MultipleAxesLineChart(
             } else {
                 detailsPopup.isVisible = false
             }
-
         }
-    }
-
-    private fun styleBaseChart(baseChart: LineChart<String, Number>) {
-        baseChart.createSymbols = false
-        baseChart.isLegendVisible = false
-        //baseChart.xAxis.isAutoRanging = false
-        baseChart.xAxis.animated = false
-        baseChart.yAxis.animated = false
     }
 
     private fun setFixedAxisWidth(chart: LineChart<String, Number>) {
@@ -159,14 +222,18 @@ internal class MultipleAxesLineChart(
 
     private fun rebuildChart() {
         children.clear()
-        children.add(resizeBaseChart(baseChart))
+        alignment = Pos.CENTER_LEFT
+        children.add(resizeChart(baseChart))
         for (lineChart in backgroundCharts) {
-            children.add(resizeBackgroundChart(lineChart))
+            val hBox = resizeChart(lineChart)
+            hBox.isMouseTransparent = true
+            children.add(hBox)
         }
         children.add(detailsWindow)
+        children.add(titleWindow)
     }
 
-    private fun resizeBaseChart(lineChart: LineChart<String, Number>): Node {
+    private fun resizeChart(lineChart: LineChart<String, Number>): Node {
 
         val hBox = HBox(lineChart)
         hBox.alignment = Pos.CENTER_LEFT
@@ -178,61 +245,12 @@ internal class MultipleAxesLineChart(
         hBox.prefWidthProperty().bind(widthProperty())
         hBox.maxWidthProperty().bind(widthProperty())
 
-        lineChart.minWidthProperty()
-            .bind(widthProperty()) //.subtract((yAxisWidth + yAxisSeparation) * backgroundCharts.size))
-        lineChart.prefWidthProperty()
-            .bind(widthProperty())//.subtract((yAxisWidth + yAxisSeparation) * backgroundCharts.size))
-        lineChart.maxWidthProperty()
-            .bind(widthProperty())//.subtract((yAxisWidth + yAxisSeparation) * backgroundCharts.size))
+        lineChart.minWidthProperty().bind(widthProperty())
+        lineChart.prefWidthProperty().bind(widthProperty())
+        lineChart.maxWidthProperty().bind(widthProperty())
 
         return lineChart
     }
-
-    private fun resizeBackgroundChart(lineChart: LineChart<String, Number>): Node {
-
-        val hBox = HBox(lineChart)
-        hBox.alignment = Pos.CENTER_LEFT
-        hBox.minHeightProperty().bind(heightProperty())
-        hBox.prefHeightProperty().bind(heightProperty())
-        hBox.maxHeightProperty().bind(heightProperty())
-
-        hBox.minWidthProperty().bind(widthProperty())
-        hBox.prefWidthProperty().bind(widthProperty())
-        hBox.maxWidthProperty().bind(widthProperty())
-        hBox.isMouseTransparent = true
-
-        lineChart.minWidthProperty()
-            .bind(widthProperty())//.subtract((yAxisWidth + yAxisSeparation) * backgroundCharts.size))
-        lineChart.prefWidthProperty()
-            .bind(widthProperty())//.subtract((yAxisWidth + yAxisSeparation) * backgroundCharts.size))
-        lineChart.maxWidthProperty()
-            .bind(widthProperty())//.subtract((yAxisWidth + yAxisSeparation) * backgroundCharts.size))
-
-        lineChart.translateXProperty().bind(baseChart.yAxis.widthProperty())
-
-        return hBox
-    }
-
-    fun addSeries(series: Series<String, Number>, lineColor: Color = COLORS[this.colorIndex++]) {
-        val xAxis = createXAxis()
-        val yAxis = createYAxis((baseChart.yAxis as NumberAxis).upperBound.toInt())
-
-        // create chart
-        val lineChart = object : LineChart<String, Number>(xAxis, yAxis) {
-            init { // hide xAxis in constructor, since not public
-                chartChildren.remove(yAxis)
-                chartChildren.remove(xAxis)
-            }
-        }
-
-        lineChart.data.add(series)
-        styleBackgroundChart(lineChart, lineColor)
-        setFixedAxisWidth(lineChart)
-
-        chartColorMap[lineChart] = lineColor
-        backgroundCharts.add(lineChart)
-    }
-
 
     private fun createYAxis(upperBound: Int): NumberAxis {
         val axis = NumberAxis(0.0, upperBound.toDouble(), 50.0)
@@ -264,34 +282,36 @@ internal class MultipleAxesLineChart(
         return axis
     }
 
+    private fun styleChartLine(lineChart: LineChart<String, Number>, lineColor: Color) {
+        lineChart.createSymbols = false
+        lineChart.isLegendVisible = false
+        lineChart.animated = false
+        lineChart.xAxis.animated = false
+        lineChart.yAxis.animated = false
 
-    private fun styleBackgroundChart(lineChart: LineChart<String, Number>, lineColor: Color) {
-        styleChartLine(lineChart, lineColor)
-        val contentBackground = lineChart.lookup(".chart-content").lookup(".chart-plot-background")
-        contentBackground.style = "-fx-background-color: transparent;"
+        lineChart.lookup(".chart-series-line").style =
+            "-fx-stroke: " + toRGBCode(lineColor) + "; -fx-stroke-width: " + strokeWidth + ";"
+    }
+
+    private fun styleBackgroundChart(lineChart: LineChart<String, Number>) {
+        chartColorMap[lineChart]?.let { color -> styleChartLine(lineChart, color) }
+
+
+        lineChart.lookup(".chart-content").lookup(".chart-plot-background").style =
+            "-fx-background-color: transparent;"
+
         lineChart.isVerticalZeroLineVisible = false
         lineChart.isHorizontalZeroLineVisible = false
         lineChart.verticalGridLinesVisible = false
         lineChart.isHorizontalGridLinesVisible = false
-        lineChart.createSymbols = false
-        lineChart.animated = false
-        lineChart.isLegendVisible = false
+        lineChart.isAlternativeColumnFillVisible = false
     }
 
-    private fun toRGBCode(color: Color?): String {
-        return String.format(
-            "#%02X%02X%02X",
-            (color!!.red * 255).toInt(),
-            (color.green * 255).toInt(),
-            (color.blue * 255).toInt()
-        )
-    }
-
-    private fun styleChartLine(chart: LineChart<String, Number>, lineColor: Color) {
-        chart.yAxis.lookup(".axis-label").style = "-fx-text-fill: " + toRGBCode(lineColor) + "; -fx-font-weight: bold;"
-        val seriesLine = chart.lookup(".chart-series-line")
-        seriesLine.style = "-fx-stroke: " + toRGBCode(lineColor) + "; -fx-stroke-width: " + strokeWidth + ";"
-    }
+    private fun toRGBCode(color: Color?) = "#%02X%02X%02X".format(
+        (color!!.red * 255).toInt(),
+        (color.green * 255).toInt(),
+        (color.blue * 255).toInt()
+    )
 
     val legend: Node
         get() {
@@ -340,16 +360,17 @@ internal class MultipleAxesLineChart(
             val baseChartPopupRow = buildPopupRow(xValue, yValue, baseChart)
             if (baseChartPopupRow != null) {
                 children.add(baseChartPopupRow)
-            }
-            for (lineChart in backgroundCharts) {
-                val popupRow = buildPopupRow(xValue, yValue, lineChart) ?: continue
-                children.add(popupRow)
+                for (lineChart in backgroundCharts) {
+                    val popupRow = buildPopupRow(xValue, yValue, lineChart) ?: continue
+                    children.add(popupRow)
+                }
             }
         }
 
         private fun buildPopupRow(xValue: String, yValue: Double, lineChart: LineChart<String, Number>): HBox? {
             val seriesName = Label(lineChart.data[0].name)
             seriesName.textFill = chartColorMap[lineChart]
+
             val yValueForChart = getYValueForX(lineChart, xValue) ?: return null
             val yValueLower: Number = normalizeYValue(lineChart, yValue - 10).roundToInt()
             val yValueUpper: Number = normalizeYValue(lineChart, yValue + 10).roundToInt()
@@ -364,7 +385,7 @@ internal class MultipleAxesLineChart(
             ) {
                 seriesName.style = "-fx-font-weight: bold"
             }
-            return HBox(10.0, seriesName, Label("[${yValueForChart.toInt()}]"))
+            return HBox(10.0, seriesName, Label("${yValueForChart.toInt()} km"))
         }
 
         private fun normalizeYValue(lineChart: LineChart<String, Number>, value: Double): Double {
@@ -376,9 +397,7 @@ internal class MultipleAxesLineChart(
         }
 
         fun getYValueForX(chart: LineChart<String, Number>, xValue: String?): Number? {
-            val dataList =
-                chart.data[0].data //(chart.data[0] as Series<String, Number>).data as List<XYChart.Data<String, Number>>
-            for (data in dataList) {
+            for (data in chart.data[0].data) {
                 if (data.xValue == xValue) {
                     return data.yValue as Number
                 }

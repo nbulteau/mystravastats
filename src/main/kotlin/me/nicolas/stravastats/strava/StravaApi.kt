@@ -32,7 +32,7 @@ internal class StravaApi(
         if (response.statusCode == 200) {
             return mapper.readValue(response.content, Athlete::class.java)
         } else {
-            throw RuntimeException("Something was wrong with Strava API ${response.text}")
+            throw RuntimeException("Something was wrong with Strava API for url $url : ${response.text}")
         }
     }
 
@@ -85,7 +85,7 @@ internal class StravaApi(
                         throw RuntimeException("Something was wrong with Strava API : 429 Too Many Requests")
                     }
                     else -> {
-                        println("Something was wrong with Strava API : ${response.statusCode} - ${response.text}")
+                        println("Something was wrong with Strava API for url $url : ${response.statusCode} - ${response.text}")
                         null
                     }
                 }
@@ -100,7 +100,7 @@ internal class StravaApi(
             }
             else -> {
                 println("\nUnable to load streams for activity : $activity")
-                throw RuntimeException("Something was wrong with Strava API ${response.statusCode} - ${response.text}")
+                throw RuntimeException("Something was wrong with Strava API for url $url : ${response.statusCode} - ${response.text}")
             }
         }
     }
@@ -119,7 +119,7 @@ internal class StravaApi(
         if (response.statusCode == 200) {
             return mapper.readValue(response.content, Token::class.java)
         } else {
-            throw RuntimeException("Something was wrong with Strava API ${response.text}")
+            throw RuntimeException("Something was wrong with Strava API for url $url : ${response.text}")
         }
     }
 

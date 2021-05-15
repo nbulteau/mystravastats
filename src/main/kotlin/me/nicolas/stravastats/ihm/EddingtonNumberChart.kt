@@ -36,9 +36,7 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
 
     private val yAxisWidth = 25.0
 
-    private val counts: MutableList<Int> = activeByDaysMap
-        .maxOf { entry -> entry.value }
-        .let { List(it) { 0 }.toMutableList() }
+    private val counts = IntArray(activeByDaysMap.maxOf { entry -> entry.value }) { 0 }.toMutableList()
 
     private var eddingtonNumber: Int = 0
 
@@ -184,9 +182,9 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         hBox.prefWidthProperty().bind(widthProperty())
         hBox.maxWidthProperty().bind(widthProperty())
 
-        eddingtonBar.minWidthProperty().bind(widthProperty())//.subtract(yAxisWidth + yAxisSeparation))
-        eddingtonBar.prefWidthProperty().bind(widthProperty())//.subtract(yAxisWidth + yAxisSeparation))
-        eddingtonBar.maxWidthProperty().bind(widthProperty())//.subtract(yAxisWidth + yAxisSeparation))
+        eddingtonBar.minWidthProperty().bind(widthProperty())
+        eddingtonBar.prefWidthProperty().bind(widthProperty())
+        eddingtonBar.maxWidthProperty().bind(widthProperty())
 
         return eddingtonBar
     }
@@ -202,12 +200,11 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
         hBox.minWidthProperty().bind(widthProperty())
         hBox.prefWidthProperty().bind(widthProperty())
         hBox.maxWidthProperty().bind(widthProperty())
-
         hBox.isMouseTransparent = true
 
-        eddingtonScatter.minWidthProperty().bind(widthProperty())//.subtract(yAxisWidth + yAxisSeparation))
-        eddingtonScatter.prefWidthProperty().bind(widthProperty())//.subtract(yAxisWidth + yAxisSeparation))
-        eddingtonScatter.maxWidthProperty().bind(widthProperty())//.subtract(yAxisWidth + yAxisSeparation))
+        eddingtonScatter.minWidthProperty().bind(widthProperty())
+        eddingtonScatter.prefWidthProperty().bind(widthProperty())
+        eddingtonScatter.maxWidthProperty().bind(widthProperty())
 
         //eddingtonScatter.translateXProperty().bind(eddingtonBar.yAxis.widthProperty())
         //eddingtonScatter.yAxis.translateX = (yAxisWidth)
