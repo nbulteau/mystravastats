@@ -56,6 +56,8 @@ internal class MultipleLineChart(
 
 
     init {
+        assert(seriesList.isNotEmpty()) {"Need at least one Series"}
+
         // find upper bound of all series
         var upperBound = 0
         seriesList.forEach { series ->

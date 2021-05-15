@@ -2,12 +2,12 @@ package me.nicolas.stravastats.ihm
 
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.ObservableList
-import javafx.event.EventTarget
 import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
+import javafx.scene.layout.Pane
 import me.nicolas.stravastats.MyStravaStatsApp
 import me.nicolas.stravastats.business.*
 import me.nicolas.stravastats.service.ActivityHelper
@@ -250,7 +250,7 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
         }
     }
 
-    private fun distanceByYears(type: String): MultipleLineChart {
+    private fun distanceByYears(type: String): Pane {
 
         val activitiesByYear = mainController.getActivitiesByYear()
         val allSeries = mutableListOf<XYChart.Series<String, Number>>()
@@ -267,7 +267,10 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
             }.toObservable()
             allSeries.add(XYChart.Series(year.toString(), data))
         }
-
-        return MultipleLineChart("$type distance (km) by years", allSeries)
+        return if (allSeries.isEmpty()) {
+            Pane()
+        } else {
+            return MultipleLineChart("$type distance (km) by years", allSeries)
+        }
     }
 }
