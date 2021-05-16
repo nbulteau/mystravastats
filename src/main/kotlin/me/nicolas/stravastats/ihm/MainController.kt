@@ -3,7 +3,6 @@ package me.nicolas.stravastats.ihm
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.chart.XYChart
-import me.nicolas.stravastats.MyStravaStatsApp
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.service.ActivityHelper
 import me.nicolas.stravastats.service.CSVService
@@ -12,9 +11,8 @@ import me.nicolas.stravastats.service.StatisticsService
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
 import tornadofx.Controller
-import java.time.LocalDate
 
-class MainController(private val activities: ObservableList<Activity>) : Controller() {
+class MainController(private val clientId: String, private val activities: ObservableList<Activity>) : Controller() {
 
     private val statsService = StatisticsService()
 
@@ -23,11 +21,7 @@ class MainController(private val activities: ObservableList<Activity>) : Control
     private val csvService = CSVService()
 
     fun generateCSV() {
-        csvService.exportCSV(
-            MyStravaStatsApp.myStravaStatsParameters.clientId,
-            activities,
-            MyStravaStatsApp.myStravaStatsParameters.filter
-        )
+        csvService.exportCSV(clientId, activities)
     }
 
     fun generateCharts() {

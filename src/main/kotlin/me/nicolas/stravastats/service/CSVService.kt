@@ -1,24 +1,20 @@
 package me.nicolas.stravastats.service
 
 import me.nicolas.stravastats.business.*
-import me.nicolas.stravastats.service.csv.RideCSVExporter
 import me.nicolas.stravastats.service.csv.HikeCSVExporter
 import me.nicolas.stravastats.service.csv.InlineSkateCSVExporter
+import me.nicolas.stravastats.service.csv.RideCSVExporter
 import me.nicolas.stravastats.service.csv.RunCSVExporter
 
 internal class CSVService {
 
-    fun exportCSV(clientId: String, activities: List<Activity>, filter: Double?) {
+    fun exportCSV(clientId: String, activities: List<Activity>) {
         activities
             .groupBy { activity ->
                 activity.startDateLocal.subSequence(0, 4).toString()
             } // year by year
             .forEach { map: Map.Entry<String, List<Activity>> ->
-                if (filter != null) {
-                    exportCSV(clientId, filterActivities(map.value, filter), map.key.toInt())
-                } else {
-                    exportCSV(clientId, map.value, map.key.toInt())
-                }
+                exportCSV(clientId, map.value, map.key.toInt())
             }
     }
 

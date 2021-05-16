@@ -8,19 +8,23 @@ import javafx.scene.chart.XYChart
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import javafx.scene.layout.Pane
-import me.nicolas.stravastats.MyStravaStatsApp
 import me.nicolas.stravastats.business.*
 import me.nicolas.stravastats.service.ActivityHelper
 import tornadofx.*
 import java.time.LocalDate
 
 
-class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("MyStravaStats") {
+class MainView(
+    clientId: String,
+    athlete: Athlete?,
+    activities: ObservableList<Activity>
+) : View("MyStravaStats") {
+
     override val root = borderpane {
         setPrefSize(1200.0, 800.0)
     }
 
-    private val mainController: MainController = MainController(activities)
+    private val mainController: MainController = MainController(clientId, activities)
 
     private var selectedYear = SimpleIntegerProperty(LocalDate.now().year)
 
@@ -30,9 +34,11 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
     private var runStatsTab: Tab by singleAssign()
     private var hikeStatsTab: Tab by singleAssign()
     private var inlineSkateStatsTab: Tab by singleAssign()
-    private var overYearsTab: Tab? by singleAssign()
+    private var overYearsTab: Tab by singleAssign()
 
     init {
+        FX.primaryStage.isResizable = true
+
         with(root) {
             left {
                 vbox {
@@ -45,18 +51,11 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
                         isEditable = false
                         maxWidth = Double.MAX_VALUE
                     }
-                    if (MyStravaStatsApp.myStravaStatsParameters.year == null) {
-                        combobox(property = selectedYear, values = (LocalDate.now().year downTo 2010).toList()) {
-                            selectionModel.selectedItemProperty().onChange {
-                                updateTabs()
-                            }
-                            maxWidth = Double.MAX_VALUE
+                    combobox(property = selectedYear, values = (LocalDate.now().year downTo 2010).toList()) {
+                        selectionModel.selectedItemProperty().onChange {
+                            updateTabs()
                         }
-                    } else {
-                        textfield(value = MyStravaStatsApp.myStravaStatsParameters.year.toString()) {
-                            isEditable = false
-                            maxWidth = Double.MAX_VALUE
-                        }
+                        maxWidth = Double.MAX_VALUE
                     }
                     button("Generate CSV") {
                         action {
@@ -81,9 +80,7 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
                     tab("Run statistics") { runStatsTab = this }
                     tab("Hike ride statistics") { hikeStatsTab = this }
                     tab("InlineSkate statistics") { inlineSkateStatsTab = this }
-                    if (MyStravaStatsApp.myStravaStatsParameters.year == null) {
-                        tab("Over years") { overYearsTab = this }
-                    }
+                    tab("Over years") { overYearsTab = this }
                 }
             }
         }
@@ -227,7 +224,7 @@ class MainView(athlete: Athlete?, activities: ObservableList<Activity>) : View("
                     }
                 }
             }
-            overYearsTab?.content = drawer {
+            overYearsTab.content = drawer {
 
                 item("Ride distance by years", expanded = true) {
                     val multipleAxesLineChart = distanceByYears(Ride)

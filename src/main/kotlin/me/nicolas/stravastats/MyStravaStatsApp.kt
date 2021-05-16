@@ -1,27 +1,33 @@
 package me.nicolas.stravastats
 
-import com.beust.jcommander.JCommander
+import javafx.scene.image.Image
 import javafx.stage.Stage
-import me.nicolas.stravastats.ihm.SplashScreenView
+import me.nicolas.stravastats.ihm.StravaAPIAuthenticationView
 import tornadofx.App
 import tornadofx.launch
+import java.awt.Taskbar
+import javax.swing.ImageIcon
 
 
-internal class MyStravaStatsApp : App(SplashScreenView::class) {
-
-    companion object {
-        val myStravaStatsParameters = MyStravaStatsParameters()
-    }
-
-    override fun init() {
-        JCommander.newBuilder()
-            .addObject(myStravaStatsParameters)
-            .programName("My Strava Stats")
-            .build().parse(*parameters.raw.toTypedArray())
-    }
+class MyStravaStatsApp : App(StravaAPIAuthenticationView::class) {
 
     override fun start(stage: Stage) {
-        stage.width = 1024.0
+        stage.isResizable = false
+        stage.isAlwaysOnTop = true
+        val logoInputStream = javaClass.getResourceAsStream("/images/strava-logo.png")
+        stage.icons += Image(logoInputStream)
+
+        val taskbar = Taskbar.getTaskbar()
+        try {
+            val iconURL = javaClass.getResource("/images/strava-logo.png")
+            val image = ImageIcon(iconURL).image
+            //set icon for mac os (and other systems which do support this method)
+            taskbar.iconImage = image
+        } catch (e: UnsupportedOperationException) {
+            println("The os does not support: 'taskbar.setIconImage'")
+        } catch (e: SecurityException) {
+            println("There was a security exception for: 'taskbar.setIconImage'")
+        }
         super.start(stage)
     }
 }

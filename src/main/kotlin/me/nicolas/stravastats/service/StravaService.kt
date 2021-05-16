@@ -1,6 +1,5 @@
 package me.nicolas.stravastats.service
 
-import com.beust.jcommander.ParameterException
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectWriter
@@ -66,7 +65,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
             try {
                 getLoggedInAthleteFromStrava(clientId)
             } catch (connectException: ConnectException) {
-                throw ParameterException("Unable to connect to Strava API : ${connectException.message}")
+                throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
             }
         }
     }
@@ -120,7 +119,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
             try {
                 getActivitiesFromStrava(clientId, year)
             } catch (connectException: ConnectException) {
-                throw ParameterException("Unable to connect to Strava API : ${connectException.message}")
+                throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
             }
         }
     }

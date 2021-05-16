@@ -22,18 +22,15 @@ Any registered Strava user can obtain an access_token by first creating an appli
 
 The Strava API application settings page provides *mandatory parameters* for My Strava Stats: 
 
-* -clientId: your application’s ID.
-* -clientSecret: your client secret.
+* clientId: your application’s ID.
+* clientSecret: your client secret.
 
 ### Get statistics
 Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava.
 The first time you use My Strava Stats it will attempt to collect activities from 2010 to now.
 Due to rate limitations (100 requests every 15 minutes, with up to 1,000 requests per day) it may be necessary to do it in several attempts. (https://developers.strava.com/docs/rate-limits/)
 
-Note : If you do not use the -clientSecret parameters MyStravaStats will use locally downloaded activities.
-
-*Optional parameters*
-* -year: the year you request (default value is from 2010 to the current year).
+Note : If you do not provide your Client Secret MyStravaStats will use locally downloaded activities.
 
 A browser will open a browser on the Strava consent screen. 
 If browser does not open, copy/past URL from your terminal in a browser to allow mystravastats to access your Strava data.
@@ -43,19 +40,12 @@ http://www.strava.com/api/v3/oauth/authorize?client_id=[YOUR_CLIENT_ID]&response
 ```
 Login to Strava then click 'Authorize' and tick the required permissions if needed.
 
-### Some examples
-Download activities from 2010 to now from Strava, then display statistics.
+### Launch MyStavaStats
 ```
-./gradlew run --args="-clientId [clientId] -clientSecret [clientSecret]"    
+./gradlew run    
 ```
-Display statistics for current year using locally downloaded activities (No further download).
-```
-./gradlew run --args="-clientId [clientId]"
-```
-Display statistics for specified year using locally downloaded activities.
-```
-./gradlew run --args="-clientId [clientId] -year 2019"
-```
+Will download activities from 2010 to now from Strava, then display statistics and some charts.
+
 
 ### Ride distance by year chart
 ![Charts](https://github.com/nbulteau/mystravastats/blob/main/docs/ride_distance_by_years_chart.png?raw=true)

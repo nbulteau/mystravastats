@@ -32,7 +32,7 @@ dependencies {
     // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    implementation("com.beust:jcommander:1.81")
+    //implementation("com.beust:jcommander:1.81")
     implementation("org.danilopianini:khttp:0.1.0-dev30+51fa9ae")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.12.3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3")
