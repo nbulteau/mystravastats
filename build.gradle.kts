@@ -39,7 +39,7 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.3")
 
     implementation("io.javalin:javalin:3.13.7")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
     implementation("org.slf4j:slf4j-nop:1.7.30")
 
     implementation("space.kscience:plotlykt-server:0.4.0") {
@@ -48,7 +48,7 @@ dependencies {
 
     implementation("no.tornado:tornadofx:1.7.20")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.2")
 }
 
 application {

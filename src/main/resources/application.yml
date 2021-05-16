@@ -2,7 +2,4 @@ strava:
   url: https://www.strava.com
   pagesize: 100
 
-removingNonMovingSections: false
-
-
 

@@ -11,5 +11,4 @@ class MyStravaStatsProperties {
         var pagesize: Int = 100
         lateinit var url: String
     }
-
 }
