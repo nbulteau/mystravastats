@@ -1,13 +1,9 @@
 package me.nicolas.stravastats.service.charts
 
+import me.nicolas.stravastats.business.Activity
 import space.kscience.plotly.PlotGrid
 import space.kscience.plotly.layout
 import space.kscience.plotly.models.*
-import me.nicolas.stravastats.business.Activity
-import java.time.LocalDate
-import java.time.Month
-import java.time.format.TextStyle
-import java.util.*
 import kotlin.math.abs
 
 abstract class Chart {

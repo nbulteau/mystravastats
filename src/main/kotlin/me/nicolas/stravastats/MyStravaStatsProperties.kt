@@ -12,9 +12,4 @@ class MyStravaStatsProperties {
         lateinit var url: String
     }
 
-    /**
-     * Set this flag to true to remove sections of activities where no movement was reported, such as when
-     * standing still at a red light or stopping to look at a map.
-     */
-    val removingNonMovingSections = false
 }

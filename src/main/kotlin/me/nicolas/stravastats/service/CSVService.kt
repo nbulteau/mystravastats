@@ -40,9 +40,4 @@ internal class CSVService {
         println("]")
     }
 
-    private fun filterActivities(activities: List<Activity>, filter: Double): List<Activity> {
-        val lowBoundary = filter - (5 * filter / 100)
-        val highBoundary = filter + (5 * filter / 100)
-        return activities.filter { activity -> activity.distance > lowBoundary && activity.distance < highBoundary }
-    }
 }
