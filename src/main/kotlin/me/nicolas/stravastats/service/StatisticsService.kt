@@ -28,8 +28,7 @@ internal class StatisticsService {
 
         return listOf(
             GlobalStatistic("Nb activities", activities, "%d", List<Activity>::size),
-            GlobalStatistic("Nb actives days", activities, "%d")
-            { activities ->
+            GlobalStatistic("Nb actives days", activities, "%d") {
                 activities
                     .map { activity -> activity.startDateLocal.substringBefore('T') }
                     .toSet()
@@ -45,19 +44,20 @@ internal class StatisticsService {
         return listOf(
             GlobalStatistic("Nb activities", activities, "%d", List<Activity>::size),
 
-            GlobalStatistic("Nb actives days", activities, "%d")
-            { activityList: List<Activity> ->
-                activityList
+            GlobalStatistic("Nb actives days", activities, "%d") {
+                activities
                     .groupBy { activity: Activity -> activity.startDateLocal.substringBefore('T') }
                     .count()
             },
             MaxStreakStatistic(activities),
 
-            GlobalStatistic("Total distance", activities, "%.2f km")
-            { activityList: List<Activity> -> activityList.sumOf { activity: Activity -> activity.distance } / 1000 },
+            GlobalStatistic("Total distance", activities, "%.2f km") {
+                activities.sumOf { activity: Activity -> activity.distance } / 1000
+            },
 
-            GlobalStatistic("Total elevation", activities, "%.2f m")
-            { activityList: List<Activity> -> activityList.sumOf { activity: Activity -> activity.totalElevationGain } },
+            GlobalStatistic("Total elevation", activities, "%.2f m") {
+                activities.sumOf { activity: Activity -> activity.totalElevationGain }
+            },
 
             MaxDistanceStatistic(activities),
             MaxDistanceInADayStatistic(activities),

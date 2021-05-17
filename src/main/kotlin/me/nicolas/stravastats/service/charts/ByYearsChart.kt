@@ -7,7 +7,7 @@ import me.nicolas.stravastats.service.ActivityHelper
 import space.kscience.dataforge.values.Value
 import java.time.LocalDate
 
-@UnstablePlotlyAPI
+@OptIn(UnstablePlotlyAPI::class)
 internal class ByYearsChart(val activities: List<Activity>) : Chart() {
 
     private val activitiesByYear = ActivityHelper.groupActivitiesByYear(activities)

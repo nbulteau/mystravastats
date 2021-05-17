@@ -54,14 +54,14 @@ internal class StravaAPIAuthenticationView : View("Strava API authentication") {
                             columnRowIndex(1, 2)
                         }
                         setOnAction {
-                            val clientId = clientIdTextField.text.toString()
-                            val clientSecret = clientSecretPasswordField.text.toString()
+                            val clientIdStr = clientIdTextField.text.toString()
+                            val clientSecretStr = clientSecretPasswordField.text.toString()
 
-                            if (clientId != "") {
-                                storeStravaAuthentication(clientId, clientSecret)
+                            if (clientIdStr != "") {
+                                storeStravaAuthentication(clientIdStr, clientSecretStr)
 
                                 this@StravaAPIAuthenticationView.replaceWith(
-                                    replacement = SplashScreenView(clientId, clientSecret.ifBlank { null }),
+                                    replacement = SplashScreenView(clientIdStr, clientSecretStr.ifBlank { null }),
                                     sizeToScene = true,
                                     centerOnScreen = true
                                 )

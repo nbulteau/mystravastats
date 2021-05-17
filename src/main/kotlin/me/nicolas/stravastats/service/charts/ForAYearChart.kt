@@ -8,6 +8,7 @@ import space.kscience.plotly.models.XAnchor
 import me.nicolas.stravastats.business.*
 import me.nicolas.stravastats.service.ActivityHelper
 
+@OptIn(UnstablePlotlyAPI::class)
 internal class ForAYearChart(val activities: List<Activity>, val year: Int) : Chart() {
 
     private val activitiesByMonth = ActivityHelper.groupActivitiesByMonth(activities)

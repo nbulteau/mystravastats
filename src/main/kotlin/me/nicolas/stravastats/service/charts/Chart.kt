@@ -2,10 +2,12 @@ package me.nicolas.stravastats.service.charts
 
 import me.nicolas.stravastats.business.Activity
 import space.kscience.plotly.PlotGrid
+import space.kscience.plotly.UnstablePlotlyAPI
 import space.kscience.plotly.layout
 import space.kscience.plotly.models.*
 import kotlin.math.abs
 
+@OptIn(UnstablePlotlyAPI::class)
 abstract class Chart {
 
     companion object {
