@@ -49,25 +49,49 @@ internal class StravaAPIAuthenticationView : View("Strava API authentication") {
                     val messageLabel = label().gridpaneConstraints {
                         columnRowIndex(1, 3)
                     }
-                    button("Launch") {
-                        gridpaneConstraints {
-                            columnRowIndex(1, 2)
+                    hbox(10) {
+                        button("Launch with cache") {
+                            gridpaneConstraints {
+                                columnRowIndex(1, 2)
+                            }
+                            setOnAction {
+                                val clientIdStr = clientIdTextField.text.toString().trim()
+                                val clientSecretStr = clientSecretPasswordField.text.toString().trim()
+
+                                if (clientIdStr.isNotEmpty()) {
+                                    storeStravaAuthentication(clientIdStr, clientSecretStr)
+
+                                    this@StravaAPIAuthenticationView.replaceWith(
+                                        replacement = SplashScreenView(clientIdStr, null),
+                                        sizeToScene = true,
+                                        centerOnScreen = true
+                                    )
+                                } else {
+                                    messageLabel.text = "Client Id is mandatory."
+                                    messageLabel.textFill = Color.RED
+                                }
+                            }
                         }
-                        setOnAction {
-                            val clientIdStr = clientIdTextField.text.toString()
-                            val clientSecretStr = clientSecretPasswordField.text.toString()
+                        button("Download new activities from Strava") {
+                            gridpaneConstraints {
+                                columnRowIndex(1, 2)
+                            }
+                            setOnAction {
+                                val clientIdStr = clientIdTextField.text.toString().trim()
+                                val clientSecretStr = clientSecretPasswordField.text.toString().trim()
 
-                            if (clientIdStr != "") {
-                                storeStravaAuthentication(clientIdStr, clientSecretStr)
+                                if (clientIdStr.isNotEmpty() && clientSecretStr.isNotEmpty()) {
+                                    storeStravaAuthentication(clientIdStr, clientSecretStr)
 
-                                this@StravaAPIAuthenticationView.replaceWith(
-                                    replacement = SplashScreenView(clientIdStr, clientSecretStr.ifBlank { null }),
-                                    sizeToScene = true,
-                                    centerOnScreen = true
-                                )
-                            } else {
-                                messageLabel.text = "Client Id is mandatory."
-                                messageLabel.textFill = Color.RED
+                                    this@StravaAPIAuthenticationView.replaceWith(
+                                        replacement = SplashScreenView(clientIdStr, clientSecretStr),
+                                        sizeToScene = true,
+                                        centerOnScreen = true
+                                    )
+                                } else {
+                                    messageLabel.text = "Client Id and client secret are mandatory."
+                                    messageLabel.textFill = Color.RED
+                                }
                             }
                         }
                     }
