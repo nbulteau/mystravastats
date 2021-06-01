@@ -11,8 +11,8 @@ buildscript {
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.5.0"
-    id("com.github.ben-manes.versions") version "0.38.0"
+    id("org.jetbrains.kotlin.jvm") version "1.5.10"
+    id("com.github.ben-manes.versions") version "0.39.0"
 
     // Apply the application plugin to add support for building a CLI application.
     application
@@ -42,7 +42,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
     implementation("org.slf4j:slf4j-nop:1.7.30")
 
-    implementation("space.kscience:plotlykt-server:0.4.0") {
+    implementation("space.kscience:plotlykt-server:0.4.2") {
         exclude("ch.qos.logback", "logback-classic")
     }
 
@@ -68,19 +68,6 @@ tasks.withType<Test> {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
-}
-
-tasks.withType<Jar> {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    manifest {
-        attributes("Main-Class" to "me.nicolas.stravastats.MyStravaStatsKt")
-    }
-
-    from(configurations.compileClasspath.map { config ->
-        config.map { file ->
-            if (file.isDirectory) file else zipTree(file)
-        }
-    })
 }
 
 fun isNonStable(version: String): Boolean {
