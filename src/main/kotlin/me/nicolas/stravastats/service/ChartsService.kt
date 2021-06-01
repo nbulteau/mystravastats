@@ -9,20 +9,17 @@ import space.kscience.plotly.UnstablePlotlyAPI
 internal class ChartsService {
 
     @OptIn(UnstablePlotlyAPI::class)
-    fun buildCharts(activities: List<Activity>) {
-        var nbYears = 0
+    fun buildCharts(activities: List<Activity>, year: Int) {
         // group by year
-        activities
+        val activitiesGroupedByYear = activities
             .groupBy { activity ->
                 activity.startDateLocal.subSequence(0, 4).toString()
             }
-            .forEach { map: Map.Entry<String, List<Activity>> ->
-                ForAYearChart(map.value, map.key.toInt()).build()
-                nbYears++
-            }
 
-        if (nbYears > 1) {
+        ForAYearChart(activitiesGroupedByYear[year.toString()] ?: emptyList(), year).build()
+
+        //if (activitiesGroupedByYear.keys.size > 1) {
             ByYearsChart(activities).build()
-        }
+        //}
     }
 }

@@ -6,7 +6,8 @@ import java.io.FileWriter
 
 internal abstract class CSVExporter(val clientId: String, activities: List<Activity>, val year: Int, val type: String) {
 
-    protected val activities: List<Activity> = activities.filter { activity -> activity.type == type }
+    protected val activities: List<Activity> = activities
+        .filter { activity -> activity.type == type }
 
     private val writer = FileWriter(File("$clientId-$type-$year.csv"))
 

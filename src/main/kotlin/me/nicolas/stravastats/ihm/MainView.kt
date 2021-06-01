@@ -59,13 +59,13 @@ class MainView(
                     }
                     button("Generate CSV") {
                         action {
-                            mainController.generateCSV()
+                            mainController.generateCSV(selectedYear.get())
                         }
                         maxWidth = Double.MAX_VALUE
                     }
                     button("Generate Charts") {
                         action {
-                            mainController.generateCharts()
+                            mainController.generateCharts(selectedYear.get())
                         }
                         maxWidth = Double.MAX_VALUE
                     }

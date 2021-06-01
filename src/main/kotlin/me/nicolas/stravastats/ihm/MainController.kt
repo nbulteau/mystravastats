@@ -20,12 +20,12 @@ class MainController(private val clientId: String, private val activities: Obser
 
     private val csvService = CSVService()
 
-    fun generateCSV() {
-        csvService.exportCSV(clientId, activities)
+    fun generateCSV(year: Int) {
+        csvService.exportCSV(clientId, activities, year)
     }
 
-    fun generateCharts() {
-        chartsService.buildCharts(activities)
+    fun generateCharts(year: Int) {
+        chartsService.buildCharts(activities, year)
     }
 
     fun getActiveDaysByActivityTypeByYear(activityType: String, year: Int): Map<String, Int> {

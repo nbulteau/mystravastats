@@ -8,33 +8,29 @@ import me.nicolas.stravastats.service.csv.RunCSVExporter
 
 internal class CSVService {
 
-    fun exportCSV(clientId: String, activities: List<Activity>) {
-        activities
+    fun exportCSV(clientId: String, activities: List<Activity>, year: Int) {
+
+        val activitiesForYear: List<Activity> = activities
             .groupBy { activity ->
                 activity.startDateLocal.subSequence(0, 4).toString()
-            } // year by year
-            .forEach { map: Map.Entry<String, List<Activity>> ->
-                exportCSV(clientId, map.value, map.key.toInt())
-            }
-    }
+            }[year.toString()] ?: emptyList()
 
-    private fun exportCSV(clientId: String, activities: List<Activity>, year: Int) {
         print("* Export activities for $year [")
 
         print(Ride)
-        val rideCSVExporter = RideCSVExporter(clientId = clientId, activities = activities, year = year)
+        val rideCSVExporter = RideCSVExporter(clientId = clientId, activities = activitiesForYear, year = year)
         rideCSVExporter.export()
 
         print(", $Run")
-        val runCSVExporter = RunCSVExporter(clientId = clientId, activities = activities, year = year)
+        val runCSVExporter = RunCSVExporter(clientId = clientId, activities = activitiesForYear, year = year)
         runCSVExporter.export()
 
         print(", $InlineSkate")
-        val inlineSkateCSVExporter = InlineSkateCSVExporter(clientId = clientId, activities = activities, year = year)
+        val inlineSkateCSVExporter = InlineSkateCSVExporter(clientId = clientId, activities = activitiesForYear, year = year)
         inlineSkateCSVExporter.export()
 
         print(", $Hike")
-        val hikeCSVExporter = HikeCSVExporter(clientId = clientId, activities = activities, year = year)
+        val hikeCSVExporter = HikeCSVExporter(clientId = clientId, activities = activitiesForYear, year = year)
         hikeCSVExporter.export()
 
         println("]")
