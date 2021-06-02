@@ -4,19 +4,17 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectWriter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import me.nicolas.stravastats.strava.StravaApi
-import java.io.File
-import java.net.ConnectException
-import java.time.LocalDateTime
-
 import io.javalin.Javalin
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.nicolas.stravastats.business.*
+import me.nicolas.stravastats.strava.StravaApi
 import java.awt.Desktop
+import java.io.File
+import java.net.ConnectException
 import java.net.URI
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 
 internal class StravaService(private val stravaApi: StravaApi) {
@@ -31,29 +29,13 @@ internal class StravaService(private val stravaApi: StravaApi) {
 
     private fun getAthleteJsonFileName(clientId: String) = "athlete-$clientId.json"
 
-
     private var accessToken: String? = null
 
     private fun setAccessToken(accessToken: String) {
         this.accessToken = accessToken
     }
 
-    fun loadActivities(clientId: String, clientSecret: String?, year: Int?): List<Activity> {
-        val activities = mutableListOf<Activity>()
-        if (year != null) {
-            activities.addAll(loadActivitiesForAYear(clientId, clientSecret, year))
-        } else {
-            for (currentYear in LocalDate.now().year downTo 2010) {
-                activities.addAll(loadActivitiesForAYear(clientId, clientSecret, currentYear))
-            }
-        }
-        return activities
-    }
-
-    fun getLoggedInAthlete(
-        clientId: String,
-        clientSecret: String?,
-    ): Athlete? {
+    fun getLoggedInAthlete(clientId: String, clientSecret: String?): Athlete? {
         // get accessToken using client secret
         if (clientSecret != null && this.accessToken == null) {
             setAccessToken(clientId, clientSecret)
@@ -102,12 +84,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
     }
 
 
-    fun loadActivitiesForAYear(
-        clientId: String,
-        clientSecret: String?,
-        year: Int
-    ): List<Activity> {
-
+    fun loadActivities(clientId: String, clientSecret: String?, year: Int): List<Activity> {
         // get accessToken using client secret
         if (clientSecret != null && this.accessToken == null) {
             setAccessToken(clientId, clientSecret)
@@ -164,20 +141,15 @@ internal class StravaService(private val stravaApi: StravaApi) {
         }
     }
 
-    private fun getActivitiesFromStrava(
-        clientId: String,
-        year: Int
-    ): List<Activity> {
+    private fun getActivitiesFromStrava(clientId: String, year: Int): List<Activity> {
+
         val yearActivitiesDirectory = getYearActivitiesDirectory(clientId, year)
         val activities = loadActivitiesAndSaveIntoCache(clientId, year, this.accessToken!!, yearActivitiesDirectory)
         loadActivitiesStreamsAndSaveIntoCache(activities, yearActivitiesDirectory, this.accessToken!!)
         return activities
     }
 
-    private fun getActivitiesFromCache(
-        clientId: String,
-        year: Int
-    ): List<Activity> {
+    private fun getActivitiesFromCache(clientId: String, year: Int): List<Activity> {
 
         val activitiesDirectoryName = getActivitiesDirectoryName(clientId)
         val yearActivitiesDirectoryName = getYearActivitiesDirectoryName(clientId, year)
@@ -261,10 +233,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
         println()
     }
 
-    private fun loadActivitiesStreamsAndSaveIntoCache(
-        activities: List<Activity>,
-        activitiesDirectory: File
-    ) {
+    private fun loadActivitiesStreamsAndSaveIntoCache(activities: List<Activity>, activitiesDirectory: File) {
         var index = 0.0
         activities.forEach { activity ->
             displayProgressBar(++index / activities.size)
