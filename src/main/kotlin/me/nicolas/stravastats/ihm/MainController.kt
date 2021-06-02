@@ -2,7 +2,12 @@ package me.nicolas.stravastats.ihm
 
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
+import javafx.event.ActionEvent
+import javafx.event.EventHandler
 import javafx.scene.chart.XYChart
+import javafx.scene.control.Hyperlink
+import javafx.scene.web.WebEngine
+import javafx.scene.web.WebView
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.service.ActivityHelper
 import me.nicolas.stravastats.service.CSVService
@@ -11,6 +16,9 @@ import me.nicolas.stravastats.service.StatisticsService
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
 import tornadofx.Controller
+import java.awt.Desktop
+import java.net.URI
+
 
 class MainController(private val clientId: String, private val activities: ObservableList<Activity>) : Controller() {
 
@@ -89,13 +97,19 @@ class MainController(private val clientId: String, private val activities: Obser
         val activityStatistics = statistics.map { statistic ->
             when (statistic) {
                 is ActivityStatistic -> {
-                    StatisticDisplay(
-                        statistic.name,
-                        statistic.value,
-                        if (statistic.activity != null) statistic.activity.toString() else ""
-                    )
+                    val hyperlink = if (statistic.activity != null) {
+                        Hyperlink(statistic.activity.toString()).apply {
+                            onAction = EventHandler {
+                                Desktop.getDesktop().browse(URI("http://www.strava.com/activities/${statistic.activity?.id}"))
+                            }
+                        }
+                    } else {
+                        null
+                    }
+
+                    StatisticDisplay(statistic.name, statistic.value, hyperlink)
                 }
-                else -> StatisticDisplay(statistic.name, statistic.toString(), "")
+                else -> StatisticDisplay(statistic.name, statistic.toString(), null)
             }
         }
         return FXCollections.observableArrayList(activityStatistics)

@@ -1,6 +1,7 @@
 package me.nicolas.stravastats.ihm
 
 import javafx.collections.ObservableList
+import javafx.scene.control.Hyperlink
 
 data class StatisticsToDisplay(
     val globalStatistics: ObservableList<StatisticDisplay>,
@@ -11,4 +12,4 @@ data class StatisticsToDisplay(
     val hikeStatics: ObservableList<StatisticDisplay>
 )
 
-data class StatisticDisplay(val label: String, val value: String, val activity: String)
+data class StatisticDisplay(val label: String, val value: String, val activity: Hyperlink?)

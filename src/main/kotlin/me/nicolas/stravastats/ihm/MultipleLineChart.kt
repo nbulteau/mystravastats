@@ -19,6 +19,8 @@ import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.shape.Line
+import javafx.scene.text.Font
+import javafx.scene.text.FontWeight
 import javafx.scene.text.Text
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -370,24 +372,25 @@ internal class MultipleLineChart(
         }
 
         private fun buildPopupRow(xValue: String, yValue: Double, lineChart: LineChart<String, Number>): HBox? {
-            val seriesName = Label(lineChart.data[0].name)
-            seriesName.textFill = chartColorMap[lineChart]
-
             val yValueForChart = getYValueForX(lineChart, xValue) ?: return null
             val yValueLower: Number = normalizeYValue(lineChart, yValue - 10).roundToInt()
             val yValueUpper: Number = normalizeYValue(lineChart, yValue + 10).roundToInt()
             val yValueUnderMouse: Number = lineChart.yAxis.getValueForDisplay(yValue).toDouble().roundToInt()
 
+            val seriesNameLabel = Label(lineChart.data[0].name)
+            seriesNameLabel.textFill = chartColorMap[lineChart]
+            val valueLabel = Label(": ${yValueForChart.toInt()} km")
+
             // make series name bold when mouse is near given chart's line
-            if (isMouseNearLine(
-                    yValueForChart,
-                    yValueUnderMouse,
-                    abs(yValueLower.toDouble() - yValueUpper.toDouble())
-                )
-            ) {
-                seriesName.style = "-fx-font-weight: bold"
+            if (isMouseNearLine(yValueForChart, yValueUnderMouse, abs(yValueLower.toDouble() - yValueUpper.toDouble()))) {
+                seriesNameLabel.font = Font.font("Arial", FontWeight.EXTRA_BOLD, 15.0)
+                valueLabel.font = Font.font("Arial", FontWeight.EXTRA_BOLD, 15.0)
+            } else {
+                seriesNameLabel.font = Font.font("Arial", 15.0)
+                valueLabel.font = Font.font("Arial", 15.0)
             }
-            return HBox(10.0, seriesName, Label("${yValueForChart.toInt()} km"))
+
+            return HBox(10.0, seriesNameLabel, valueLabel)
         }
 
         private fun normalizeYValue(lineChart: LineChart<String, Number>, value: Double): Double {
