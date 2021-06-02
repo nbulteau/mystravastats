@@ -132,12 +132,29 @@ class MainView(
                     eddingtonNumberChart(mainController.getActiveDaysByActivityTypeByYear(Ride, selectedYear.value))
                 }
             }
-            commuteRideStatsTab.content =
+            commuteRideStatsTab.content = vbox {
                 tableview(statisticsToDisplay.commuteRideStatistics) {
                     readonlyColumn("Statistic", StatisticDisplay::label)
                     readonlyColumn("Value", StatisticDisplay::value)
                     readonlyColumn("Activity", StatisticDisplay::activity)
                 }
+                drawer {
+                    item("Distance by months", expanded = true) {
+                        barchart("Distance by months for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
+                            series(Ride, mainController.buildDistanceByMonthsSeries(Ride, selectedYear.value, commute = true))
+                            verticalGridLinesVisible = false
+                            isLegendVisible = false
+                        }
+                    }
+                    item("Distance by days") {
+                        barchart("Distance by days for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
+                            series(Ride, mainController.buildDistanceByDaysSeries(Ride, selectedYear.value, commute = true))
+                            verticalGridLinesVisible = false
+                            isLegendVisible = false
+                        }
+                    }
+                }
+            }
             runStatsTab.content = vbox {
                 tableview(statisticsToDisplay.runStatistics) {
                     readonlyColumn("Statistic", StatisticDisplay::label)

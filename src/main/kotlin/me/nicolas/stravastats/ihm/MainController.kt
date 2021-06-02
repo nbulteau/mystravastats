@@ -68,22 +68,32 @@ class MainController(private val clientId: String, private val activities: Obser
         )
     }
 
-    fun buildDistanceByMonthsSeries(type: String, year: Int): ObservableList<XYChart.Data<String, Number>> {
+    fun buildDistanceByMonthsSeries(
+        type: String,
+        year: Int,
+        commute: Boolean = false,
+    ): ObservableList<XYChart.Data<String, Number>> {
         val activitiesByMonth: Map<String, List<Activity>> =
-            ActivityHelper.groupActivitiesByMonth(activities.filter { activity ->
-                activity.startDateLocal.subSequence(0, 4).toString().toInt() == year
-            })
+            ActivityHelper.groupActivitiesByMonth(activities
+                .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+                .filter { activity -> activity.commute == commute }
+            )
         val distanceByMonth: Map<String, Double> = ActivityHelper.sumDistanceByType(activitiesByMonth, type)
         return FXCollections.observableList(distanceByMonth.map { entry ->
             XYChart.Data(entry.key, entry.value)
         })
     }
 
-    fun buildDistanceByDaysSeries(type: String, year: Int): ObservableList<XYChart.Data<String, Number>>? {
+    fun buildDistanceByDaysSeries(
+        type: String,
+        year: Int,
+        commute: Boolean = false,
+    ): ObservableList<XYChart.Data<String, Number>>? {
         val activitiesByDay: Map<String, List<Activity>> =
-            ActivityHelper.groupActivitiesByDay(activities.filter { activity ->
-                activity.startDateLocal.subSequence(0, 4).toString().toInt() == year
-            }, year)
+            ActivityHelper.groupActivitiesByDay(activities
+                .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+                .filter { activity -> activity.commute == commute }, year
+            )
         val distanceByDay: Map<String, Double> = ActivityHelper.sumDistanceByType(activitiesByDay, type)
         return FXCollections.observableList(distanceByDay.map { entry ->
             XYChart.Data(entry.key, entry.value)
@@ -97,7 +107,8 @@ class MainController(private val clientId: String, private val activities: Obser
                     val hyperlink = if (statistic.activity != null) {
                         Hyperlink(statistic.activity.toString()).apply {
                             onAction = EventHandler {
-                                Desktop.getDesktop().browse(URI("http://www.strava.com/activities/${statistic.activity?.id}"))
+                                Desktop.getDesktop()
+                                    .browse(URI("http://www.strava.com/activities/${statistic.activity?.id}"))
                             }
                         }
                     } else {
