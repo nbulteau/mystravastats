@@ -44,7 +44,7 @@ Login to Strava then click 'Authorize' and tick the required permissions if need
 ```
 ./gradlew run    
 ```
-Will download activities from 2010 to now from Strava, then display statistics and some charts.
+Will download activities from 2010 to now from Strava, then display statistics and charts.
 
 
 ### Ride distance by year chart
