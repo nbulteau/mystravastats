@@ -1,6 +1,7 @@
 package me.nicolas.stravastats.ihm
 
 import javafx.geometry.Insets
+import javafx.geometry.Pos
 import javafx.scene.layout.BorderPane
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
@@ -50,6 +51,7 @@ internal class StravaAPIAuthenticationView : View("Strava API authentication") {
                         columnRowIndex(1, 3)
                     }
                     hbox(10) {
+                        alignment = Pos.CENTER
                         button("Launch with cache") {
                             gridpaneConstraints {
                                 columnRowIndex(1, 2)
