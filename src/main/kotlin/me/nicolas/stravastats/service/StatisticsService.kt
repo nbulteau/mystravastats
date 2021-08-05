@@ -10,21 +10,7 @@ internal class StatisticsService {
      * Compute statistics.
      * @param activities activities to scan.
      */
-    fun computeStatistics(activities: List<Activity>): StravaStatistics {
-
-        val globalStatistics = computeGlobalStats(activities)
-
-        val commuteRideStats =
-            computeCommuteBikeStats(activities.filter { activity -> activity.type == Ride && activity.commute })
-        val rideStats = computeBikeStats(activities.filter { activity -> activity.type == Ride && !activity.commute })
-        val runsStats = computeRunStats(activities.filter { activity -> activity.type == Run })
-        val hikesStats = computeHikeStats(activities.filter { activity -> activity.type == Hike })
-        val inlineSkate = computeInlineSkateStats(activities.filter { activity -> activity.type == InlineSkate })
-
-        return StravaStatistics(globalStatistics, commuteRideStats, rideStats, runsStats, hikesStats, inlineSkate)
-    }
-
-    private fun computeGlobalStats(activities: List<Activity>): List<Statistic> {
+    fun computeGlobalStatistics(activities: List<Activity>): List<Statistic> {
 
         return listOf(
             GlobalStatistic("Nb activities", activities, "%d", List<Activity>::size),
@@ -38,6 +24,137 @@ internal class StatisticsService {
             MostActiveMonthStatistic(activities),
         )
     }
+
+    fun computeRunStatistics(runActivities: List<Activity>): List<Statistic> {
+
+        val statistics = computeCommonStats(runActivities).toMutableList()
+
+        statistics.addAll(
+            listOf(
+                CooperStatistic(runActivities),
+                VVO2maxStatistic(runActivities),
+                BestEffortDistanceStatistic("Best 200 m", runActivities, 200.0),
+                BestEffortDistanceStatistic("Best 400 m", runActivities, 400.0),
+                BestEffortDistanceStatistic("Best 1000 m", runActivities, 1000.0),
+                BestEffortDistanceStatistic("Best 10000 m", runActivities, 10000.0),
+                BestEffortDistanceStatistic("Best half Marathon", runActivities, 21097.0),
+                BestEffortDistanceStatistic("Best Marathon", runActivities, 42195.0),
+                BestEffortTimeStatistic("Best 1 h", runActivities, 60 * 60),
+                BestEffortTimeStatistic("Best 2 h", runActivities, 2 * 60 * 60),
+                BestEffortTimeStatistic("Best 3 h", runActivities, 3 * 60 * 60),
+                BestEffortTimeStatistic("Best 4 h", runActivities, 4 * 60 * 60),
+                BestEffortTimeStatistic("Best 5 h", runActivities, 5 * 60 * 60),
+                BestEffortTimeStatistic("Best 6 h", runActivities, 6 * 60 * 60),
+            )
+        )
+
+        return statistics
+    }
+
+    fun computeRideStatistics(rideActivities: List<Activity>): List<Statistic> {
+
+        val statistics = computeCommonStats(rideActivities).toMutableList()
+        statistics.addAll(
+            listOf(
+                MaxSpeedStatistic(rideActivities),
+                MaxMovingTimeStatistic(rideActivities),
+                BestEffortDistanceStatistic("Best 250 m", rideActivities, 250.0),
+                BestEffortDistanceStatistic("Best 500 m", rideActivities, 500.0),
+                BestEffortDistanceStatistic("Best 1000 m", rideActivities, 1000.0),
+                BestEffortDistanceStatistic("Best 5 km", rideActivities, 5000.0),
+                BestEffortDistanceStatistic("Best 10 km", rideActivities, 10000.0),
+                BestEffortDistanceStatistic("Best 20 km", rideActivities, 20000.0),
+                BestEffortDistanceStatistic("Best 50 km", rideActivities, 50000.0),
+                BestEffortDistanceStatistic("Best 100 km", rideActivities, 100000.0),
+                BestEffortTimeStatistic("Best 30 min", rideActivities, 30 * 60),
+                BestEffortTimeStatistic("Best 1 h", rideActivities, 60 * 60),
+                BestEffortTimeStatistic("Best 2 h", rideActivities, 2 * 60 * 60),
+                BestEffortTimeStatistic("Best 3 h", rideActivities, 3 * 60 * 60),
+                BestEffortTimeStatistic("Best 4 h", rideActivities, 4 * 60 * 60),
+                BestEffortTimeStatistic("Best 5 h", rideActivities, 5 * 60 * 60),
+                BestElevationDistanceStatistic("Max gradient for 250 m", rideActivities, 250.0),
+                BestElevationDistanceStatistic("Max gradient for 500 m", rideActivities, 500.0),
+                BestElevationDistanceStatistic("Max gradient for 1000 m", rideActivities, 1000.0),
+                BestElevationDistanceStatistic("Max gradient for 5 km", rideActivities, 5000.0),
+                BestElevationDistanceStatistic("Max gradient for 10 km", rideActivities, 10000.0),
+                BestElevationDistanceStatistic("Max gradient for 20 km", rideActivities, 20000.0),
+            )
+        )
+        return statistics
+    }
+
+    fun computeCommuteStatistics(commuteActivities: List<Activity>): List<Statistic> {
+
+        val statistics = computeCommonStats(commuteActivities).toMutableList()
+        statistics.addAll(
+            listOf(
+                MaxSpeedStatistic(commuteActivities),
+                MaxMovingTimeStatistic(commuteActivities),
+                BestEffortDistanceStatistic("Best 250 m", commuteActivities, 250.0),
+                BestEffortDistanceStatistic("Best 500 m", commuteActivities, 500.0),
+                BestEffortDistanceStatistic("Best 1000 m", commuteActivities, 1000.0),
+                BestEffortDistanceStatistic("Best 5 km", commuteActivities, 5000.0),
+                BestEffortDistanceStatistic("Best 10 km", commuteActivities, 10000.0),
+                BestEffortTimeStatistic("Best 30 min", commuteActivities, 30 * 60),
+                BestEffortTimeStatistic("Best 1 h", commuteActivities, 60 * 60),
+                BestElevationDistanceStatistic("Max gradient for 250 m", commuteActivities, 250.0),
+                BestElevationDistanceStatistic("Max gradient for 500 m", commuteActivities, 500.0),
+                BestElevationDistanceStatistic("Max gradient for 1000 m", commuteActivities, 1000.0),
+            )
+        )
+        return statistics
+    }
+
+    fun computeHikeStatistics(hikeActivities: List<Activity>): List<Statistic> {
+
+        val statistics = computeCommonStats(hikeActivities).toMutableList()
+
+        statistics.addAll(
+            listOf(
+                BestDayStatistic("Max distance in a day", hikeActivities, "%s => %.02f km")
+                {
+                    hikeActivities
+                        .groupBy { activity: Activity -> activity.startDateLocal.substringBefore('T') }
+                        .mapValues { it.value.sumOf { activity -> activity.distance / 1000 } }
+                        .maxByOrNull { entry: Map.Entry<String, Double> -> entry.value }
+                        ?.toPair()
+                },
+                BestDayStatistic("Max elevation in a day", hikeActivities, "%s => %.02f m")
+                {
+                    hikeActivities
+                        .groupBy { activity: Activity -> activity.startDateLocal.substringBefore('T') }
+                        .mapValues { it.value.sumOf { activity -> activity.totalElevationGain } }
+                        .maxByOrNull { entry: Map.Entry<String, Double> -> entry.value }
+                        ?.toPair()
+                }
+            )
+        )
+
+        return statistics
+    }
+
+    fun computeInlineSkateStatistics(InlineSkateActivities: List<Activity>): List<Statistic> {
+
+        val statistics = computeCommonStats(InlineSkateActivities).toMutableList()
+
+        statistics.addAll(
+            listOf(
+                BestEffortDistanceStatistic("Best 200 m", InlineSkateActivities, 200.0),
+                BestEffortDistanceStatistic("Best 400 m", InlineSkateActivities, 400.0),
+                BestEffortDistanceStatistic("Best 1000 m", InlineSkateActivities, 1000.0),
+                BestEffortDistanceStatistic("Best 10000 m", InlineSkateActivities, 10000.0),
+                BestEffortDistanceStatistic("Best half Marathon", InlineSkateActivities, 21097.0),
+                BestEffortDistanceStatistic("Best Marathon", InlineSkateActivities, 42195.0),
+                BestEffortTimeStatistic("Best 1 h", InlineSkateActivities, 60 * 60),
+                BestEffortTimeStatistic("Best 2 h", InlineSkateActivities, 2 * 60 * 60),
+                BestEffortTimeStatistic("Best 3 h", InlineSkateActivities, 3 * 60 * 60),
+                BestEffortTimeStatistic("Best 4 h", InlineSkateActivities, 4 * 60 * 60),
+            )
+        )
+
+        return statistics
+    }
+
 
     private fun computeCommonStats(activities: List<Activity>): List<Statistic> {
 
@@ -69,135 +186,5 @@ internal class StatisticsService {
             MostActiveMonthStatistic(activities),
             EddingtonStatistic(activities),
         )
-    }
-
-    private fun computeRunStats(activities: List<Activity>): List<Statistic> {
-
-        val statistics = computeCommonStats(activities).toMutableList()
-
-        statistics.addAll(
-            listOf(
-                CooperStatistic(activities),
-                VVO2maxStatistic(activities),
-                BestEffortDistanceStatistic("Best 200 m", activities, 200.0),
-                BestEffortDistanceStatistic("Best 400 m", activities, 400.0),
-                BestEffortDistanceStatistic("Best 1000 m", activities, 1000.0),
-                BestEffortDistanceStatistic("Best 10000 m", activities, 10000.0),
-                BestEffortDistanceStatistic("Best half Marathon", activities, 21097.0),
-                BestEffortDistanceStatistic("Best Marathon", activities, 42195.0),
-                BestEffortTimeStatistic("Best 1 h", activities, 60 * 60),
-                BestEffortTimeStatistic("Best 2 h", activities, 2 * 60 * 60),
-                BestEffortTimeStatistic("Best 3 h", activities, 3 * 60 * 60),
-                BestEffortTimeStatistic("Best 4 h", activities, 4 * 60 * 60),
-                BestEffortTimeStatistic("Best 5 h", activities, 5 * 60 * 60),
-                BestEffortTimeStatistic("Best 6 h", activities, 6 * 60 * 60),
-            )
-        )
-
-        return statistics
-    }
-
-    private fun computeBikeStats(activities: List<Activity>): List<Statistic> {
-
-        val statistics = computeCommonStats(activities).toMutableList()
-        statistics.addAll(
-            listOf(
-                MaxSpeedStatistic(activities),
-                MaxMovingTimeStatistic(activities),
-                BestEffortDistanceStatistic("Best 250 m", activities, 250.0),
-                BestEffortDistanceStatistic("Best 500 m", activities, 500.0),
-                BestEffortDistanceStatistic("Best 1000 m", activities, 1000.0),
-                BestEffortDistanceStatistic("Best 5 km", activities, 5000.0),
-                BestEffortDistanceStatistic("Best 10 km", activities, 10000.0),
-                BestEffortDistanceStatistic("Best 20 km", activities, 20000.0),
-                BestEffortDistanceStatistic("Best 50 km", activities, 50000.0),
-                BestEffortDistanceStatistic("Best 100 km", activities, 100000.0),
-                BestEffortTimeStatistic("Best 30 min", activities, 30 * 60),
-                BestEffortTimeStatistic("Best 1 h", activities, 60 * 60),
-                BestEffortTimeStatistic("Best 2 h", activities, 2 * 60 * 60),
-                BestEffortTimeStatistic("Best 3 h", activities, 3 * 60 * 60),
-                BestEffortTimeStatistic("Best 4 h", activities, 4 * 60 * 60),
-                BestEffortTimeStatistic("Best 5 h", activities, 5 * 60 * 60),
-                BestElevationDistanceStatistic("Max gradient for 250 m", activities, 250.0),
-                BestElevationDistanceStatistic("Max gradient for 500 m", activities, 500.0),
-                BestElevationDistanceStatistic("Max gradient for 1000 m", activities, 1000.0),
-                BestElevationDistanceStatistic("Max gradient for 5 km", activities, 5000.0),
-                BestElevationDistanceStatistic("Max gradient for 10 km", activities, 10000.0),
-                BestElevationDistanceStatistic("Max gradient for 20 km", activities, 20000.0),
-            )
-        )
-        return statistics
-    }
-
-    private fun computeCommuteBikeStats(activities: List<Activity>): List<Statistic> {
-
-        val statistics = computeCommonStats(activities).toMutableList()
-        statistics.addAll(
-            listOf(
-                MaxSpeedStatistic(activities),
-                MaxMovingTimeStatistic(activities),
-                BestEffortDistanceStatistic("Best 250 m", activities, 250.0),
-                BestEffortDistanceStatistic("Best 500 m", activities, 500.0),
-                BestEffortDistanceStatistic("Best 1000 m", activities, 1000.0),
-                BestEffortDistanceStatistic("Best 5 km", activities, 5000.0),
-                BestEffortDistanceStatistic("Best 10 km", activities, 10000.0),
-                BestEffortTimeStatistic("Best 30 min", activities, 30 * 60),
-                BestEffortTimeStatistic("Best 1 h", activities, 60 * 60),
-                BestElevationDistanceStatistic("Max gradient for 250 m", activities, 250.0),
-                BestElevationDistanceStatistic("Max gradient for 500 m", activities, 500.0),
-                BestElevationDistanceStatistic("Max gradient for 1000 m", activities, 1000.0),
-            )
-        )
-        return statistics
-    }
-
-    private fun computeHikeStats(activities: List<Activity>): List<Statistic> {
-
-        val statistics = computeCommonStats(activities).toMutableList()
-
-        statistics.addAll(
-            listOf(
-                BestDayStatistic("Max distance in a day", activities, "%s => %.02f km")
-                {
-                    activities
-                        .groupBy { activity: Activity -> activity.startDateLocal.substringBefore('T') }
-                        .mapValues { it.value.sumOf { activity -> activity.distance / 1000 } }
-                        .maxByOrNull { entry: Map.Entry<String, Double> -> entry.value }
-                        ?.toPair()
-                },
-                BestDayStatistic("Max elevation in a day", activities, "%s => %.02f m")
-                {
-                    activities
-                        .groupBy { activity: Activity -> activity.startDateLocal.substringBefore('T') }
-                        .mapValues { it.value.sumOf { activity -> activity.totalElevationGain } }
-                        .maxByOrNull { entry: Map.Entry<String, Double> -> entry.value }
-                        ?.toPair()
-                }
-            )
-        )
-
-        return statistics
-    }
-
-    private fun computeInlineSkateStats(activities: List<Activity>): List<Statistic> {
-
-        val statistics = computeCommonStats(activities).toMutableList()
-
-        statistics.addAll(
-            listOf(
-                BestEffortDistanceStatistic("Best 200 m", activities, 200.0),
-                BestEffortDistanceStatistic("Best 400 m", activities, 400.0),
-                BestEffortDistanceStatistic("Best 1000 m", activities, 1000.0),
-                BestEffortDistanceStatistic("Best 10000 m", activities, 10000.0),
-                BestEffortDistanceStatistic("Best half Marathon", activities, 21097.0),
-                BestEffortDistanceStatistic("Best Marathon", activities, 42195.0),
-                BestEffortTimeStatistic("Best 1 h", activities, 60 * 60),
-                BestEffortTimeStatistic("Best 2 h", activities, 2 * 60 * 60),
-                BestEffortTimeStatistic("Best 3 h", activities, 3 * 60 * 60),
-                BestEffortTimeStatistic("Best 4 h", activities, 4 * 60 * 60),
-            )
-        )
-
-        return statistics
     }
 }

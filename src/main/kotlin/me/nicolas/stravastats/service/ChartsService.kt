@@ -10,13 +10,9 @@ internal class ChartsService {
 
     @OptIn(UnstablePlotlyAPI::class)
     fun buildCharts(activities: List<Activity>, year: Int) {
-        // group by year
-        val activitiesGroupedByYear = activities
-            .groupBy { activity ->
-                activity.startDateLocal.subSequence(0, 4).toString()
-            }
 
-        ForAYearChart(activitiesGroupedByYear[year.toString()] ?: emptyList(), year).build()
+        ForAYearChart(activities, year).build()
+
         ByYearsChart(activities).build()
     }
 }

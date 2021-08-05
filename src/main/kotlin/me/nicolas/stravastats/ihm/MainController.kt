@@ -5,16 +5,15 @@ import javafx.collections.ObservableList
 import javafx.event.EventHandler
 import javafx.scene.chart.XYChart
 import javafx.scene.control.Hyperlink
-import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.service.ActivityHelper
-import me.nicolas.stravastats.service.CSVService
-import me.nicolas.stravastats.service.ChartsService
-import me.nicolas.stravastats.service.StatisticsService
+import me.nicolas.stravastats.business.*
+import me.nicolas.stravastats.service.*
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
-import tornadofx.Controller
+import tornadofx.*
 import java.awt.Desktop
 import java.net.URI
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 
 class MainController(private val clientId: String, private val activities: ObservableList<Activity>) : Controller() {
@@ -34,9 +33,10 @@ class MainController(private val clientId: String, private val activities: Obser
     }
 
     fun getActiveDaysByActivityTypeByYear(activityType: String, year: Int): Map<String, Int> {
-        return activities
+
+        val filteredActivities = filterActivitiesByType(activityType)
+        return filteredActivities
             .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
-            .filter { activity -> activity.type == activityType }
             .groupBy { activity -> activity.startDateLocal.substringBefore('T') }
             .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance / 1000 } }
             .mapValues { entry -> entry.value.toInt() }
@@ -44,60 +44,86 @@ class MainController(private val clientId: String, private val activities: Obser
     }
 
     fun getActiveDaysByActivityType(activityType: String): Map<String, Int> {
-        return activities
-            .filter { activity -> activity.type == activityType }
+
+        val filteredActivities = filterActivitiesByType(activityType)
+        return filteredActivities
             .groupBy { activity -> activity.startDateLocal.substringBefore('T') }
             .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance / 1000 } }
             .mapValues { entry -> entry.value.toInt() }
             .toMap()
     }
 
-    fun getActivitiesByYear() = ActivityHelper.groupActivitiesByYear(activities)
+    fun getActivitiesByYear(activityType: String): Map<String, List<Activity>> {
+        val filteredActivities = filterActivitiesByType(activityType)
 
-    fun getStatisticsToDisplay(year: Int?): StatisticsToDisplay {
-        val stravaStatistics = statsService.computeStatistics(activities.filter { activity ->
-            activity.startDateLocal.subSequence(0, 4).toString().toInt() == year
-        })
-        return StatisticsToDisplay(
-            buildStatisticsToDisplay(stravaStatistics.globalStatistics),
-            buildStatisticsToDisplay(stravaStatistics.sportRideStatistics),
-            buildStatisticsToDisplay(stravaStatistics.commuteRideStatistics),
-            buildStatisticsToDisplay(stravaStatistics.runStatistics),
-            buildStatisticsToDisplay(stravaStatistics.inlineSkateStats),
-            buildStatisticsToDisplay(stravaStatistics.hikeStatistics)
-        )
+        return ActivityHelper.groupActivitiesByYear(filteredActivities)
+    }
+
+    fun getActivitiesToDisplay(activityType: String, year: Int): ObservableList<ActivityDisplay> {
+
+        val filteredActivities = filterActivitiesByType(activityType)
+            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+        return buildActivitiesToDisplay(filteredActivities)
+    }
+
+    fun getStatisticsToDisplay(activityType: String, year: Int?): ObservableList<StatisticDisplay> {
+
+        val filteredActivities = filterActivitiesByType(activityType)
+            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+        val statistics = when (activityType) {
+            Ride -> statsService.computeRideStatistics(filteredActivities)
+            Commute -> statsService.computeCommuteStatistics(filteredActivities)
+            Run -> statsService.computeRunStatistics(filteredActivities)
+            InlineSkate -> statsService.computeInlineSkateStatistics(filteredActivities)
+            Hike -> statsService.computeHikeStatistics(filteredActivities)
+            else -> emptyList()
+        }
+
+        return buildStatisticsToDisplay(statistics)
     }
 
     fun buildDistanceByMonthsSeries(
-        type: String,
+        activityType: String,
         year: Int,
-        commute: Boolean = false,
     ): ObservableList<XYChart.Data<String, Number>> {
-        val activitiesByMonth: Map<String, List<Activity>> =
-            ActivityHelper.groupActivitiesByMonth(activities
-                .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
-                .filter { activity -> activity.commute == commute }
-            )
-        val distanceByMonth: Map<String, Double> = ActivityHelper.sumDistanceByType(activitiesByMonth, type)
+
+        val filteredActivities = filterActivitiesByType(activityType)
+            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+
+        val activitiesByMonth: Map<String, List<Activity>> = ActivityHelper.groupActivitiesByMonth(filteredActivities)
+        val distanceByMonth: Map<String, Double> =  activitiesByMonth.mapValues { (_, activities) ->
+            activities.sumOf { activity -> activity.distance / 1000 }
+        }
+
         return FXCollections.observableList(distanceByMonth.map { entry ->
             XYChart.Data(entry.key, entry.value)
         })
     }
 
     fun buildDistanceByDaysSeries(
-        type: String,
+        activityType: String,
         year: Int,
-        commute: Boolean = false,
     ): ObservableList<XYChart.Data<String, Number>>? {
-        val activitiesByDay: Map<String, List<Activity>> =
-            ActivityHelper.groupActivitiesByDay(activities
-                .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
-                .filter { activity -> activity.commute == commute }, year
-            )
-        val distanceByDay: Map<String, Double> = ActivityHelper.sumDistanceByType(activitiesByDay, type)
+
+        val filteredActivities = filterActivitiesByType(activityType)
+            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+
+        val activitiesByDay: Map<String, List<Activity>> = ActivityHelper.groupActivitiesByDay(filteredActivities, year)
+        val distanceByDay: Map<String, Double> = activitiesByDay.mapValues { (_, activities) ->
+            activities.sumOf { activity -> activity.distance / 1000 }
+        }
+
         return FXCollections.observableList(distanceByDay.map { entry ->
             XYChart.Data(entry.key, entry.value)
         })
+    }
+
+    private fun filterActivitiesByType(activityType: String) = if (activityType == Commute) {
+        activities
+            .filter { activity -> activity.type == Ride && activity.commute }
+    } else {
+        activities
+            .filter { activity -> activity.type == activityType && !activity.commute }
     }
 
     private fun buildStatisticsToDisplay(statistics: List<Statistic>): ObservableList<StatisticDisplay> {
@@ -121,5 +147,21 @@ class MainController(private val clientId: String, private val activities: Obser
             }
         }
         return FXCollections.observableArrayList(activityStatistics)
+    }
+
+    private fun buildActivitiesToDisplay(activities: List<Activity>): ObservableList<ActivityDisplay> {
+        val activitiesToDisplay = activities.map { activity ->
+
+            val hyperlink = Hyperlink(activity.toString()).apply {
+                onAction = EventHandler {
+                    Desktop.getDesktop()
+                        .browse(URI("http://www.strava.com/activities/${activity.id}"))
+                }
+            }
+
+            ActivityDisplay(hyperlink, "%.02f".format(activity.distance / 1000), activity.startDateLocal.formatDate())
+        }
+
+        return FXCollections.observableArrayList(activitiesToDisplay)
     }
 }

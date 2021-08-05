@@ -9,11 +9,13 @@ import me.nicolas.stravastats.business.*
 import me.nicolas.stravastats.service.ActivityHelper
 
 @OptIn(UnstablePlotlyAPI::class)
-internal class ForAYearChart(val activities: List<Activity>, val year: Int) : Chart() {
+internal class ForAYearChart(activities: List<Activity>, val year: Int) : Chart() {
 
-    private val activitiesByMonth = ActivityHelper.groupActivitiesByMonth(activities)
+    private val activitiesForYear = activities.filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
 
-    private val activitiesByDay = ActivityHelper.groupActivitiesByDay(activities, year)
+    private val activitiesByMonth = ActivityHelper.groupActivitiesByMonth(activitiesForYear)
+
+    private val activitiesByDay = ActivityHelper.groupActivitiesByDay(activitiesForYear, year)
 
     override fun build() {
         Plotly.grid {
@@ -55,8 +57,8 @@ internal class ForAYearChart(val activities: List<Activity>, val year: Int) : Ch
                 inLineSkateByDays = ActivityHelper.averageSpeedByType(activitiesByDay, InlineSkate),
                 year
             )
-            buildEddingtonNumberPlotByType(row = 6, width = 6, activities, Run)
-            buildEddingtonNumberPlotByType(row = 6, width = 6, activities, Ride)
+            buildEddingtonNumberPlotByType(row = 6, width = 6, activitiesForYear, Run)
+            buildEddingtonNumberPlotByType(row = 6, width = 6, activitiesForYear, Ride)
         }.makeFile()
     }
 

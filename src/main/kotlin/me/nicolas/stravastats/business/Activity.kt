@@ -10,6 +10,7 @@ const val Run = "Run"
 const val Ride = "Ride"
 const val InlineSkate = "InlineSkate"
 const val Hike = "Hike"
+const val Commute = "Commute"
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Activity(
