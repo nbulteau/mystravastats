@@ -8,7 +8,10 @@ import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
+import javafx.scene.control.TableCell
+import javafx.scene.control.TableColumn
 import javafx.scene.layout.Pane
+import javafx.util.Callback
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.business.Ride
@@ -94,16 +97,46 @@ class MainView(
         updateTabs()
     }
 
+    private fun <ROW, T : Double?> getDistanceCell(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+        return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+            object : TableCell<ROW, T>() {
+                override fun updateItem(item: T?, empty: Boolean) {
+                    super.updateItem(item, empty)
+                    if (item == null || empty) {
+                        setText(null)
+                    } else {
+                        setText("%.2f km".format(item.div(1000)))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun <ROW, T : Double?> getElevationCell(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+        return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+            object : TableCell<ROW, T>() {
+                override fun updateItem(item: T?, empty: Boolean) {
+                    super.updateItem(item, empty)
+                    if (item == null || empty) {
+                        setText(null)
+                    } else {
+                        setText("%.0f m".format(item))
+                    }
+                }
+            }
+        }
+    }
+
     private fun updateTabs() {
         val statisticsToDisplay = mainController.getStatisticsToDisplay(selectedActivity.value, selectedYear.value)
         val activities = mainController.getActivitiesToDisplay(selectedActivity.value, selectedYear.value)
 
         activitiesTab.content = tableview(activities) {
             readonlyColumn("Activity", ActivityDisplay::activity)
-            readonlyColumn("Distance", ActivityDisplay::distance).setComparator { d1, d2 ->
-                d1.replace(",", ".").toDouble().compareTo(d2.replace(",", ".").toDouble())
-            }
+            readonlyColumn("Distance", ActivityDisplay::distance).cellFactory = getDistanceCell()
+            readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory = getElevationCell()
             readonlyColumn("Date", ActivityDisplay::date)
+
             resizeColumnsToFitContent()
         }
 

@@ -54,6 +54,7 @@ class MainController(private val clientId: String, private val activities: Obser
     }
 
     fun getActivitiesByYear(activityType: String): Map<String, List<Activity>> {
+
         val filteredActivities = filterActivitiesByType(activityType)
 
         return ActivityHelper.groupActivitiesByYear(filteredActivities)
@@ -91,7 +92,7 @@ class MainController(private val clientId: String, private val activities: Obser
             .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
 
         val activitiesByMonth: Map<String, List<Activity>> = ActivityHelper.groupActivitiesByMonth(filteredActivities)
-        val distanceByMonth: Map<String, Double> =  activitiesByMonth.mapValues { (_, activities) ->
+        val distanceByMonth: Map<String, Double> = activitiesByMonth.mapValues { (_, activities) ->
             activities.sumOf { activity -> activity.distance / 1000 }
         }
 
@@ -127,6 +128,7 @@ class MainController(private val clientId: String, private val activities: Obser
     }
 
     private fun buildStatisticsToDisplay(statistics: List<Statistic>): ObservableList<StatisticDisplay> {
+
         val activityStatistics = statistics.map { statistic ->
             when (statistic) {
                 is ActivityStatistic -> {
@@ -152,14 +154,14 @@ class MainController(private val clientId: String, private val activities: Obser
     private fun buildActivitiesToDisplay(activities: List<Activity>): ObservableList<ActivityDisplay> {
         val activitiesToDisplay = activities.map { activity ->
 
-            val hyperlink = Hyperlink(activity.toString()).apply {
+            val hyperlink = Hyperlink(activity.name).apply {
                 onAction = EventHandler {
                     Desktop.getDesktop()
                         .browse(URI("http://www.strava.com/activities/${activity.id}"))
                 }
             }
 
-            ActivityDisplay(hyperlink, "%.02f".format(activity.distance / 1000), activity.startDateLocal.formatDate())
+            ActivityDisplay(hyperlink, activity.distance, activity.totalElevationGain, activity.startDateLocal.formatDate())
         }
 
         return FXCollections.observableArrayList(activitiesToDisplay)
