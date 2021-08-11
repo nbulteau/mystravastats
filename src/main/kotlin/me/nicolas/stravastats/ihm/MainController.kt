@@ -24,6 +24,8 @@ class MainController(private val clientId: String, private val activities: Obser
 
     private val csvService = CSVService()
 
+    private val badgeService = BadgeService()
+
     fun generateCSV(year: Int) {
         csvService.exportCSV(clientId, activities, year)
     }
@@ -81,6 +83,12 @@ class MainController(private val clientId: String, private val activities: Obser
         }
 
         return buildStatisticsToDisplay(statistics)
+    }
+
+    fun getBadges(activityType: String): List<Badge> {
+        val filteredActivities = filterActivitiesByType(activityType)
+
+        return badgeService.computeBadges(activityType, filteredActivities)
     }
 
     fun buildDistanceByMonthsSeries(
@@ -161,7 +169,12 @@ class MainController(private val clientId: String, private val activities: Obser
                 }
             }
 
-            ActivityDisplay(hyperlink, activity.distance, activity.totalElevationGain, activity.startDateLocal.formatDate())
+            ActivityDisplay(
+                hyperlink,
+                activity.distance,
+                activity.totalElevationGain,
+                activity.startDateLocal.formatDate()
+            )
         }
 
         return FXCollections.observableArrayList(activitiesToDisplay)

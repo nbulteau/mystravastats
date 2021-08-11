@@ -129,7 +129,7 @@ abstract class Chart {
                 xaxis {
                     title = "Km"
                     type = AxisType.linear
-                    range = 0.0.rangeTo(counts.size.toDouble())
+                    range(0.0.rangeTo(counts.size.toDouble()))
                 }
 
                 yaxis {

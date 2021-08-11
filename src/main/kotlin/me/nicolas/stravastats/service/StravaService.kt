@@ -215,9 +215,11 @@ internal class StravaService(private val stravaApi: StravaApi) {
 
         var index = 0.0
         val writer: ObjectWriter = objectMapper.writer()
+
         activities.forEach { activity ->
             displayProgressBar(++index / activities.size)
 
+            // stream
             val streamFile = File(activitiesDirectory, "stream-${activity.id}")
             val stream: Stream?
             if (streamFile.exists()) {
@@ -225,7 +227,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
             } else {
                 stream = stravaApi.getActivityStream(accessToken, activity)
                 if (stream != null) {
-                    writer.writeValue(File(activitiesDirectory, "stream-${activity.id}"), stream)
+                    writer.writeValue(streamFile, stream)
                 }
             }
             activity.stream = stream

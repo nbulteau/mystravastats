@@ -83,7 +83,7 @@ class ActivityHelper {
             }
         }
 
-        fun sumDistanceByType(activities: Map<String, List<Activity>>, type: String) =
+        fun sumDistanceByType(activities: Map<String, List<Activity>>, type: String?) =
             activities.mapValues { (_, activities) ->
                 activities
                     .filter { activity -> activity.type == type }

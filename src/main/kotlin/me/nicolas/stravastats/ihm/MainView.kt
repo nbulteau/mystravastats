@@ -3,6 +3,7 @@ package me.nicolas.stravastats.ihm
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
+import javafx.geometry.Pos
 import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
@@ -38,6 +39,7 @@ class MainView(
     private var statisticsTab: Tab by singleAssign()
     private var activitiesTab: Tab by singleAssign()
     private var chartsTab: Tab by singleAssign()
+    private var badgesTab: Tab by singleAssign()
     private var overYearsTab: Tab by singleAssign()
 
     init {
@@ -90,6 +92,7 @@ class MainView(
                     tab("Activities") { activitiesTab = this }
                     tab("Statistics") { statisticsTab = this }
                     tab("Charts") { chartsTab = this }
+                    tab("Badges") { badgesTab = this }
                     tab("Over years") { overYearsTab = this }
                 }
             }
@@ -129,10 +132,12 @@ class MainView(
 
     private fun updateTabs() {
         val statisticsToDisplay = mainController.getStatisticsToDisplay(selectedActivity.value, selectedYear.value)
-        val activities = mainController.getActivitiesToDisplay(selectedActivity.value, selectedYear.value)
+        val activitiesToDisplay = mainController.getActivitiesToDisplay(selectedActivity.value, selectedYear.value)
+        val badges = mainController.getBadges(selectedActivity.value)
 
-        activitiesTab.content = tableview(activities) {
-            readonlyColumn("Activity", ActivityDisplay::activity)
+
+        activitiesTab.content = tableview(activitiesToDisplay) {
+            readonlyColumn("Activity", ActivityDisplay::name)
             readonlyColumn("Distance", ActivityDisplay::distance).cellFactory = getDistanceCell()
             readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory = getElevationCell()
             readonlyColumn("Date", ActivityDisplay::date)
@@ -171,10 +176,34 @@ class MainView(
                 )
             }
         }
+        badgesTab.content = flowpane {
+            vgap = 15.0
+            hgap = 15.0
+            for (badge in badges) {
+                borderpane {
+                    bottom = text {
+                        text = "${badge.name} (${badge.elevation} m)"
+                        borderpaneConstraints {
+                            alignment = Pos.CENTER
+                        }
+                    }
+                    center = imageview("images/map-location.png") {
+                        if (!badge.isCompleted) {
+                            opacity = 0.15
+                        }
+                        fitWidth = 120.0
+                        isPreserveRatio = true
+                        isSmooth = true
+                        isCache = true
+
+                    }
+                }
+            }
+        }
         overYearsTab.content = drawer {
 
-            item("${selectedActivity.value} distance by years", expanded = true) {
-                val multipleAxesLineChart = distanceByYears(selectedActivity.value)
+            item("${selectedActivity.value} distance per year cumulative", expanded = true) {
+                val multipleAxesLineChart = cumulativeDistancePerYear(selectedActivity.value)
                 multipleAxesLineChart.attachTo(this)
             }
             item("${selectedActivity.value} Eddington number") {
@@ -183,7 +212,7 @@ class MainView(
         }
     }
 
-    private fun distanceByYears(activityType: String): Pane {
+    private fun cumulativeDistancePerYear(activityType: String): Pane {
 
         val activitiesByYear = mainController.getActivitiesByYear(activityType)
         val allSeries = mutableListOf<XYChart.Series<String, Number>>()
@@ -204,6 +233,30 @@ class MainView(
             Pane()
         } else {
             return MultipleLineChart("$activityType distance (km) by years", allSeries)
+        }
+    }
+
+    private fun distancePerYear(activityType: String): Pane {
+
+        val activitiesByYear = mainController.getActivitiesByYear(activityType)
+        val allSeries = mutableListOf<XYChart.Series<String, Number>>()
+        for (year in 2010..LocalDate.now().year) {
+            val activities = if (activitiesByYear[year.toString()] != null) {
+                activitiesByYear[year.toString()]!!
+            } else {
+                continue
+            }
+            val activitiesPerMonth = ActivityHelper.groupActivitiesByMonth(activities)
+            val cumulativeDistance = ActivityHelper.sumDistanceByType(activitiesPerMonth, activityType)
+            val data = cumulativeDistance.entries.map { entry ->
+                XYChart.Data<String, Number>(entry.key, entry.value)
+            }.toObservable()
+            allSeries.add(XYChart.Series(year.toString(), data))
+        }
+        return if (allSeries.isEmpty()) {
+            Pane()
+        } else {
+            return MultipleLineChart("$activityType distance (km) per years", allSeries)
         }
     }
 }

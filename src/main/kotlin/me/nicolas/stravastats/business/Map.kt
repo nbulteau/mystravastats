@@ -3,7 +3,7 @@ package me.nicolas.stravastats.business
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class Map(
+data class Map<T, U>(
     @JsonProperty("id")
     val id: String,
     @JsonProperty("resource_state")

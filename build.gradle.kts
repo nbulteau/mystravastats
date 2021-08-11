@@ -11,7 +11,7 @@ buildscript {
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.5.10"
+    id("org.jetbrains.kotlin.jvm") version "1.5.21"
     id("com.github.ben-manes.versions") version "0.39.0"
 
     // Apply the application plugin to add support for building a CLI application.
@@ -34,15 +34,15 @@ dependencies {
 
     //implementation("com.beust:jcommander:1.81")
     implementation("org.danilopianini:khttp:0.1.0-dev30+51fa9ae")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.3")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.3")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.4")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.4")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.4")
 
-    implementation("io.javalin:javalin:3.13.7")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
-    implementation("org.slf4j:slf4j-nop:1.7.30")
+    implementation("io.javalin:javalin:3.13.10")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
+    implementation("org.slf4j:slf4j-nop:1.7.32")
 
-    implementation("space.kscience:plotlykt-server:0.4.2") {
+    implementation("space.kscience:plotlykt-server:0.4.4") {
         exclude("ch.qos.logback", "logback-classic")
     }
 

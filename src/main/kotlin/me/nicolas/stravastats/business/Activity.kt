@@ -77,7 +77,7 @@ data class Activity(
     @JsonProperty("manual")
     val manual: Boolean,
     @JsonProperty("map")
-    val map: Map,
+    val map: Map<Any?, Any?>,
     @JsonProperty("max_speed")
     val maxSpeed: Double,
     @JsonProperty("moving_time")
@@ -143,7 +143,8 @@ data class Activity(
             Distance(mutableListOf(), 0, "high", "distance"),
             Time(mutableListOf(), 0, "high", "distance"),
             Moving(mutableListOf(), 0, "high", "distance"),
-            Altitude(mutableListOf(), 0, "high", "distance")
+            Altitude(mutableListOf(), 0, "high", "distance"),
+            LatitudeLongitude(mutableListOf(), 0, "high", "distance")
         )
         streamWithoutNonMovingData.append(0.0, 0, 0.0)
 

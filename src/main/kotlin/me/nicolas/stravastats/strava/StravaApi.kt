@@ -22,7 +22,6 @@ internal class StravaApi(
 
     private val mapper = jacksonObjectMapper()
 
-
     fun getLoggedInAthlete(accessToken: String): Athlete {
 
         val url = "${properties.strava.url}/api/v3/athlete"
@@ -66,7 +65,7 @@ internal class StravaApi(
             return null
         }
         val url = "${properties.strava.url}/api/v3/activities/${activity.id}/streams" +
-                "?keys=time,distance,altitude,moving&key_by_type=true"
+                "?keys=time,distance,latlng,altitude,moving&key_by_type=true"
 
         val requestHeaders = buildRequestHeaders(accessToken)
         val response = get(url, requestHeaders)
