@@ -133,7 +133,7 @@ class MainView(
     private fun updateTabs() {
         val statisticsToDisplay = mainController.getStatisticsToDisplay(selectedActivity.value, selectedYear.value)
         val activitiesToDisplay = mainController.getActivitiesToDisplay(selectedActivity.value, selectedYear.value)
-        val badges = mainController.getBadges(selectedActivity.value)
+        val badgesToDisplay = mainController.getBadgesToDisplay(selectedActivity.value)
 
 
         activitiesTab.content = tableview(activitiesToDisplay) {
@@ -176,26 +176,19 @@ class MainView(
                 )
             }
         }
-        badgesTab.content = flowpane {
-            vgap = 15.0
-            hgap = 15.0
-            for (badge in badges) {
-                borderpane {
-                    bottom = text {
-                        text = "${badge.name} (${badge.elevation} m)"
-                        borderpaneConstraints {
-                            alignment = Pos.CENTER
+        badgesTab.content = scrollpane(fitToWidth = true) {
+            flowpane {
+                vgap = 15.0
+                hgap = 15.0
+                for (badgeToDisplay in badgesToDisplay) {
+                    borderpane {
+                        bottom = text {
+                            text = badgeToDisplay.label
+                            borderpaneConstraints {
+                                alignment = Pos.CENTER
+                            }
                         }
-                    }
-                    center = imageview("images/map-location.png") {
-                        if (!badge.isCompleted) {
-                            opacity = 0.15
-                        }
-                        fitWidth = 120.0
-                        isPreserveRatio = true
-                        isSmooth = true
-                        isCache = true
-
+                        center = badgeToDisplay.activity
                     }
                 }
             }

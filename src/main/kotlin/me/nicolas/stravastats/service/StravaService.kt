@@ -69,6 +69,8 @@ internal class StravaService(private val stravaApi: StravaApi) {
 
     private fun getLoggedInAthleteFromStrava(clientId: String): Athlete {
         val activitiesDirectoryName = getActivitiesDirectoryName(clientId)
+        val activitiesDirectory = File(activitiesDirectoryName)
+        activitiesDirectory.mkdirs()
 
         print("\nLoad athlete description of clientId=$clientId... ")
         val athlete = stravaApi.getLoggedInAthlete(this.accessToken!!)
@@ -144,6 +146,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
     private fun getActivitiesFromStrava(clientId: String, year: Int): List<Activity> {
 
         val yearActivitiesDirectory = getYearActivitiesDirectory(clientId, year)
+
         val activities = loadActivitiesAndSaveIntoCache(clientId, year, this.accessToken!!, yearActivitiesDirectory)
         loadActivitiesStreamsAndSaveIntoCache(activities, yearActivitiesDirectory, this.accessToken!!)
         return activities

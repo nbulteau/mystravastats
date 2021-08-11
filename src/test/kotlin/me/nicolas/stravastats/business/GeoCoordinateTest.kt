@@ -1,7 +1,8 @@
 package me.nicolas.stravastats.business
 
-import me.nicolas.stravastats.service.BadgeService.Companion.COL_AGNEL
-import me.nicolas.stravastats.service.BadgeService.Companion.COL_D_IZOARD
+
+import me.nicolas.stravastats.business.badges.LocationBadge.Companion.COL_AGNEL
+import me.nicolas.stravastats.business.badges.LocationBadge.Companion.COL_D_IZOARD
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 

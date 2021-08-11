@@ -5,7 +5,10 @@ import javafx.collections.ObservableList
 import javafx.event.EventHandler
 import javafx.scene.chart.XYChart
 import javafx.scene.control.Hyperlink
+import javafx.scene.image.ImageView
 import me.nicolas.stravastats.business.*
+import me.nicolas.stravastats.business.badges.Badge
+import me.nicolas.stravastats.business.badges.LocationBadge
 import me.nicolas.stravastats.service.*
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
@@ -85,10 +88,10 @@ class MainController(private val clientId: String, private val activities: Obser
         return buildStatisticsToDisplay(statistics)
     }
 
-    fun getBadges(activityType: String): List<Badge> {
+    fun getBadgesToDisplay(activityType: String): ObservableList<BadgeDisplay> {
         val filteredActivities = filterActivitiesByType(activityType)
 
-        return badgeService.computeBadges(activityType, filteredActivities)
+        return buildBadgesToDisplay(badgeService.computeBadges(activityType, filteredActivities))
     }
 
     fun buildDistanceByMonthsSeries(
@@ -133,6 +136,51 @@ class MainController(private val clientId: String, private val activities: Obser
     } else {
         activities
             .filter { activity -> activity.type == activityType && !activity.commute }
+    }
+
+    private fun buildBadgesToDisplay(badgesList: List<Triple<Badge, Activity?, Boolean>>): ObservableList<BadgeDisplay> {
+        val badges = badgesList.map { entry ->
+            val isCompleted = entry.third
+            val activity = entry.second
+            val badge = entry.first
+
+            val imageView = when (badge) {
+                is LocationBadge -> ImageView("images/cycling.png")
+                    .apply {
+                        if (!isCompleted) {
+                            opacity = 0.15
+                        }
+                        fitWidth = 120.0
+                        isPreserveRatio = true
+                        isSmooth = true
+                        isCache = true
+                    }
+                else -> ImageView("images/stopwatch.png")
+                    .apply {
+                        if (!isCompleted) {
+                            opacity = 0.15
+                        }
+                        fitWidth = 120.0
+                        isPreserveRatio = true
+                        isSmooth = true
+                        isCache = true
+                    }
+            }
+
+            val hyperlink = Hyperlink("", imageView)
+                .apply {
+                    if (entry.second != null) {
+                        onAction = EventHandler {
+                            Desktop.getDesktop()
+                                .browse(URI("https://www.strava.com/activities/${activity?.id}"))
+                        }
+                    }
+                }
+
+            BadgeDisplay(badge.toString(), hyperlink)
+        }
+
+        return FXCollections.observableArrayList(badges)
     }
 
     private fun buildStatisticsToDisplay(statistics: List<Statistic>): ObservableList<StatisticDisplay> {
