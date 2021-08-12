@@ -12,7 +12,9 @@ https://en.wikipedia.org/wiki/VVO2max
 * ...
 
 ## IHM
-![Charts](https://github.com/nbulteau/mystravastats/blob/main/docs/MyStravaStats_IHM.png)
+![Screen shoot 1](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shot-1.png)
+![Screen shoot 2](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shot-2.png)
+![Screen shoot 3](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shot-3.png)
 
 ## Launch mystravastats
 
