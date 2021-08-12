@@ -2,15 +2,13 @@ package me.nicolas.stravastats.business.badges
 
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.GeoCoordinate
-import me.nicolas.stravastats.business.Ride
 
 data class LocationBadge(
-    override val name: String,
-    override val isCompleted: Boolean = false,
+    override val label: String,
     val elevation: Int,
     val geoCoordinate: GeoCoordinate,
     val location: String
-) : Badge(name, isCompleted) {
+) : Badge(label) {
 
     override fun check(activities: List<Activity>): Pair<Activity?, Boolean> {
         for (activity in activities) {
@@ -26,112 +24,110 @@ data class LocationBadge(
         return Pair(null, false)
     }
 
-    // match if distance from the geo localisation is less than 150 m
-    private fun match(latitude: Double, longitude: Double) = geoCoordinate.haversineInM(latitude, longitude) < 150
+    override fun toString() = "$label\n$elevation m"
 
-    override fun toString(): String {
-        return "$name\n$elevation m"
-    }
+    // match if distance from the geo localisation is less than 200 m
+    private fun match(latitude: Double, longitude: Double) = geoCoordinate.haversineInM(latitude, longitude) < 200
 
     companion object {
         val COL_AGNEL = LocationBadge(
-            name = "Col Agnel",
+            label = "Col Agnel",
             elevation = 2740,
             geoCoordinate = GeoCoordinate(44.6839194, 6.9795741),
             location = "Alpes"
         )
         val CIME_DE_LA_BONETTE = LocationBadge(
-            name = "Cime de la Bonette",
+            label = "Cime de la Bonette",
             elevation = 2802,
             geoCoordinate = GeoCoordinate(44.3216186, 6.8068886),
             location = "Alpes"
         )
         val COL_DE_LA_CAYOLLE = LocationBadge(
-            name = "Col de la Cayolle",
+            label = "Col de la Cayolle",
             elevation = 2324,
             geoCoordinate = GeoCoordinate(44.259142, 6.7439734),
             location = "Alpes"
         )
         val COL_D_IZOARD = LocationBadge(
-            name = "Col d'Izoard",
+            label = "Col d'Izoard",
             elevation = 2362,
             geoCoordinate = GeoCoordinate(44.8200267, 6.7350408),
             location = "Alpes"
         )
         val COL_DE_VARS = LocationBadge(
-            name = "Col de Vars",
+            label = "Col de Vars",
             elevation = 2108,
             geoCoordinate = GeoCoordinate(44.5387261, 6.7028698),
             location = "Alpes"
         )
         val COL_DU_GALIBIER = LocationBadge(
-            name = "Col du Galibier",
+            label = "Col du Galibier",
             elevation = 2642,
             geoCoordinate = GeoCoordinate(45.0641651, 6.407878),
             location = "Alpes"
         )
         val RISOUL = LocationBadge(
-            name = "Risoul",
+            label = "Risoul",
             elevation = 1850,
             geoCoordinate = GeoCoordinate(44.6491889, 6.6387088),
             location = "Alpes"
         )
         val VALBERG = LocationBadge(
-            name = "Valberg",
+            label = "Valberg",
             elevation = 1673,
             geoCoordinate = GeoCoordinate(44.0956228, 6.9301384),
             location = "Alpes"
         )
         val ALPE_D_HUEZ = LocationBadge(
-            name = "Alpe d'Huez",
+            label = "Alpe d'Huez",
             elevation = 1850,
             geoCoordinate = GeoCoordinate(45.092401, 6.0699443),
             location = "Alpes"
         )
         val ISOLA_2000 = LocationBadge(
-            name = "Isola 2000",
+            label = "Isola 2000",
             elevation = 2000,
-            geoCoordinate = GeoCoordinate(44.1869246, 7.1454412),
+            geoCoordinate = GeoCoordinate(44.186683, 7.157875),
             location = "Alpes"
         )
         val COL_DE_L_ISERAN = LocationBadge(
-            name = "Col de l'Iseran",
+            label = "Col de l'Iseran",
             elevation = 2764,
             geoCoordinate = GeoCoordinate(45.4171195, 7.0308387),
             location = "Alpes"
         )
         val COL_DU_MONT_CENIS = LocationBadge(
-            name = "Col du Mont-Cenis",
+            label = "Col du Mont-Cenis",
             elevation = 2085,
             geoCoordinate = GeoCoordinate(45.2598281, 6.9008841),
             location = "Alpes"
         )
         val COL_DU_TELEGRAPHE = LocationBadge(
-            name = "Col du Télégraphe",
+            label = "Col du Télégraphe",
             elevation = 1566,
             geoCoordinate = GeoCoordinate(45.2026999, 6.4446143),
             location = "Alpes"
         )
         val COL_DE_LA_LOZE = LocationBadge(
-            name = "Col de la Loze",
+            label = "Col de la Loze",
             elevation = 2275,
-            geoCoordinate = GeoCoordinate(45.4050819, 6.6016171),
+            geoCoordinate = GeoCoordinate(45.407564, 6.602688),
             location = "Alpes"
         )
         val COL_DES_CHAMPS = LocationBadge(
-            name = "Col des Champs",
+            label = "Col des Champs",
             elevation = 2045,
-            geoCoordinate = GeoCoordinate(44.1774368, 6.7008858),
+            geoCoordinate = GeoCoordinate(44.175062, 6.697894),
             location = "Alpes"
         )
         val MUR_DE_BRETAGNE = LocationBadge(
-            name = "Mur de Bretagne",
+            label = "Mur de Bretagne",
             elevation = 293,
             geoCoordinate = GeoCoordinate(48.228680749433366, -2.9981557314865346),
             location = "Massif armoricain"
         )
         val COL_DU_TOURMALET = LocationBadge(
-            name = "Col du Tourmalet",
+            label = "Col du Tourmalet",
             elevation = 2115,
             geoCoordinate = GeoCoordinate(42.9083885, 0.1452852),
             location = "Pyrénées"

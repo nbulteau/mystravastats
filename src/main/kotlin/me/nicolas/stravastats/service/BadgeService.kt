@@ -1,12 +1,13 @@
 package me.nicolas.stravastats.service
 
 import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.Commute
 import me.nicolas.stravastats.business.Ride
 import me.nicolas.stravastats.business.Run
-import me.nicolas.stravastats.business.badges.Badge
-import me.nicolas.stravastats.business.badges.DistanceBadge
-import me.nicolas.stravastats.business.badges.ElevationBadge
-import me.nicolas.stravastats.business.badges.LocationBadge
+import me.nicolas.stravastats.business.badges.*
+import me.nicolas.stravastats.service.statistics.GlobalStatistic
+import me.nicolas.stravastats.service.statistics.MaxStreakStatistic
+import me.nicolas.stravastats.service.statistics.MostActiveMonthStatistic
 
 class BadgeService {
 
@@ -24,9 +25,10 @@ class BadgeService {
 
         val filteredActivities = activities.filter { activity -> activity.stream?.latitudeLongitude != null }
 
-        val badgesToCheck = when (activityType) {
-            Ride -> DistanceBadge.rideBadges + ElevationBadge.rideBadges
-            Run -> DistanceBadge.runBadges + ElevationBadge.runBadges
+        val badgesToCheck: List<Badge> = when (activityType) {
+            Ride -> DistanceBadge.rideBadges + ElevationBadge.rideBadges + MovingTimeBadge.movingTimeBadges
+            Run -> DistanceBadge.runBadges + ElevationBadge.runBadges + MovingTimeBadge.movingTimeBadges
+
             else -> emptyList()
         }
 

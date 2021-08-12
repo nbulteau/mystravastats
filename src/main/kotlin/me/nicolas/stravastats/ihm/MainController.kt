@@ -93,6 +93,8 @@ class MainController(private val clientId: String, private val activities: Obser
         val imageUrl= when (activityType) {
             Ride -> "images/racing.png"
             Run -> "images/run.png"
+            Commute -> "images/badge.png"
+
             else -> ""
         }
         val badges = badgeService.computeGeneralBadges(activityType, filteredActivities)
