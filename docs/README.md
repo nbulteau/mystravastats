@@ -12,9 +12,9 @@ https://en.wikipedia.org/wiki/VVO2max
 * ...
 
 ## IHM
-![Screen shoot 1](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shot-1.png)
-![Screen shoot 2](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shot-2.png)
-![Screen shoot 3](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shot-3.png)
+![Screen shoot 1](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shoot-1.png)
+![Screen shoot 2](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shoot-2.png)
+![Screen shoot 3](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shoot-3.png)
 
 ## Launch mystravastats
 
