@@ -1,9 +1,7 @@
 package me.nicolas.stravastats.business.badges
 
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.service.statistics.MaxDistanceStatistic
 import me.nicolas.stravastats.service.statistics.MaxElevationStatistic
-import kotlin.collections.Map
 
 data class ElevationBadge(
     override val name: String,
@@ -14,7 +12,7 @@ data class ElevationBadge(
     override fun check(activities: List<Activity>): Pair<Activity?, Boolean> {
         val maxElevationStatistic = MaxElevationStatistic(activities)
 
-        if (maxElevationStatistic.activity?.totalElevationGain!!  >= totalElevationGain) {
+        if (maxElevationStatistic.activity?.totalElevationGain!! >= totalElevationGain) {
             return Pair(maxElevationStatistic.activity, true)
         }
         return Pair(null, false)
@@ -25,31 +23,54 @@ data class ElevationBadge(
     }
 
     companion object {
-        val LEVEL_1 = ElevationBadge(
+        val RIDE_LEVEL_1 = ElevationBadge(
             name = "Ride that climb",
             totalElevationGain = 1000
         )
-        val LEVEL_2 = ElevationBadge(
+        val RIDE_LEVEL_2 = ElevationBadge(
             name = "Ride that climb",
             totalElevationGain = 1500
         )
-        val LEVEL_3 = ElevationBadge(
+        val RIDE_LEVEL_3 = ElevationBadge(
             name = "Ride that climb",
             totalElevationGain = 2000
         )
-        val LEVEL_4 = ElevationBadge(
+        val RIDE_LEVEL_4 = ElevationBadge(
             name = "Ride that climb",
             totalElevationGain = 2500
         )
-        val LEVEL_5 = ElevationBadge(
+        val RIDE_LEVEL_5 = ElevationBadge(
             name = "Ride that climb",
             totalElevationGain = 3000
         )
-        val LEVEL_6 = ElevationBadge(
+        val RIDE_LEVEL_6 = ElevationBadge(
             name = "Ride that climb",
             totalElevationGain = 3500
         )
-        val cyclingBadges = listOf(LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6)
+        val rideBadges = listOf(RIDE_LEVEL_1, RIDE_LEVEL_2, RIDE_LEVEL_3, RIDE_LEVEL_4, RIDE_LEVEL_5, RIDE_LEVEL_6)
+
+        val RUN_LEVEL_1 = ElevationBadge(
+            name = "Run that climb",
+            totalElevationGain = 250
+        )
+        val RUN_LEVEL_2 = ElevationBadge(
+            name = "Run that climb",
+            totalElevationGain = 500
+        )
+        val RUN_LEVEL_3 = ElevationBadge(
+            name = "Run that climb",
+            totalElevationGain = 1000
+        )
+        val RUN_LEVEL_4 = ElevationBadge(
+            name = "Run that climb",
+            totalElevationGain = 1500
+        )
+        val RUN_LEVEL_5 = ElevationBadge(
+            name = "Run that climb",
+            totalElevationGain = 2000
+        )
+
+        val runBadges = listOf(RUN_LEVEL_1, RUN_LEVEL_2, RUN_LEVEL_3, RUN_LEVEL_4, RUN_LEVEL_5)
     }
 
 }

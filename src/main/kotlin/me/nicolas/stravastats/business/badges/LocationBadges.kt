@@ -2,6 +2,7 @@ package me.nicolas.stravastats.business.badges
 
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.GeoCoordinate
+import me.nicolas.stravastats.business.Ride
 
 data class LocationBadge(
     override val name: String,

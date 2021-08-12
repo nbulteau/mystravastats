@@ -2,6 +2,7 @@ package me.nicolas.stravastats.service
 
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Ride
+import me.nicolas.stravastats.business.Run
 import me.nicolas.stravastats.business.badges.Badge
 import me.nicolas.stravastats.business.badges.DistanceBadge
 import me.nicolas.stravastats.business.badges.ElevationBadge
@@ -9,21 +10,27 @@ import me.nicolas.stravastats.business.badges.LocationBadge
 
 class BadgeService {
 
-    fun computeBadges(activityType: String, activities: List<Activity>): List<Triple<Badge, Activity?, Boolean>> {
-
-        val badges = mutableListOf<Triple<Badge, Activity?, Boolean>>()
+    fun computeLocationRideBadges(activities: List<Activity>): List<Triple<Badge, Activity?, Boolean>> {
 
         val filteredActivities = activities.filter { activity -> activity.stream?.latitudeLongitude != null }
 
-        when (activityType) {
-            Ride -> {
-                val badgesToCheck =
-                    LocationBadge.cyclingBadges + DistanceBadge.cyclingBadges + ElevationBadge.cyclingBadges
-                badges.addAll(checkBadges(badgesToCheck, filteredActivities))
-            }
+        return checkBadges(LocationBadge.cyclingBadges, filteredActivities)
+    }
+
+    fun computeGeneralBadges(
+        activityType: String,
+        activities: List<Activity>
+    ): List<Triple<Badge, Activity?, Boolean>> {
+
+        val filteredActivities = activities.filter { activity -> activity.stream?.latitudeLongitude != null }
+
+        val badgesToCheck = when (activityType) {
+            Ride -> DistanceBadge.rideBadges + ElevationBadge.rideBadges
+            Run -> DistanceBadge.runBadges + ElevationBadge.runBadges
+            else -> emptyList()
         }
 
-        return badges
+        return checkBadges(badgesToCheck, filteredActivities)
     }
 
     private fun checkBadges(

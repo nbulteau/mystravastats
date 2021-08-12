@@ -10,43 +10,61 @@ data class DistanceBadge(
 ) : Badge(name, isCompleted) {
 
     override fun toString(): String {
-        return "$name\n$distance km"
+        return name
     }
 
     override fun check(activities: List<Activity>): Pair<Activity?, Boolean> {
         val maxDistanceStatistic = MaxDistanceStatistic(activities)
 
-        if (maxDistanceStatistic.activity?.distance!! / 1000 >= distance) {
+        if (maxDistanceStatistic.activity?.distance!! >= distance) {
             return Pair(maxDistanceStatistic.activity, true)
         }
         return Pair(null, false)
     }
 
     companion object {
-        val LEVEL_1 = DistanceBadge(
-            name = "Hit the road",
-            distance = 50
+        val RIDE_LEVEL_1 = DistanceBadge(
+            name = "Hit the road 50 km",
+            distance = 50000
         )
-        val LEVEL_2 = DistanceBadge(
-            name = "Hit the road",
-            distance = 100
+        val RIDE_LEVEL_2 = DistanceBadge(
+            name = "Hit the road 100 km",
+            distance = 100000
         )
-        val LEVEL_3 = DistanceBadge(
-            name = "Hit the road",
-            distance = 150
+        val RIDE_LEVEL_3 = DistanceBadge(
+            name = "Hit the road 150 km",
+            distance = 150000
         )
-        val LEVEL_4 = DistanceBadge(
-            name = "Hit the road",
-            distance = 200
+        val RIDE_LEVEL_4 = DistanceBadge(
+            name = "Hit the road 200 km",
+            distance = 200000
         )
-        val LEVEL_5 = DistanceBadge(
-            name = "Hit the road",
-            distance = 250
+        val RIDE_LEVEL_5 = DistanceBadge(
+            name = "Hit the road 250 km",
+            distance = 250000
         )
-        val LEVEL_6 = DistanceBadge(
-            name = "Hit the road",
-            distance = 300
+        val RIDE_LEVEL_6 = DistanceBadge(
+            name = "Hit the road 300 km",
+            distance = 300000
         )
-        val cyclingBadges = listOf(LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6)
+        val rideBadges = listOf(RIDE_LEVEL_1, RIDE_LEVEL_2, RIDE_LEVEL_3, RIDE_LEVEL_4, RIDE_LEVEL_5, RIDE_LEVEL_6)
+
+        val RUN_LEVEL_1 = DistanceBadge(
+            name = "Run that distance 10 km",
+            distance = 10000
+        )
+        val RUN_LEVEL_2 = DistanceBadge(
+            name = "Run that distance half Marathon",
+            distance = 21097
+        )
+        val RUN_LEVEL_3 = DistanceBadge(
+            name = "Run that distance 30 lm",
+            distance = 30000
+        )
+        val RUN_LEVEL_4 = DistanceBadge(
+            name = "Run that distance Marathon",
+            distance = 42195
+        )
+        val runBadges = listOf(RUN_LEVEL_1, RUN_LEVEL_2, RUN_LEVEL_3, RUN_LEVEL_4)
     }
 }

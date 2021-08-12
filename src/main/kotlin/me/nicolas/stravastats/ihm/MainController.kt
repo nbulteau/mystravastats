@@ -8,7 +8,6 @@ import javafx.scene.control.Hyperlink
 import javafx.scene.image.ImageView
 import me.nicolas.stravastats.business.*
 import me.nicolas.stravastats.business.badges.Badge
-import me.nicolas.stravastats.business.badges.LocationBadge
 import me.nicolas.stravastats.service.*
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
@@ -88,10 +87,34 @@ class MainController(private val clientId: String, private val activities: Obser
         return buildStatisticsToDisplay(statistics)
     }
 
-    fun getBadgesToDisplay(activityType: String): ObservableList<BadgeDisplay> {
+    fun getGeneralBadgesToDisplay(activityType: String): ObservableList<BadgeDisplay> {
         val filteredActivities = filterActivitiesByType(activityType)
 
-        return buildBadgesToDisplay(badgeService.computeBadges(activityType, filteredActivities))
+        val imageUrl= when (activityType) {
+            Ride -> "images/racing.png"
+            Run -> "images/run.png"
+            else -> ""
+        }
+        val badges = badgeService.computeGeneralBadges(activityType, filteredActivities)
+        return buildBadgesToDisplay(badges, imageUrl)
+    }
+
+    fun getLocationBadgesToDisplay(activityType: String): ObservableList<BadgeDisplay> {
+        val filteredActivities = filterActivitiesByType(activityType)
+
+        val badges: List<Triple<Badge, Activity?, Boolean>>
+        val imageUrl: String
+        when (activityType) {
+            Ride -> {
+                badges = badgeService.computeLocationRideBadges(filteredActivities)
+                imageUrl = "images/cycling.png"
+            }
+            else -> {
+                badges = emptyList()
+                imageUrl = ""
+            }
+        }
+        return buildBadgesToDisplay(badges, imageUrl)
     }
 
     fun buildDistanceByMonthsSeries(
@@ -138,38 +161,30 @@ class MainController(private val clientId: String, private val activities: Obser
             .filter { activity -> activity.type == activityType && !activity.commute }
     }
 
-    private fun buildBadgesToDisplay(badgesList: List<Triple<Badge, Activity?, Boolean>>): ObservableList<BadgeDisplay> {
-        val badges = badgesList.map { entry ->
-            val isCompleted = entry.third
-            val activity = entry.second
-            val badge = entry.first
+    private fun buildBadgesToDisplay(
+        badgesList: List<Triple<Badge, Activity?, Boolean>>,
+        url: String
+    ): ObservableList<BadgeDisplay> {
 
-            val imageView = when (badge) {
-                is LocationBadge -> ImageView("images/cycling.png")
-                    .apply {
-                        if (!isCompleted) {
-                            opacity = 0.15
-                        }
-                        fitWidth = 120.0
-                        isPreserveRatio = true
-                        isSmooth = true
-                        isCache = true
+        val badges = badgesList.map { triple ->
+            val isCompleted = triple.third
+            val activity = triple.second
+            val badge = triple.first
+
+            val imageView = ImageView(url)
+                .apply {
+                    if (!isCompleted) {
+                        opacity = 0.15
                     }
-                else -> ImageView("images/stopwatch.png")
-                    .apply {
-                        if (!isCompleted) {
-                            opacity = 0.15
-                        }
-                        fitWidth = 120.0
-                        isPreserveRatio = true
-                        isSmooth = true
-                        isCache = true
-                    }
-            }
+                    fitWidth = 120.0
+                    isPreserveRatio = true
+                    isSmooth = true
+                    isCache = true
+                }
 
             val hyperlink = Hyperlink("", imageView)
                 .apply {
-                    if (entry.second != null) {
+                    if (triple.second != null) {
                         onAction = EventHandler {
                             Desktop.getDesktop()
                                 .browse(URI("https://www.strava.com/activities/${activity?.id}"))

@@ -133,8 +133,7 @@ class MainView(
     private fun updateTabs() {
         val statisticsToDisplay = mainController.getStatisticsToDisplay(selectedActivity.value, selectedYear.value)
         val activitiesToDisplay = mainController.getActivitiesToDisplay(selectedActivity.value, selectedYear.value)
-        val badgesToDisplay = mainController.getBadgesToDisplay(selectedActivity.value)
-
+        val generalBadgesToDisplay = mainController.getGeneralBadgesToDisplay(selectedActivity.value)
 
         activitiesTab.content = tableview(activitiesToDisplay) {
             readonlyColumn("Activity", ActivityDisplay::name)
@@ -176,25 +175,70 @@ class MainView(
                 )
             }
         }
-        badgesTab.content = scrollpane(fitToWidth = true) {
-            flowpane {
-                vgap = 15.0
-                hgap = 15.0
-                for (badgeToDisplay in badgesToDisplay) {
-                    borderpane {
-                        bottom = text {
-                            text = badgeToDisplay.label
-                            borderpaneConstraints {
-                                alignment = Pos.CENTER
+        badgesTab.content = if (selectedActivity.value == "Ride") {
+            val locationBadgesToDisplay = mainController.getLocationBadgesToDisplay(selectedActivity.value)
+
+            drawer {
+                item("General", expanded = true) {
+                    scrollpane(fitToWidth = true) {
+                        flowpane {
+                            vgap = 15.0
+                            hgap = 15.0
+                            for (badgeToDisplay in generalBadgesToDisplay) {
+                                borderpane {
+                                    bottom = text {
+                                        text = badgeToDisplay.label
+                                        borderpaneConstraints {
+                                            alignment = Pos.CENTER
+                                        }
+                                    }
+                                    center = badgeToDisplay.activity
+                                }
                             }
                         }
-                        center = badgeToDisplay.activity
+                    }
+                }
+                item("Famous climb", expanded = false) {
+                    scrollpane(fitToWidth = true) {
+                        flowpane {
+                            vgap = 15.0
+                            hgap = 15.0
+                            for (badgeToDisplay in locationBadgesToDisplay) {
+                                borderpane {
+                                    bottom = text {
+                                        text = badgeToDisplay.label
+                                        borderpaneConstraints {
+                                            alignment = Pos.CENTER
+                                        }
+                                    }
+                                    center = badgeToDisplay.activity
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            scrollpane(fitToWidth = true) {
+                flowpane {
+                    vgap = 15.0
+                    hgap = 15.0
+                    for (badgeToDisplay in generalBadgesToDisplay) {
+                        borderpane {
+                            bottom = text {
+                                text = badgeToDisplay.label
+                                borderpaneConstraints {
+                                    alignment = Pos.CENTER
+                                }
+                            }
+                            center = badgeToDisplay.activity
+                        }
                     }
                 }
             }
         }
-        overYearsTab.content = drawer {
 
+        overYearsTab.content = drawer {
             item("${selectedActivity.value} distance per year cumulative", expanded = true) {
                 val multipleAxesLineChart = cumulativeDistancePerYear(selectedActivity.value)
                 multipleAxesLineChart.attachTo(this)
