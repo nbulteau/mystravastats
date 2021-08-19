@@ -1,13 +1,9 @@
 package me.nicolas.stravastats.service
 
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.Commute
 import me.nicolas.stravastats.business.Ride
 import me.nicolas.stravastats.business.Run
 import me.nicolas.stravastats.business.badges.*
-import me.nicolas.stravastats.service.statistics.GlobalStatistic
-import me.nicolas.stravastats.service.statistics.MaxStreakStatistic
-import me.nicolas.stravastats.service.statistics.MostActiveMonthStatistic
 
 class BadgeService {
 
@@ -48,5 +44,4 @@ class BadgeService {
 
         return badges
     }
-
 }

@@ -12,7 +12,7 @@ internal class GeoCoordinateTest {
     fun haversineInM1() {
 
         val result = COL_AGNEL.geoCoordinate.haversineInM(COL_D_IZOARD.geoCoordinate.latitude, COL_D_IZOARD.geoCoordinate.longitude)
-        Assertions.assertEquals(result, result)
+        Assertions.assertEquals(24561, result)
     }
 
     @Test

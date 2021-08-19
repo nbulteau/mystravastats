@@ -90,7 +90,7 @@ class MainController(private val clientId: String, private val activities: Obser
     fun getGeneralBadgesToDisplay(activityType: String): ObservableList<BadgeDisplay> {
         val filteredActivities = filterActivitiesByType(activityType)
 
-        val imageUrl= when (activityType) {
+        val imageUrl = when (activityType) {
             Ride -> "images/racing.png"
             Run -> "images/run.png"
             Commute -> "images/badge.png"
@@ -188,8 +188,7 @@ class MainController(private val clientId: String, private val activities: Obser
                 .apply {
                     if (triple.second != null) {
                         onAction = EventHandler {
-                            Desktop.getDesktop()
-                                .browse(URI("https://www.strava.com/activities/${activity?.id}"))
+                            Desktop.getDesktop().browse(URI("https://www.strava.com/activities/${activity?.id}"))
                         }
                     }
                 }
@@ -229,19 +228,18 @@ class MainController(private val clientId: String, private val activities: Obser
 
             val hyperlink = Hyperlink(activity.name).apply {
                 onAction = EventHandler {
-                    Desktop.getDesktop()
-                        .browse(URI("http://www.strava.com/activities/${activity.id}"))
+                    Desktop.getDesktop().browse(URI("http://www.strava.com/activities/${activity.id}"))
                 }
             }
 
             ActivityDisplay(
                 hyperlink,
                 activity.distance,
+                activity.elapsedTime,
                 activity.totalElevationGain,
                 activity.startDateLocal.formatDate()
             )
         }
-
         return FXCollections.observableArrayList(activitiesToDisplay)
     }
 }

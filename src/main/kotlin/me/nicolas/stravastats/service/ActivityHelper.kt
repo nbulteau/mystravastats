@@ -11,9 +11,8 @@ class ActivityHelper {
 
         fun groupActivitiesByYear(activities: List<Activity>): Map<String, List<Activity>> {
             val activitiesByYear = activities
-                .groupBy { activity ->
-                    activity.startDateLocal.subSequence(0, 4).toString()
-                }.toMutableMap()
+                .groupBy { activity -> activity.startDateLocal.subSequence(0, 4).toString() }
+                .toMutableMap()
 
             // Add years without activities
             if(activitiesByYear.isNotEmpty()) {

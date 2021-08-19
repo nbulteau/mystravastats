@@ -9,6 +9,10 @@ data class Shoe(
     val id: String,
     @JsonProperty("name")
     val name: String,
+    @JsonProperty("nickname")
+    val nickname: String?,
+    @JsonProperty("retired")
+    val retired: Boolean?,
     @JsonProperty("primary")
     val primary: Boolean,
     @JsonProperty("resource_state")

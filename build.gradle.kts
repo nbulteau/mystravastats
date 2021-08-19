@@ -32,7 +32,6 @@ dependencies {
     // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    //implementation("com.beust:jcommander:1.81")
     implementation("org.danilopianini:khttp:0.1.0-dev30+51fa9ae")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.12.4")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.4")
@@ -42,6 +41,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
     implementation("org.slf4j:slf4j-nop:1.7.32")
 
+    // Some problem with 0.5.0 version
     implementation("space.kscience:plotlykt-server:0.4.4") {
         exclude("ch.qos.logback", "logback-classic")
     }

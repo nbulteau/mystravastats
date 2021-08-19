@@ -17,6 +17,7 @@ import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.business.Ride
 import me.nicolas.stravastats.service.ActivityHelper
+import me.nicolas.stravastats.service.formatSeconds
 import tornadofx.*
 import java.time.LocalDate
 
@@ -115,6 +116,21 @@ class MainView(
         }
     }
 
+    private fun <ROW, T : Int?> getElapsedTimeCell(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+        return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+            object : TableCell<ROW, T>() {
+                override fun updateItem(item: T?, empty: Boolean) {
+                    super.updateItem(item, empty)
+                    if (item == null || empty) {
+                        setText(null)
+                    } else {
+                        setText( item.formatSeconds(),)
+                    }
+                }
+            }
+        }
+    }
+
     private fun <ROW, T : Double?> getElevationCell(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
         return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
             object : TableCell<ROW, T>() {
@@ -138,9 +154,9 @@ class MainView(
         activitiesTab.content = tableview(activitiesToDisplay) {
             readonlyColumn("Activity", ActivityDisplay::name)
             readonlyColumn("Distance", ActivityDisplay::distance).cellFactory = getDistanceCell()
+            readonlyColumn("Elapsed time", ActivityDisplay::elapsedTime).cellFactory = getElapsedTimeCell()
             readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory = getElevationCell()
             readonlyColumn("Date", ActivityDisplay::date)
-
             resizeColumnsToFitContent()
         }
 
