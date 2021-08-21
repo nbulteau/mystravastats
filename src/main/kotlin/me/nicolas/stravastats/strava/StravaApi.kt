@@ -1,6 +1,7 @@
 package me.nicolas.stravastats.strava
 
 import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import khttp.get
@@ -29,7 +30,11 @@ internal class StravaApi(
         val requestHeaders = buildRequestHeaders(accessToken)
         val response = get(url, requestHeaders)
         if (response.statusCode == 200) {
-            return mapper.readValue(response.content, Athlete::class.java)
+            try {
+                return mapper.readValue(response.content, Athlete::class.java)
+            } catch (jsonMappingException: JsonMappingException) {
+                throw RuntimeException("Something was wrong with Strava API", jsonMappingException)
+            }
         } else {
             throw RuntimeException("Something was wrong with Strava API for url $url : ${response.text}")
         }

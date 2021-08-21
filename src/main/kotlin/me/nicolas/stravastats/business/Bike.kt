@@ -13,6 +13,8 @@ data class Bike(
     val nickname: String?,
     @JsonProperty("retired")
     val retired: Boolean?,
+    @JsonProperty("converted_distance")
+    val convertedDistance: Double,
     @JsonProperty("primary")
     val primary: Boolean,
     @JsonProperty("resource_state")
