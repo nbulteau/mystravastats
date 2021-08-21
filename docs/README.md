@@ -16,6 +16,8 @@ https://en.wikipedia.org/wiki/VVO2max
 ![Screen shoot 2](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shoot-2.png)
 ![Screen shoot 3](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shoot-3.png)
 
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
 ## Launch mystravastats
 
 ### Stava access
@@ -188,4 +190,5 @@ Will download activities from 2010 to now from Strava, then display statistics a
 | Eddington number | The Eddington number in the context of cycling is defined as the maximum number E such that the cyclist has cycled E km on E days.
 | Max distance in a day | Max walked distance in a day for hikes.
 | Max elevation in a day | Max elevation in a day for hikes.
+
 

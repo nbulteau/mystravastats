@@ -1,5 +1,6 @@
 package me.nicolas.stravastats.service
 
+import me.nicolas.stravastats.business.Run
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -37,6 +38,18 @@ fun Double.formatSeconds(): String {
     }
     return String.format("%d'%02d", min, sec)
 }
+
+/**
+ * Format average speed (m/s)
+ */
+fun Double.formatSpeed(activityType: String): String {
+    return if (activityType == Run) {
+        "${(1000 / this).formatSeconds()}/km"
+    } else {
+        "%.02f km/h".format(this * 3.6)
+    }
+}
+
 
 
 

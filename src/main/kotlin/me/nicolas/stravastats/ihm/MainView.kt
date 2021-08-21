@@ -7,10 +7,7 @@ import javafx.geometry.Pos
 import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
-import javafx.scene.control.Tab
-import javafx.scene.control.TabPane
-import javafx.scene.control.TableCell
-import javafx.scene.control.TableColumn
+import javafx.scene.control.*
 import javafx.scene.layout.Pane
 import javafx.util.Callback
 import me.nicolas.stravastats.business.Activity
@@ -18,6 +15,7 @@ import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.business.Ride
 import me.nicolas.stravastats.service.ActivityHelper
 import me.nicolas.stravastats.service.formatSeconds
+import me.nicolas.stravastats.service.formatSpeed
 import tornadofx.*
 import java.time.LocalDate
 
@@ -101,61 +99,18 @@ class MainView(
         updateTabs()
     }
 
-    private fun <ROW, T : Double?> getDistanceCell(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
-        return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
-            object : TableCell<ROW, T>() {
-                override fun updateItem(item: T?, empty: Boolean) {
-                    super.updateItem(item, empty)
-                    if (item == null || empty) {
-                        setText(null)
-                    } else {
-                        setText("%.2f km".format(item.div(1000)))
-                    }
-                }
-            }
-        }
-    }
-
-    private fun <ROW, T : Int?> getElapsedTimeCell(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
-        return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
-            object : TableCell<ROW, T>() {
-                override fun updateItem(item: T?, empty: Boolean) {
-                    super.updateItem(item, empty)
-                    if (item == null || empty) {
-                        setText(null)
-                    } else {
-                        setText( item.formatSeconds(),)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun <ROW, T : Double?> getElevationCell(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
-        return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
-            object : TableCell<ROW, T>() {
-                override fun updateItem(item: T?, empty: Boolean) {
-                    super.updateItem(item, empty)
-                    if (item == null || empty) {
-                        setText(null)
-                    } else {
-                        setText("%.0f m".format(item))
-                    }
-                }
-            }
-        }
-    }
-
     private fun updateTabs() {
         val statisticsToDisplay = mainController.getStatisticsToDisplay(selectedActivity.value, selectedYear.value)
         val activitiesToDisplay = mainController.getActivitiesToDisplay(selectedActivity.value, selectedYear.value)
-        val generalBadgesToDisplay = mainController.getGeneralBadgesToDisplay(selectedActivity.value)
+        val generalBadgesSetToDisplay = mainController.getGeneralBadgesSetToDisplay(selectedActivity.value)
 
         activitiesTab.content = tableview(activitiesToDisplay) {
             readonlyColumn("Activity", ActivityDisplay::name)
             readonlyColumn("Distance", ActivityDisplay::distance).cellFactory = getDistanceCell()
             readonlyColumn("Elapsed time", ActivityDisplay::elapsedTime).cellFactory = getElapsedTimeCell()
             readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory = getElevationCell()
+            readonlyColumn("Average speed", ActivityDisplay::averageSpeed).cellFactory =
+                getAverageSpeedCell(selectedActivity.value)
             readonlyColumn("Date", ActivityDisplay::date)
             resizeColumnsToFitContent()
         }
@@ -192,54 +147,98 @@ class MainView(
             }
         }
         badgesTab.content = if (selectedActivity.value == "Ride") {
-            val locationBadgesToDisplay = mainController.getLocationBadgesToDisplay(selectedActivity.value)
+            val famousClimbBadgesSetToDisplay = mainController.getFamousClimbBadgesSetToDisplay(selectedActivity.value)
 
             drawer {
                 item("General", expanded = true) {
-                    scrollpane(fitToWidth = true) {
-                        flowpane {
-                            vgap = 15.0
-                            hgap = 15.0
-                            for (badgeToDisplay in generalBadgesToDisplay) {
-                                borderpane {
-                                    bottom = text {
-                                        text = badgeToDisplay.label
-                                        borderpaneConstraints {
-                                            alignment = Pos.CENTER
-                                        }
-                                    }
-                                    center = badgeToDisplay.activity
-                                }
-                            }
-                        }
-                    }
+                    this.add(buildGeneralBadgesSetScrollpane(generalBadgesSetToDisplay))
                 }
                 item("Famous climb", expanded = false) {
-                    scrollpane(fitToWidth = true) {
-                        flowpane {
-                            vgap = 15.0
-                            hgap = 15.0
-                            for (badgeToDisplay in locationBadgesToDisplay) {
-                                borderpane {
-                                    bottom = text {
-                                        text = badgeToDisplay.label
-                                        borderpaneConstraints {
-                                            alignment = Pos.CENTER
-                                        }
-                                    }
-                                    center = badgeToDisplay.activity
-                                }
-                            }
-                        }
-                    }
+                    this.add(buildFamousClimbBadgesSetScrollpane(famousClimbBadgesSetToDisplay))
                 }
             }
         } else {
-            scrollpane(fitToWidth = true) {
-                flowpane {
+            buildGeneralBadgesSetScrollpane(generalBadgesSetToDisplay)
+        }
+
+        overYearsTab.content = drawer {
+            item("${selectedActivity.value} distance per year cumulative", expanded = true) {
+                val multipleAxesLineChart = cumulativeDistancePerYear(selectedActivity.value)
+                multipleAxesLineChart.attachTo(this)
+            }
+            item("${selectedActivity.value} Eddington number") {
+                eddingtonNumberChart(mainController.getActiveDaysByActivityType(selectedActivity.value))
+            }
+        }
+    }
+
+    private fun <ROW, T : Double?> getDistanceCell(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+        return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+            object : TableCell<ROW, T>() {
+                override fun updateItem(item: T?, empty: Boolean) {
+                    super.updateItem(item, empty)
+                    if (item == null || empty) {
+                        setText(null)
+                    } else {
+                        setText("%.2f km".format(item.div(1000)))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun <ROW, T : Int?> getElapsedTimeCell(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+        return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+            object : TableCell<ROW, T>() {
+                override fun updateItem(item: T?, empty: Boolean) {
+                    super.updateItem(item, empty)
+                    if (item == null || empty) {
+                        setText(null)
+                    } else {
+                        setText(item.formatSeconds())
+                    }
+                }
+            }
+        }
+    }
+
+    private fun <ROW, T : Double?> getElevationCell(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+        return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+            object : TableCell<ROW, T>() {
+                override fun updateItem(item: T?, empty: Boolean) {
+                    super.updateItem(item, empty)
+                    if (item == null || empty) {
+                        setText(null)
+                    } else {
+                        setText("%.0f m".format(item))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun <ROW, T : Double?> getAverageSpeedCell(activityType: String): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+        return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+            object : TableCell<ROW, T>() {
+                override fun updateItem(item: T, empty: Boolean) {
+                    super.updateItem(item, empty)
+                    if (item == null || empty) {
+                        setText(null)
+                    } else {
+                        setText(item.formatSpeed(activityType))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun buildFamousClimbBadgesSetScrollpane(famousClimbBadgesSetToDisplay: List<List<BadgeDisplay>>): ScrollPane {
+        return scrollpane(fitToWidth = true) {
+            flowpane {
+                for (badgeSetToDisplay in famousClimbBadgesSetToDisplay) {
                     vgap = 15.0
                     hgap = 15.0
-                    for (badgeToDisplay in generalBadgesToDisplay) {
+                    for (badgeToDisplay in badgeSetToDisplay) {
                         borderpane {
                             bottom = text {
                                 text = badgeToDisplay.label
@@ -253,14 +252,26 @@ class MainView(
                 }
             }
         }
+    }
 
-        overYearsTab.content = drawer {
-            item("${selectedActivity.value} distance per year cumulative", expanded = true) {
-                val multipleAxesLineChart = cumulativeDistancePerYear(selectedActivity.value)
-                multipleAxesLineChart.attachTo(this)
-            }
-            item("${selectedActivity.value} Eddington number") {
-                eddingtonNumberChart(mainController.getActiveDaysByActivityType(selectedActivity.value))
+    private fun buildGeneralBadgesSetScrollpane(generalBadgesSetToDisplay: List<List<BadgeDisplay>>): ScrollPane {
+        return scrollpane(fitToWidth = true) {
+            flowpane {
+                for (badgeSetToDisplay in generalBadgesSetToDisplay) {
+                    vgap = 15.0
+                    hgap = 15.0
+                    for (badgeToDisplay in badgeSetToDisplay) {
+                        borderpane {
+                            bottom = text {
+                                text = badgeToDisplay.label
+                                borderpaneConstraints {
+                                    alignment = Pos.CENTER
+                                }
+                            }
+                            center = badgeToDisplay.activity
+                        }
+                    }
+                }
             }
         }
     }

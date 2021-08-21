@@ -15,7 +15,7 @@ class ActivityHelper {
                 .toMutableMap()
 
             // Add years without activities
-            if(activitiesByYear.isNotEmpty()) {
+            if (activitiesByYear.isNotEmpty()) {
                 val min = activitiesByYear.keys.minOf { it.toInt() }
                 val max = activitiesByYear.keys.maxOf { it.toInt() }
                 for (year in min..max) {
@@ -98,11 +98,14 @@ class ActivityHelper {
 
         fun averageSpeedByType(activities: Map<String, List<Activity>>, type: String) =
             activities.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == type }
-                    .map { activity -> activity.averageSpeed * 3.6 }
-                    .average()
+                averageSpeedByType(activities, type)
             }
-    }
 
+        fun averageSpeedByType(activities: List<Activity>, type: String) =
+            activities
+                .filter { activity -> activity.type == type }
+                .map { activity -> activity.averageSpeed * 3.6 }
+                .average()
+    }
 }
+

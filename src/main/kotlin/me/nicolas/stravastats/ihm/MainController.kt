@@ -7,7 +7,7 @@ import javafx.scene.chart.XYChart
 import javafx.scene.control.Hyperlink
 import javafx.scene.image.ImageView
 import me.nicolas.stravastats.business.*
-import me.nicolas.stravastats.business.badges.Badge
+import me.nicolas.stravastats.business.badges.*
 import me.nicolas.stravastats.service.*
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
@@ -25,8 +25,6 @@ class MainController(private val clientId: String, private val activities: Obser
     private val chartsService = ChartsService()
 
     private val csvService = CSVService()
-
-    private val badgeService = BadgeService()
 
     fun generateCSV(year: Int) {
         csvService.exportCSV(clientId, activities, year)
@@ -87,36 +85,84 @@ class MainController(private val clientId: String, private val activities: Obser
         return buildStatisticsToDisplay(statistics)
     }
 
-    fun getGeneralBadgesToDisplay(activityType: String): ObservableList<BadgeDisplay> {
+
+    fun getGeneralBadgesSetToDisplay(activityType: String): List<List<BadgeDisplay>> {
         val filteredActivities = filterActivitiesByType(activityType)
 
-        val imageUrl = when (activityType) {
-            Ride -> "images/racing.png"
-            Run -> "images/run.png"
-            Commute -> "images/badge.png"
-
-            else -> ""
-        }
-        val badges = badgeService.computeGeneralBadges(activityType, filteredActivities)
-        return buildBadgesToDisplay(badges, imageUrl)
-    }
-
-    fun getLocationBadgesToDisplay(activityType: String): ObservableList<BadgeDisplay> {
-        val filteredActivities = filterActivitiesByType(activityType)
-
-        val badges: List<Triple<Badge, Activity?, Boolean>>
-        val imageUrl: String
+        val badgesSets = mutableListOf<List<BadgeDisplay>>()
         when (activityType) {
             Ride -> {
-                badges = badgeService.computeLocationRideBadges(filteredActivities)
-                imageUrl = "images/cycling.png"
+                badgesSets.add(
+                    buildBadgesToDisplay(
+                        badgesList = DistanceBadge.rideBadgeSet.check(filteredActivities),
+                        url = "images/racing.png"
+                    )
+                )
+                badgesSets.add(
+                    buildBadgesToDisplay(
+                        badgesList = ElevationBadge.rideBadgeSet.check(filteredActivities),
+                        url = "images/cycling.png"
+                    )
+                )
+                badgesSets.add(
+                    buildBadgesToDisplay(
+                        badgesList = MovingTimeBadge.movingTimeBadgesSet.check(filteredActivities),
+                        url = "images/stopwatch.png"
+                    )
+                )
             }
-            else -> {
-                badges = emptyList()
-                imageUrl = ""
+            Run -> {
+                badgesSets.add(
+                    buildBadgesToDisplay(
+                        badgesList = DistanceBadge.runBadgeSet.check(filteredActivities),
+                        url = "images/run.png"
+                    )
+                )
+                badgesSets.add(
+                    buildBadgesToDisplay(
+                        badgesList = ElevationBadge.runBadgeSet.check(filteredActivities),
+                        url = "images/run.png"
+                    )
+                )
+                badgesSets.add(
+                    buildBadgesToDisplay(
+                        badgesList = MovingTimeBadge.movingTimeBadgesSet.check(filteredActivities),
+                        url = "images/stopwatch.png"
+                    )
+                )
             }
         }
-        return buildBadgesToDisplay(badges, imageUrl)
+        return badgesSets
+    }
+
+    fun getFamousClimbBadgesSetToDisplay(activityType: String): List<List<BadgeDisplay>> {
+        val filteredActivities = filterActivitiesByType(activityType)
+
+        val badgesSets = mutableListOf<List<BadgeDisplay>>()
+        when (activityType) {
+            Ride -> {
+                badgesSets.add(
+                    buildBadgesToDisplay(
+                        badgesList = LocationBadge.alpes.check(filteredActivities),
+                        url = "images/cycling.png"
+                    )
+                )
+                badgesSets.add(
+                    buildBadgesToDisplay(
+                        badgesList = LocationBadge.pyrenees.check(filteredActivities),
+                        url = "images/cycling.png"
+                    )
+                )
+                badgesSets.add(
+                    buildBadgesToDisplay(
+                        badgesList = LocationBadge.bretagne.check(filteredActivities),
+                        url = "images/cycling.png"
+                    )
+                )
+            }
+
+        }
+        return badgesSets
     }
 
     fun buildDistanceByMonthsSeries(
@@ -166,7 +212,7 @@ class MainController(private val clientId: String, private val activities: Obser
     private fun buildBadgesToDisplay(
         badgesList: List<Triple<Badge, Activity?, Boolean>>,
         url: String
-    ): ObservableList<BadgeDisplay> {
+    ): List<BadgeDisplay> {
 
         val badges = badgesList.map { triple ->
             val isCompleted = triple.third
@@ -178,7 +224,7 @@ class MainController(private val clientId: String, private val activities: Obser
                     if (!isCompleted) {
                         opacity = 0.15
                     }
-                    fitWidth = 120.0
+                    fitWidth = 110.0
                     isPreserveRatio = true
                     isSmooth = true
                     isCache = true
@@ -196,7 +242,7 @@ class MainController(private val clientId: String, private val activities: Obser
             BadgeDisplay(badge.toString(), hyperlink)
         }
 
-        return FXCollections.observableArrayList(badges)
+        return badges
     }
 
     private fun buildStatisticsToDisplay(statistics: List<Statistic>): ObservableList<StatisticDisplay> {
@@ -237,6 +283,7 @@ class MainController(private val clientId: String, private val activities: Obser
                 activity.distance,
                 activity.elapsedTime,
                 activity.totalElevationGain,
+                activity.averageSpeed,
                 activity.startDateLocal.formatDate()
             )
         }
