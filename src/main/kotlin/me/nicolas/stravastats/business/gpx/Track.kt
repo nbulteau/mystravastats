@@ -1,7 +1,5 @@
 package me.nicolas.stravastats.business.gpx
 
-import java.io.Serializable
-
 data class Track(
     val trackPoints: List<WayPoint>,
     val name: String? = null,

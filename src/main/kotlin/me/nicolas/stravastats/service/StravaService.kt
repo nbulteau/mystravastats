@@ -1,7 +1,6 @@
 package me.nicolas.stravastats.service
 
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectWriter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.javalin.Javalin
@@ -61,7 +60,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
         val athleteJsonFile = File(activitiesDirectory, athleteJsonFileName)
 
         if (athleteJsonFile.exists()) {
-            athlete = ObjectMapper().readValue(athleteJsonFile, Athlete::class.java)
+            athlete = objectMapper.readValue(athleteJsonFile, Athlete::class.java)
         }
 
         return athlete
@@ -84,7 +83,6 @@ internal class StravaService(private val stravaApi: StravaApi) {
 
         return athlete
     }
-
 
     fun loadActivities(clientId: String, clientSecret: String?, year: Int): List<Activity> {
         // get accessToken using client secret
@@ -165,7 +163,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
 
         if (yearActivitiesJsonFile.exists()) {
             print("\nLoad activities of clientId=$clientId for year $year ... ")
-            activities = ObjectMapper().readValue(yearActivitiesJsonFile, Array<Activity>::class.java)
+            activities = objectMapper.readValue(yearActivitiesJsonFile, Array<Activity>::class.java)
                 .toList()
                 .filterActivities()
             println("done")

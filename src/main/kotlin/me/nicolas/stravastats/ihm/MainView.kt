@@ -3,16 +3,21 @@ package me.nicolas.stravastats.ihm
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
+import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.control.*
+import javafx.scene.input.MouseEvent
+import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
+import javafx.scene.layout.VBox
 import javafx.util.Callback
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.business.Ride
+import me.nicolas.stravastats.business.badges.FamousClimbBadge
 import me.nicolas.stravastats.service.ActivityHelper
 import me.nicolas.stravastats.service.formatSeconds
 import me.nicolas.stravastats.service.formatSpeed
@@ -40,6 +45,9 @@ class MainView(
     private var chartsTab: Tab by singleAssign()
     private var badgesTab: Tab by singleAssign()
     private var overYearsTab: Tab by singleAssign()
+
+    private val detailsWindow: AnchorPane
+    private val detailsPopup: DetailsPopup
 
     init {
         FX.primaryStage.isResizable = true
@@ -96,6 +104,15 @@ class MainView(
                 }
             }
         }
+
+        detailsWindow = AnchorPane()
+        detailsPopup = DetailsPopup()
+        detailsWindow.children.add(detailsPopup)
+        detailsWindow.prefHeightProperty().bind(root.heightProperty())
+        detailsWindow.prefWidthProperty().bind(root.widthProperty())
+        detailsWindow.isMouseTransparent = true
+        badgesTab.tabPane.getChildList()?.add(detailsWindow)
+
         updateTabs()
     }
 
@@ -172,6 +189,25 @@ class MainView(
         }
     }
 
+    private inner class DetailsPopup : VBox() {
+
+        init {
+            style =
+                "-fx-border-width: 1px; -fx-padding: 5 5 5 5px; -fx-border-color: gray; -fx-background-color: whitesmoke;"
+            isVisible = false
+        }
+
+        fun famousClimbDescription(badge: FamousClimbBadge) {
+            children.clear()
+            children.add(Label(badge.label))
+            children.add(Label("top : ${badge.topOfTheAscent} m"))
+            children.add(Label("total ascent : ${badge.totalAscent} m"))
+            children.add(Label("length : ${badge.length} km"))
+            children.add(Label("avg. gradient : ${badge.averageGradient} %"))
+            children.add(Label("difficulty points : ${badge.difficulty}"))
+        }
+    }
+
     private fun <ROW, T : Double?> getDistanceCell(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
         return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
             object : TableCell<ROW, T>() {
@@ -180,7 +216,7 @@ class MainView(
                     if (item == null || empty) {
                         setText(null)
                     } else {
-                        setText("%.2f km".format(item.div(1000)))
+                        setText("%.02f km".format(item.div(1000)))
                     }
                 }
             }
@@ -246,6 +282,33 @@ class MainView(
                                     alignment = Pos.CENTER
                                 }
                             }
+
+                            badgeToDisplay.activity?.onMouseEntered = EventHandler { event: MouseEvent ->
+                                detailsPopup.isVisible = true
+                            }
+                            badgeToDisplay.activity?.onMouseExited = EventHandler {
+                                detailsPopup.isVisible = false
+                            }
+                            badgeToDisplay.activity?.onMouseMoved = EventHandler { event: MouseEvent ->
+                                val x = event.sceneX
+                                val y = event.sceneY
+
+                                detailsPopup.famousClimbDescription(badgeToDisplay.badge as FamousClimbBadge)
+
+                                if (y + detailsPopup.height + 10 < height) {
+                                    AnchorPane.setTopAnchor(detailsPopup, y + 10)
+                                } else {
+                                    AnchorPane.setTopAnchor(detailsPopup, y - 10 - detailsPopup.height)
+                                }
+
+                                if (x + detailsPopup.width + 10 < width) {
+                                    AnchorPane.setLeftAnchor(detailsPopup, x + 10)
+                                } else {
+                                    AnchorPane.setLeftAnchor(detailsPopup, x - 10 - detailsPopup.width)
+                                }
+                                detailsPopup.isVisible = true
+                            }
+
                             center = badgeToDisplay.activity
                         }
                     }
@@ -274,6 +337,7 @@ class MainView(
                 }
             }
         }
+
     }
 
     private fun cumulativeDistancePerYear(activityType: String): Pane {

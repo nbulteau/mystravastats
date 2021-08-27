@@ -1,6 +1,5 @@
 package me.nicolas.stravastats.business.gpx
 
-import java.io.Serializable
 import java.util.*
 
 data class WayPoint(

@@ -26,6 +26,8 @@ class MainController(private val clientId: String, private val activities: Obser
 
     private val csvService = CSVService()
 
+    private val badgesService = BadgesService()
+
     fun generateCSV(year: Int) {
         csvService.exportCSV(clientId, activities, year)
     }
@@ -143,24 +145,17 @@ class MainController(private val clientId: String, private val activities: Obser
             Ride -> {
                 badgesSets.add(
                     buildBadgesToDisplay(
-                        badgesList = LocationBadge.alpes.check(filteredActivities),
+                        badgesList = badgesService.getAlpesFamousBadges(filteredActivities),
                         url = "images/cycling.png"
                     )
                 )
                 badgesSets.add(
                     buildBadgesToDisplay(
-                        badgesList = LocationBadge.pyrenees.check(filteredActivities),
-                        url = "images/cycling.png"
-                    )
-                )
-                badgesSets.add(
-                    buildBadgesToDisplay(
-                        badgesList = LocationBadge.bretagne.check(filteredActivities),
+                        badgesList = badgesService.getPyreneesFamousBadges(filteredActivities),
                         url = "images/cycling.png"
                     )
                 )
             }
-
         }
         return badgesSets
     }
@@ -239,7 +234,7 @@ class MainController(private val clientId: String, private val activities: Obser
                     }
                 }
 
-            BadgeDisplay(badge.toString(), hyperlink)
+            BadgeDisplay(badge.toString(), hyperlink, badge)
         }
 
         return badges

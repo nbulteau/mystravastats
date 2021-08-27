@@ -1,8 +1,10 @@
 package me.nicolas.stravastats.ihm
 
 import javafx.scene.control.Hyperlink
+import me.nicolas.stravastats.business.badges.Badge
 
 data class StatisticDisplay(val label: String, val value: String, val activity: Hyperlink?)
+
 data class ActivityDisplay(
     val name: Hyperlink?,
     val distance: Double,
@@ -11,4 +13,5 @@ data class ActivityDisplay(
     val averageSpeed: Double,
     val date: String
 )
-data class BadgeDisplay(val label: String, val activity: Hyperlink?)
+
+data class BadgeDisplay(val label: String, val activity: Hyperlink?, val badge: Badge)

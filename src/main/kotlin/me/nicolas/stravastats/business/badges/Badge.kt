@@ -2,7 +2,7 @@ package me.nicolas.stravastats.business.badges
 
 import me.nicolas.stravastats.business.Activity
 
-abstract class Badge(
+sealed class Badge(
     open val label: String,
 ) {
     abstract fun check(activities: List<Activity>): Pair<Activity?, Boolean>

@@ -11,7 +11,7 @@ buildscript {
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.5.21"
+    id("org.jetbrains.kotlin.jvm") version "1.5.30"
     id("com.github.ben-manes.versions") version "0.39.0"
 
     // Apply the application plugin to add support for building a CLI application.
@@ -33,11 +33,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     implementation("org.danilopianini:khttp:0.1.0-dev30+51fa9ae")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.4")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.4")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.4")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.5")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.5")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.5")
 
-    implementation("io.javalin:javalin:3.13.10")
+    implementation("io.javalin:javalin:3.13.11")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
     implementation("org.slf4j:slf4j-nop:1.7.32")
 

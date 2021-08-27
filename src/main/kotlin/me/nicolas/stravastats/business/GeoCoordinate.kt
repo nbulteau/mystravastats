@@ -28,5 +28,10 @@ data class GeoCoordinate(val latitude: Double, val longitude: Double) {
 
         return equatorialEarthRadius * c
     }
+
+    /**
+     *  match if distance from the geo localisation is less than 250 m
+     */
+    fun match(latitude: Double, longitude: Double) = this.haversineInM(latitude, longitude) < 250
 }
 
