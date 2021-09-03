@@ -108,5 +108,6 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
+        //freeCompilerArgs = freeCompilerArgs + "--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED"
     }
 }
