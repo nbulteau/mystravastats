@@ -54,7 +54,7 @@ dependencies {
 application {
     // Define the main class for the application.
     mainClass.set("me.nicolas.stravastats.MyStravaStatsAppKt")
-    applicationDefaultJvmArgs = listOf("-Xmx2048m", "--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED")
+    applicationDefaultJvmArgs = listOf("-Xmx2048m")
 }
 
 javafx {
