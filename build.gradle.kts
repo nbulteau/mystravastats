@@ -59,7 +59,7 @@ application {
 
 javafx {
     version = "16"
-    modules = listOf("javafx.controls", "javafx.media", "javafx.fxml", "javafx.web")
+    modules = listOf("javafx.controls", "javafx.media", "javafx.fxml", "javafx.web", "javafx.graphics", "javafx.scene")
 }
 
 tasks.withType<Test> {
