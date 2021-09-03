@@ -54,7 +54,18 @@ dependencies {
 application {
     // Define the main class for the application.
     mainClass.set("me.nicolas.stravastats.MyStravaStatsAppKt")
-    applicationDefaultJvmArgs = listOf("-Xmx2048m", "--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED")
+    applicationDefaultJvmArgs = listOf(
+        "-Xmx2048m",
+        "--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+        "--add-opens=java.base/java.net=ALL-UNNAMED",
+        "--add-opens=java.base/sun.net=ALL-UNNAMED",
+        "--add-opens=java.base/sun.net.www.protocol.https=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED"
+    )
 }
 
 javafx {
@@ -104,6 +115,7 @@ tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
         jvmTarget = "16"
+        moduleName = "mystravastats"
     }
 }
 
