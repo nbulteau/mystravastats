@@ -54,7 +54,7 @@ dependencies {
 application {
     // Define the main class for the application.
     mainClass.set("me.nicolas.stravastats.MyStravaStatsAppKt")
-    applicationDefaultJvmArgs = listOf("-Xmx2048m")
+    applicationDefaultJvmArgs = listOf("-Xmx2048m", "--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED")
 }
 
 javafx {
@@ -109,5 +109,7 @@ tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
         //freeCompilerArgs = freeCompilerArgs + "--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED"
+        jvmTarget = "16"
     }
 }
+
