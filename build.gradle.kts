@@ -59,7 +59,7 @@ application {
 
 javafx {
     version = "16"
-    modules = listOf("javafx.controls", "javafx.media", "javafx.fxml", "javafx.web")
+    modules = listOf("javafx.controls", "javafx.media", "javafx.fxml", "javafx.web", "javafx.graphics")
 }
 
 tasks.withType<Test> {
@@ -107,6 +107,6 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn --add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED"
+        freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
     }
 }

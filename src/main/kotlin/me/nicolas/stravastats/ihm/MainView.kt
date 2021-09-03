@@ -284,7 +284,7 @@ class MainView(
                                 }
                             }
 
-                            badgeToDisplay.activity?.onMouseEntered = EventHandler { event: MouseEvent ->
+                            badgeToDisplay.activity?.onMouseEntered = EventHandler {
                                 detailsPopup.isVisible = true
                             }
                             badgeToDisplay.activity?.onMouseExited = EventHandler {

@@ -10,7 +10,6 @@ internal class GeoCoordinateTest {
     companion object {
         val COL_AGNEL = GeoCoordinate(44.6839194, 6.9795741)
         val COL_D_IZOARD = GeoCoordinate(44.8200267, 6.7350408)
-
     }
 
     @Test
@@ -27,7 +26,7 @@ internal class GeoCoordinateTest {
     fun haversineInM2() {
 
         val result =
-            COL_AGNEL.haversineInM(COL_AGNEL.latitude, COL_AGNEL.latitude)
+            COL_AGNEL.haversineInM(COL_AGNEL.latitude, COL_AGNEL.longitude)
         Assertions.assertEquals(0, result)
     }
 }
