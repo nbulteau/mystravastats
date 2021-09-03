@@ -1,0 +1,612 @@
+[
+  {
+    "name": "Col du Sabot",
+    "topOfTheAscent": 2286,
+    "geoCoordinate": {
+      "latitude": 45.1904757,
+      "longitude": 6.1090149
+    },
+    "alternatives": [
+      {
+        "name": "Vaujany",
+        "geoCoordinate": {
+          "latitude": 45.1464853,
+          "longitude": 6.0513659
+        },
+        "length": 14.4,
+        "totalAscent": 1279,
+        "difficulty": 1191,
+        "averageGradient": 0.0
+      }
+    ]
+  },
+  {
+    "name": "Val Thorens",
+    "topOfTheAscent": 2286,
+    "geoCoordinate": {
+      "latitude": 45.2989231,
+      "longitude": 6.5768956
+    },
+    "alternatives": [
+      {
+        "name": "Moutiers",
+        "geoCoordinate": {
+          "latitude": 45.484658,
+          "longitude": 6.5237168
+        },
+        "length": 36.3,
+        "totalAscent": 1897,
+        "difficulty": 1269
+      }
+    ]
+  },
+  {
+    "name": "Col du Granon",
+    "topOfTheAscent": 2404,
+    "geoCoordinate": {
+      "latitude": 45.2275049,
+      "longitude": 6.2039849
+    },
+    "alternatives": [
+      {
+        "name": "Saint-Chaffrey",
+        "geoCoordinate": {
+          "latitude": 44.9291299,
+          "longitude": 6.5987456
+        },
+        "length": 11.4,
+        "totalAscent": 1059,
+        "difficulty": 1058
+      }
+    ]
+  },
+  {
+    "name": "Col de la Croix-de-Fer",
+    "topOfTheAscent": 1924,
+    "geoCoordinate": {
+      "latitude": 45.2275049,
+      "longitude": 6.2039849
+    },
+    "alternatives": [
+      {
+        "name": "Saint-Jean-de-Maurienne",
+        "geoCoordinate": {
+          "latitude": 45.2711233,
+          "longitude": 6.3395117
+        },
+        "length": 28.1,
+        "totalAscent": 1545,
+        "difficulty": 1209
+      }
+    ]
+  },
+  {
+    "name": "Col du Glandon",
+    "topOfTheAscent": 1924,
+    "geoCoordinate": {
+      "latitude": 45.2396101,
+      "longitude": 6.1754635
+    },
+    "alternatives": [
+      {
+        "name": "La Chambre",
+        "geoCoordinate": {
+          "latitude": 45.3498367,
+          "longitude": 6.2995973
+        },
+        "length": 20.9,
+        "totalAscent": 1471,
+        "difficulty": 1199,
+        "averageGradient": 7.0
+      }
+    ]
+  },
+  {
+    "name": "Col de la Madeleine",
+    "topOfTheAscent": 1993,
+    "geoCoordinate": {
+      "latitude": 45.4352186,
+      "longitude": 6.3756008
+    },
+    "alternatives": [
+      {
+        "name": "La Chambre",
+        "geoCoordinate": {
+          "latitude": 45.3594886,
+          "longitude": 6.2994994
+        },
+        "length": 19.6,
+        "totalAscent": 1520,
+        "difficulty": 1305,
+        "averageGradient": 8.0
+      },
+      {
+        "name": "Feissons-sur-Isère",
+        "geoCoordinate": {
+          "latitude": 45.3594886,
+          "longitude": 6.2994994
+        },
+        "length": 25.9,
+        "totalAscent": 1588,
+        "difficulty": 1215,
+        "averageGradient": 6.1
+      }
+    ]
+  },
+  {
+    "name": "Col Agnel",
+    "topOfTheAscent": 2740,
+    "geoCoordinate": {
+      "latitude": 44.6839194,
+      "longitude": 6.9795741
+    },
+    "alternatives": [
+      {
+        "name": "Château-Ville-Vieille",
+        "geoCoordinate": {
+          "latitude": 44.76234,
+          "longitude": 6.820959
+        },
+        "length": 20.7,
+        "totalAscent": 1364,
+        "difficulty": 1030,
+        "averageGradient": 6.6
+      }
+    ]
+  },
+  {
+    "name": "Col d'Izoard",
+    "topOfTheAscent": 2362,
+    "geoCoordinate": {
+      "latitude": 44.8200267,
+      "longitude": 6.7350408
+    },
+    "alternatives": [
+      {
+        "name": "Château-Ville-Vieille",
+        "geoCoordinate": {
+          "latitude": 44.7480781,
+          "longitude": 6.7724131
+        },
+        "length": 14.1,
+        "totalAscent": 1000,
+        "difficulty": 810,
+        "averageGradient": 7.0
+      },
+      {
+        "name": "Briançon",
+        "geoCoordinate": {
+          "latitude": 44.8948635,
+          "longitude": 6.6370336
+        },
+        "length": 19.1,
+        "totalAscent": 1174,
+        "difficulty": 866,
+        "averageGradient": 6.0
+      }
+    ]
+  },
+  {
+    "name": "Col de Vars",
+    "topOfTheAscent": 2108,
+    "geoCoordinate": {
+      "latitude": 44.5387261,
+      "longitude": 6.7028698
+    },
+    "alternatives": [
+      {
+        "name": "Guillestre",
+        "geoCoordinate": {
+          "latitude": 44.6550379,
+          "longitude": 6.6518708
+        },
+        "length": 18.9,
+        "totalAscent": 1108,
+        "difficulty": 899,
+        "averageGradient": 5.7
+      }
+    ]
+  },
+  {
+    "name": "Col du Galibier",
+    "topOfTheAscent": 2642,
+    "geoCoordinate": {
+      "latitude": 45.0641651,
+      "longitude": 6.407878
+    },
+    "alternatives": [
+      {
+        "name": "Saint Michel de Maurienne",
+        "geoCoordinate": {
+          "latitude": 45.2144801,
+          "longitude": 6.4732597
+        },
+        "length": 34.8,
+        "totalAscent": 2069,
+        "difficulty": 1612,
+        "averageGradient": 5.5
+      },
+      {
+        "name": "Valloire",
+        "geoCoordinate": {
+          "latitude": 45.2144801,
+          "longitude": 6.4732597
+        },
+        "length": 17.5,
+        "totalAscent": 1213,
+        "difficulty": 933,
+        "averageGradient": 6.9
+      },
+      {
+        "name": "Briançon",
+        "geoCoordinate": {
+          "latitude": 45.2144801,
+          "longitude": 6.4732597
+        },
+        "length": 34.8,
+        "totalAscent": 1398,
+        "difficulty": 782,
+        "averageGradient": 4.0
+      }
+    ]
+  },
+  {
+    "name": "Risoul",
+    "topOfTheAscent": 1850,
+    "geoCoordinate": {
+      "latitude": 44.6491889,
+      "longitude": 6.6387088
+    },
+    "alternatives": [
+      {
+        "name": "Guillestre",
+        "geoCoordinate": {
+          "latitude": 44.6575616,
+          "longitude": 6.6443148
+        },
+        "length": 12.8,
+        "totalAscent": 882,
+        "difficulty": 710,
+        "averageGradient": 6.9
+      }
+    ]
+  },
+  {
+    "name": "Valberg",
+    "topOfTheAscent": 1673,
+    "geoCoordinate": {
+      "latitude": 44.0956228,
+      "longitude": 6.9301384
+    },
+    "alternatives": [
+      {
+        "name": "Guillaumes",
+        "geoCoordinate": {
+          "latitude": 44.0879608,
+          "longitude": 6.8538532
+        },
+        "length": 13.1,
+        "totalAscent": 891,
+        "difficulty": 686,
+        "averageGradient": 6.7
+      }
+    ]
+  },
+  {
+    "name": "Alpe d'Huez",
+    "topOfTheAscent": 1850,
+    "geoCoordinate": {
+      "latitude": 45.092401,
+      "longitude": 6.0699443
+    },
+    "alternatives": [
+      {
+        "name": "Le Bourg-d'Oisans",
+        "geoCoordinate": {
+          "latitude": 45.0642762,
+          "longitude": 6.0390149
+        },
+        "length": 13.9,
+        "totalAscent": 1118,
+        "difficulty": 994,
+        "averageGradient": 8.0
+      }
+    ]
+  },
+  {
+    "name": "La Saussaz",
+    "topOfTheAscent": 2087,
+    "geoCoordinate": {
+      "latitude": 45.28344,
+      "longitude": 6.472256
+    },
+    "alternatives": [
+      {
+        "name": "Saint-Martin-de-la-Porte",
+        "geoCoordinate": {
+          "latitude": 45.231251,
+          "longitude": 6.44883
+        },
+        "length": 15.5,
+        "totalAscent": 1396,
+        "difficulty": 1454,
+        "averageGradient": 9.0
+      }
+    ]
+  },
+  {
+    "name": "Cime de la Bonette",
+    "topOfTheAscent": 2802,
+    "geoCoordinate": {
+      "latitude": 44.3216186,
+      "longitude": 6.8068886
+    },
+    "alternatives": [
+      {
+        "name": "Saint-Étienne-de-Tinée",
+        "geoCoordinate": {
+          "latitude": 44.258723,
+          "longitude": 6.925962
+        },
+        "length": 25.4,
+        "totalAscent": 1663,
+        "difficulty": 1260,
+        "averageGradient": 6.5
+      },
+      {
+        "name": "Jausiers",
+        "geoCoordinate": {
+          "latitude": 44.420541,
+          "longitude": 6.736689
+        },
+        "length": 23.3,
+        "totalAscent": 1590,
+        "difficulty": 1281,
+        "averageGradient": 6.8
+      }
+    ]
+  },
+  {
+    "name": "Col de la Cayolle",
+    "topOfTheAscent": 2326,
+    "geoCoordinate": {
+      "latitude": 44.259142,
+      "longitude": 6.7439734
+    },
+    "alternatives": [
+      {
+        "name": "Saint-Martin-d'Entraunes",
+        "geoCoordinate": {
+          "latitude": 44.142692,
+          "longitude": 6.761264
+        },
+        "length": 20.4,
+        "totalAscent": 1289,
+        "difficulty": 955,
+        "averageGradient": 6.3
+      },
+      {
+        "name": "Barcelonnette",
+        "geoCoordinate": {
+          "latitude": 44.38458,
+          "longitude": 6.648423
+        },
+        "length": 29.2,
+        "totalAscent": 1211,
+        "difficulty": 674,
+        "averageGradient": 4.1
+      }
+    ]
+  },
+  {
+    "name": "Col de l'Iseran",
+    "topOfTheAscent": 2764,
+    "geoCoordinate": {
+      "latitude": 45.4171195,
+      "longitude": 7.0308387
+    },
+    "alternatives": [
+      {
+        "name": "Lanslebourg",
+        "geoCoordinate": {
+          "latitude": 45.2855825,
+          "longitude": 6.8826311
+        },
+        "length": 32.2,
+        "totalAscent": 1461,
+        "difficulty": 1151,
+        "averageGradient": 4.2
+      }
+    ]
+  },
+  {
+    "name": "Col du Mont-Cenis",
+    "topOfTheAscent": 2085,
+    "geoCoordinate": {
+      "latitude": 45.2598281,
+      "longitude": 6.9008841
+    },
+    "alternatives": [
+      {
+        "name": "Lanslebourg",
+        "geoCoordinate": {
+          "latitude": 45.2855825,
+          "longitude": 6.8826311
+        },
+        "length": 32.2,
+        "totalAscent": 1461,
+        "difficulty": 1151,
+        "averageGradient": 6.9
+      }
+    ]
+  },
+  {
+    "name": "Col du Télégraphe",
+    "topOfTheAscent": 1566,
+    "geoCoordinate": {
+      "latitude": 45.2026999,
+      "longitude": 6.4446143
+    },
+    "alternatives": [
+      {
+        "name": "Saint Michel de Maurienne",
+        "geoCoordinate": {
+          "latitude": 45.2144801,
+          "longitude": 6.4732597
+        },
+        "length": 11.8,
+        "totalAscent": 837,
+        "difficulty": 628,
+        "averageGradient": 7.1
+      }
+    ]
+  },
+  {
+    "name": "Col de la Loze",
+    "topOfTheAscent": 2275,
+    "geoCoordinate": {
+      "latitude": 45.407564,
+      "longitude": 6.602688
+    },
+    "alternatives": [
+      {
+        "name": "Courchevel",
+        "geoCoordinate": {
+          "latitude": 45.4152095,
+          "longitude": 6.6338026
+        },
+        "length": 8.8,
+        "totalAscent": 594,
+        "difficulty": 515,
+        "averageGradient": 6.3
+      }
+    ]
+  },
+  {
+    "name": "Col des Champs",
+    "topOfTheAscent": 2045,
+    "geoCoordinate": {
+      "latitude": 44.175062,
+      "longitude": 6.697894
+    },
+    "alternatives": [
+      {
+        "name": "Saint Martin-d'Entraunes",
+        "geoCoordinate": {
+          "latitude": 44.1425801,
+          "longitude": 6.7612582
+        },
+        "length": 16.3,
+        "totalAscent": 1057,
+        "difficulty": 837,
+        "averageGradient": 6.4
+      }
+    ]
+  },
+  {
+    "name": "Col de la Moutière",
+    "topOfTheAscent": 2439,
+    "geoCoordinate": {
+      "latitude": 44.315175,
+      "longitude": 6.796783
+    },
+    "alternatives": [
+      {
+        "name": "Saint-Étienne-de-Tinée",
+        "geoCoordinate": {
+          "latitude": 44.258723,
+          "longitude": 6.925962
+        },
+        "length": 25.4,
+        "totalAscent": 1663,
+        "difficulty": 1260,
+        "averageGradient": 7.0
+      }
+    ]
+  },
+  {
+    "name": "Bellecombe / Plan du Lac",
+    "topOfTheAscent": 2313,
+    "geoCoordinate": {
+      "latitude": 45.336148,
+      "longitude": 6.830975
+    },
+    "alternatives": [
+      {
+        "name": "Termignon",
+        "geoCoordinate": {
+          "latitude": 45.2812973,
+          "longitude": 6.816184
+        },
+        "length": 12.6,
+        "totalAscent": 1001,
+        "difficulty": 959,
+        "averageGradient": 7.7
+      }
+    ]
+  },
+  {
+    "name": "Valmeinier 1800",
+    "topOfTheAscent": 1889,
+    "geoCoordinate": {
+      "latitude": 45.174361,
+      "longitude": 6.492791
+    },
+    "alternatives": [
+      {
+        "name": "Saint Michel de Maurienne",
+        "geoCoordinate": {
+          "latitude": 45.2144801,
+          "longitude": 6.4732597
+        },
+        "length": 17.0,
+        "totalAscent": 1171,
+        "difficulty": 874,
+        "averageGradient": 6.8
+      }
+    ]
+  },
+  {
+    "name": "Mont Ventoux",
+    "topOfTheAscent": 1909,
+    "geoCoordinate": {
+      "latitude": 44.1734967,
+      "longitude": 5.2784967
+    },
+    "alternatives": [
+      {
+        "name": "Bedoin",
+        "geoCoordinate": {
+          "latitude": 44.1240672,
+          "longitude": 5.1861982
+        },
+        "length": 20.8,
+        "totalAscent": 1594,
+        "difficulty": 1352,
+        "averageGradient": 7.7
+      },
+      {
+        "name": "Malaucène",
+        "geoCoordinate": {
+          "latitude": 44.1732333,
+          "longitude": 5.1337364
+        },
+        "length": 21.0,
+        "totalAscent": 1564,
+        "difficulty": 1288,
+        "averageGradient": 7.5
+      },
+      {
+        "name": "Sault",
+        "geoCoordinate": {
+          "latitude": 44.0972155,
+          "longitude": 5.4058709
+        },
+        "length": 24.4,
+        "totalAscent": 1204,
+        "difficulty": 748,
+        "averageGradient": 4.9
+      }
+    ]
+  }
+]

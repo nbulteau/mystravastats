@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Col du Tourmalet",
+    "topOfTheAscent": 2115,
+    "geoCoordinate": {
+      "latitude": 42.9083885,
+      "longitude": 0.1452852
+    },
+    "alternatives": [
+      {
+        "name": "Luz Saint Sauveur",
+        "geoCoordinate": {
+          "latitude": 42.8732642,
+          "longitude": -0.0030853
+        },
+        "length": 18.3,
+        "totalAscent": 1401,
+        "difficulty": 1133,
+        "averageGradient": 7.7
+      },
+      {
+        "name": "Sainte-Marie de Campan",
+        "geoCoordinate": {
+          "latitude": 42.984611,
+          "longitude": 0.2274947
+        },
+        "length": 16.9,
+        "totalAscent": 1266,
+        "difficulty": 1055,
+        "averageGradient": 7.5
+      }
+    ]
+  },
+  {
+    "name": "Col de Portet",
+    "topOfTheAscent": 2115,
+    "geoCoordinate": {
+      "latitude": 42.8333037,
+      "longitude": 0.1452852
+    },
+    "alternatives": [
+      {
+        "name": "Saint Lary Soulan",
+        "geoCoordinate": {
+          "latitude": 42.8260457,
+          "longitude": 0.3179257
+        },
+        "length": 16.1,
+        "totalAscent": 1409,
+        "difficulty": 1381,
+        "averageGradient": 8.7
+      }
+    ]
+  }
+]
+

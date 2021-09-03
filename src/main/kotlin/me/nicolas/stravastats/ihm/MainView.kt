@@ -21,6 +21,7 @@ import me.nicolas.stravastats.business.badges.FamousClimbBadge
 import me.nicolas.stravastats.service.ActivityHelper
 import me.nicolas.stravastats.service.formatSeconds
 import me.nicolas.stravastats.service.formatSpeed
+import me.nicolas.stravastats.service.statistics.BestElevationDistanceStatistic
 import tornadofx.*
 import java.time.LocalDate
 
@@ -123,12 +124,12 @@ class MainView(
 
         activitiesTab.content = tableview(activitiesToDisplay) {
             readonlyColumn("Activity", ActivityDisplay::name)
-            readonlyColumn("Distance", ActivityDisplay::distance).cellFactory = getDistanceCell()
-            readonlyColumn("Elapsed time", ActivityDisplay::elapsedTime).cellFactory = getElapsedTimeCell()
-            readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory = getElevationCell()
-            readonlyColumn("Average speed", ActivityDisplay::averageSpeed).cellFactory =
-                getAverageSpeedCell(selectedActivity.value)
+            readonlyColumn("Distance", ActivityDisplay::distance).cellFactory = formatDistance()
+            readonlyColumn("Elapsed time", ActivityDisplay::elapsedTime).cellFactory = formatSeconds()
+            readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory = formatElevation()
+            readonlyColumn("Average speed", ActivityDisplay::averageSpeed).cellFactory = formatSpeed(selectedActivity.value)
             readonlyColumn("Date", ActivityDisplay::date)
+
             resizeColumnsToFitContent()
         }
 
@@ -208,7 +209,7 @@ class MainView(
         }
     }
 
-    private fun <ROW, T : Double?> getDistanceCell(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+    private fun <ROW, T : Double?> formatDistance(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
         return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
             object : TableCell<ROW, T>() {
                 override fun updateItem(item: T?, empty: Boolean) {
@@ -223,7 +224,7 @@ class MainView(
         }
     }
 
-    private fun <ROW, T : Int?> getElapsedTimeCell(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+    private fun <ROW, T : Int?> formatSeconds(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
         return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
             object : TableCell<ROW, T>() {
                 override fun updateItem(item: T?, empty: Boolean) {
@@ -238,7 +239,7 @@ class MainView(
         }
     }
 
-    private fun <ROW, T : Double?> getElevationCell(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+    private fun <ROW, T : Double?> formatElevation(): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
         return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
             object : TableCell<ROW, T>() {
                 override fun updateItem(item: T?, empty: Boolean) {
@@ -253,7 +254,7 @@ class MainView(
         }
     }
 
-    private fun <ROW, T : Double?> getAverageSpeedCell(activityType: String): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
+    private fun <ROW, T : Double?> formatSpeed(activityType: String): Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
         return Callback<TableColumn<ROW, T>?, TableCell<ROW, T>> {
             object : TableCell<ROW, T>() {
                 override fun updateItem(item: T, empty: Boolean) {
