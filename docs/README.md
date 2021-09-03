@@ -45,6 +45,9 @@ http://www.strava.com/api/v3/oauth/authorize?client_id=[YOUR_CLIENT_ID]&response
 Login to Strava then click 'Authorize' and tick the required permissions if needed.
 
 ### Launch MyStavaStats
+
+A jdk >= 11 is needed to run mystavastats.
+
 ```
 ./gradlew run    
 ```
