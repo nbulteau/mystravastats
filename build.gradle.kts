@@ -114,8 +114,11 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
-        jvmTarget = "16"
+        jvmTarget = "14"
         moduleName = "mystravastats"
     }
 }
 
+tasks.withType<JavaCompile> {
+    targetCompatibility = "14"
+}

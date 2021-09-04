@@ -29,11 +29,14 @@ data class FamousClimbBadge(
     }
 
     private fun check(activity: Activity, geoCoordinateToCheck: GeoCoordinate): Boolean {
-        for (coords in activity.stream?.latitudeLongitude?.data!!) {
-            if (geoCoordinateToCheck.match(coords[0], coords[1])) {
-                return true
+        if(activity.stream != null && activity.stream?.latitudeLongitude != null) {
+            for (coords in activity.stream?.latitudeLongitude?.data!!) {
+                if (geoCoordinateToCheck.match(coords[0], coords[1])) {
+                    return true
+                }
             }
         }
+
         return false
     }
 

@@ -46,7 +46,7 @@ Login to Strava then click 'Authorize' and tick the required permissions if need
 
 ### Launch MyStavaStats
 
-A jdk >= 11 is needed to run mystavastats.
+A jdk >= 14 is needed to run mystavastats.
 
 ```
 ./gradlew run    

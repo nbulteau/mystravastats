@@ -28,13 +28,15 @@ fun removeJavaFxInfoMessage() {
  * Open Browser
  */
 fun openBrowser(url: String) {
-    if (Desktop.isDesktopSupported()) {
-        Desktop.getDesktop().browse(URI(url))
-    } else {
-        val runtime = Runtime.getRuntime()
-        if (OSValidator.IS_WINDOWS) {
+    val runtime = Runtime.getRuntime()
+    when {
+        OSValidator.IS_WINDOWS -> {
             runtime.exec("rundll32 url.dll,FileProtocolHandler $url")
-        } else {
+        }
+        OSValidator.IS_MAC -> {
+            Desktop.getDesktop().browse(URI(url))
+        }
+        else -> {
             runtime.exec("xdg-open $url")
         }
     }
