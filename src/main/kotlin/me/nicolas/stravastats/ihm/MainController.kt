@@ -7,7 +7,11 @@ import javafx.scene.chart.XYChart
 import javafx.scene.control.Hyperlink
 import javafx.scene.image.ImageView
 import me.nicolas.stravastats.business.*
-import me.nicolas.stravastats.business.badges.*
+import me.nicolas.stravastats.business.badges.Badge
+import me.nicolas.stravastats.business.badges.DistanceBadge
+import me.nicolas.stravastats.business.badges.ElevationBadge
+import me.nicolas.stravastats.business.badges.MovingTimeBadge
+import me.nicolas.stravastats.openBrowser
 import me.nicolas.stravastats.service.*
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
@@ -229,7 +233,7 @@ class MainController(private val clientId: String, private val activities: Obser
                 .apply {
                     if (triple.second != null) {
                         onAction = EventHandler {
-                            Desktop.getDesktop().browse(URI("https://www.strava.com/activities/${activity?.id}"))
+                            openBrowser("https://www.strava.com/activities/${activity?.id}")
                         }
                     }
                 }
@@ -248,8 +252,7 @@ class MainController(private val clientId: String, private val activities: Obser
                     val hyperlink = if (statistic.activity != null) {
                         Hyperlink(statistic.activity.toString()).apply {
                             onAction = EventHandler {
-                                Desktop.getDesktop()
-                                    .browse(URI("http://www.strava.com/activities/${statistic.activity?.id}"))
+                                openBrowser("http://www.strava.com/activities/${statistic.activity?.id}")
                             }
                         }
                     } else {
@@ -269,7 +272,7 @@ class MainController(private val clientId: String, private val activities: Obser
 
             val hyperlink = Hyperlink(activity.name).apply {
                 onAction = EventHandler {
-                    Desktop.getDesktop().browse(URI("http://www.strava.com/activities/${activity.id}"))
+                    openBrowser("http://www.strava.com/activities/${activity.id}")
                 }
             }
 

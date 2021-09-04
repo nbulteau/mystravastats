@@ -8,6 +8,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.nicolas.stravastats.business.*
+import me.nicolas.stravastats.openBrowser
 import me.nicolas.stravastats.strava.StravaApi
 import java.awt.Desktop
 import java.io.File
@@ -112,7 +113,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
                     "&approval_prompt=auto" +
                     "&scope=read_all,activity:read_all,profile:read_all"
         println(url)
-        Desktop.getDesktop().browse(URI(url))
+        openBrowser(url)
         println()
 
         runBlocking {
@@ -134,7 +135,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
                 }
             }
 
-            println("Waiting for your agreement to allow MyStravaStats to access to your Strava data ...")
+            print("Waiting for your agreement to allow MyStravaStats to access to your Strava data ...")
             val accessTokenFromToken = channel.receive()
             println(" access granted.")
             setAccessToken(accessTokenFromToken)

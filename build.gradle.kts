@@ -12,11 +12,11 @@ buildscript {
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.5.30"
+    id("org.openjfx.javafxplugin") version "0.0.10"
     id("com.github.ben-manes.versions") version "0.39.0"
 
     // Apply the application plugin to add support for building a CLI application.
     application
-    id("org.openjfx.javafxplugin") version "0.0.10"
 }
 
 repositories {
@@ -38,7 +38,7 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.5")
 
     implementation("io.javalin:javalin:3.13.11")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     implementation("org.slf4j:slf4j-nop:1.7.32")
 
     // Some problem with 0.5.0 version
@@ -49,6 +49,10 @@ dependencies {
     implementation("no.tornado:tornadofx:1.7.20")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.2")
+}
+
+javafx {
+    modules = listOf("javafx.controls", "javafx.media", "javafx.fxml", "javafx.web", "javafx.graphics")
 }
 
 application {
@@ -66,10 +70,6 @@ application {
         "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
         "--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED"
     )
-}
-
-javafx {
-    modules = listOf("javafx.controls", "javafx.media", "javafx.fxml", "javafx.web", "javafx.graphics")
 }
 
 tasks.withType<Test> {
