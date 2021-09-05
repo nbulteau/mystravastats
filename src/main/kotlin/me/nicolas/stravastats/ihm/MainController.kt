@@ -16,8 +16,6 @@ import me.nicolas.stravastats.service.*
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
 import tornadofx.*
-import java.awt.Desktop
-import java.net.URI
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -101,19 +99,19 @@ class MainController(private val clientId: String, private val activities: Obser
                 badgesSets.add(
                     buildBadgesToDisplay(
                         badgesList = DistanceBadge.rideBadgeSet.check(filteredActivities),
-                        url = "images/racing.png"
+                        imageViewUrl = "images/racing.png"
                     )
                 )
                 badgesSets.add(
                     buildBadgesToDisplay(
                         badgesList = ElevationBadge.rideBadgeSet.check(filteredActivities),
-                        url = "images/cycling.png"
+                        imageViewUrl = "images/cycling.png"
                     )
                 )
                 badgesSets.add(
                     buildBadgesToDisplay(
                         badgesList = MovingTimeBadge.movingTimeBadgesSet.check(filteredActivities),
-                        url = "images/stopwatch.png"
+                        imageViewUrl = "images/stopwatch.png"
                     )
                 )
             }
@@ -121,19 +119,19 @@ class MainController(private val clientId: String, private val activities: Obser
                 badgesSets.add(
                     buildBadgesToDisplay(
                         badgesList = DistanceBadge.runBadgeSet.check(filteredActivities),
-                        url = "images/run.png"
+                        imageViewUrl = "images/run.png"
                     )
                 )
                 badgesSets.add(
                     buildBadgesToDisplay(
                         badgesList = ElevationBadge.runBadgeSet.check(filteredActivities),
-                        url = "images/run.png"
+                        imageViewUrl = "images/run.png"
                     )
                 )
                 badgesSets.add(
                     buildBadgesToDisplay(
                         badgesList = MovingTimeBadge.movingTimeBadgesSet.check(filteredActivities),
-                        url = "images/stopwatch.png"
+                        imageViewUrl = "images/stopwatch.png"
                     )
                 )
             }
@@ -150,13 +148,13 @@ class MainController(private val clientId: String, private val activities: Obser
                 badgesSets.add(
                     buildBadgesToDisplay(
                         badgesList = badgesService.getAlpesFamousBadges(filteredActivities),
-                        url = "images/cycling.png"
+                        imageViewUrl = "images/cycling.png"
                     )
                 )
                 badgesSets.add(
                     buildBadgesToDisplay(
                         badgesList = badgesService.getPyreneesFamousBadges(filteredActivities),
-                        url = "images/cycling.png"
+                        imageViewUrl = "images/cycling.png"
                     )
                 )
             }
@@ -210,7 +208,7 @@ class MainController(private val clientId: String, private val activities: Obser
 
     private fun buildBadgesToDisplay(
         badgesList: List<Triple<Badge, Activity?, Boolean>>,
-        url: String
+        imageViewUrl: String
     ): List<BadgeDisplay> {
 
         val badges = badgesList.map { triple ->
@@ -218,7 +216,7 @@ class MainController(private val clientId: String, private val activities: Obser
             val activity = triple.second
             val badge = triple.first
 
-            val imageView = ImageView(url)
+            val imageView = ImageView(imageViewUrl)
                 .apply {
                     if (!isCompleted) {
                         opacity = 0.15

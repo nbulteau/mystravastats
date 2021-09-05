@@ -7,9 +7,7 @@ import space.kscience.plotly.PlotlyPage
 import space.kscience.plotly.UnstablePlotlyAPI
 import space.kscience.plotly.layout
 import space.kscience.plotly.models.*
-import java.awt.Desktop
 import java.nio.file.Files
-import java.nio.file.Path
 import kotlin.math.abs
 
 @OptIn(UnstablePlotlyAPI::class)
@@ -153,7 +151,7 @@ abstract class Chart {
                     bgcolor("#E2E2E2")
                     traceorder = TraceOrder.normal
                 }
-                annotation(eddingtonText)
+                // annotation(eddingtonText) // not yet implemented with plotlykt 0.5.0
             }
         }
     }

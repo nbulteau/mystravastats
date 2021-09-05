@@ -42,7 +42,7 @@ dependencies {
     implementation("org.slf4j:slf4j-nop:1.7.32")
 
     // Some problem with 0.5.0 version
-    implementation("space.kscience:plotlykt-server:0.4.4") {
+    implementation("space.kscience:plotlykt-server:0.5.0") {
         exclude("ch.qos.logback", "logback-classic")
     }
 
