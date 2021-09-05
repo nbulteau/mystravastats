@@ -15,6 +15,8 @@ import me.nicolas.stravastats.openBrowser
 import me.nicolas.stravastats.service.*
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
+import me.nicolas.stravastats.service.statistics.calculateBestElevationForDistance
+import me.nicolas.stravastats.service.statistics.calculateBestTimeForDistance
 import tornadofx.*
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -280,6 +282,8 @@ class MainController(private val clientId: String, private val activities: Obser
                 activity.elapsedTime,
                 activity.totalElevationGain,
                 activity.averageSpeed,
+                activity.calculateBestTimeForDistance(1000.0)?.getFormattedSpeed() ?: "",
+                activity.calculateBestElevationForDistance(250.0)?.getFormattedSlope() ?: "",
                 activity.startDateLocal.formatDate()
             )
         }

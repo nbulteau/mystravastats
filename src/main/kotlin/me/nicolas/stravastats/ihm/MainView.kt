@@ -128,6 +128,8 @@ class MainView(
             readonlyColumn("Elapsed time", ActivityDisplay::elapsedTime).cellFactory = formatSeconds()
             readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory = formatElevation()
             readonlyColumn("Average speed", ActivityDisplay::averageSpeed).cellFactory = formatSpeed(selectedActivity.value)
+            readonlyColumn("Best speed for 1000 m", ActivityDisplay::bestTimeForDistanceFor1000m)
+            readonlyColumn("Max slope for 250 m", ActivityDisplay::BestElevationForDistanceFor250m)
             readonlyColumn("Date", ActivityDisplay::date)
 
             resizeColumnsToFitContent()
