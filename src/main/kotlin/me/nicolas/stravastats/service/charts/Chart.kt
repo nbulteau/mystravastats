@@ -108,19 +108,6 @@ abstract class Chart {
             }
         }
 
-        val eddingtonText = Text {
-            xref = "x"
-            yref = "y"
-            position(eddingtonNumber, eddingtonNumber)
-            text = "Eddington number : $eddingtonNumber"
-            font {
-                family = "Arial"
-                size = 12
-                color("black")
-            }
-            showarrow = true
-        }
-
         plot(row = row, width = width) {
             traces(
                 Bar {
@@ -151,7 +138,22 @@ abstract class Chart {
                     bgcolor("#E2E2E2")
                     traceorder = TraceOrder.normal
                 }
-                // annotation(eddingtonText) // not yet implemented with plotlykt 0.5.0
+
+                // not yet implemented with plotlykt 0.5.0
+                /*
+                annotation {
+                    xref = "x"
+                    yref = "y"
+                    position(eddingtonNumber, eddingtonNumber)
+                    text = "Eddington number : $eddingtonNumber"
+                    font {
+                        family = "Arial"
+                        size = 12
+                        color("black")
+                    }
+                    showarrow = true
+                }
+                */
             }
         }
     }
