@@ -30,7 +30,7 @@ dependencies {
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     // Use the Kotlin JDK 8 standard library.
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.21")
 
     implementation("org.danilopianini:khttp:0.1.0-dev30+51fa9ae")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.12.5")

@@ -1,10 +1,15 @@
 package me.nicolas.stravastats.service.charts
 
 import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.openBrowser
 import space.kscience.plotly.PlotGrid
+import space.kscience.plotly.PlotlyPage
 import space.kscience.plotly.UnstablePlotlyAPI
 import space.kscience.plotly.layout
 import space.kscience.plotly.models.*
+import java.awt.Desktop
+import java.nio.file.Files
+import java.nio.file.Path
 import kotlin.math.abs
 
 @OptIn(UnstablePlotlyAPI::class)
@@ -32,6 +37,14 @@ abstract class Chart {
             connectgaps = true
             name = "$year"
         }
+    }
+
+    fun renderAndOpenBrowser(plot: PlotlyPage) {
+        val actualFile = Files.createTempFile("tempPlot", ".html")
+        Files.createDirectories(actualFile.parent)
+        Files.writeString(actualFile, plot.render())
+        // Desktop.getDesktop().browse(actualFile.toFile().toURI())
+        openBrowser(actualFile.toString())
     }
 
     fun PlotGrid.buildEddingtonNumberPlotByType(

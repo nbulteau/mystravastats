@@ -18,7 +18,7 @@ internal class ForAYearChart(activities: List<Activity>, val year: Int) : Chart(
     private val activitiesByDay = ActivityHelper.groupActivitiesByDay(activitiesForYear, year)
 
     override fun build() {
-        Plotly.grid {
+        val plotlyPage = Plotly.grid {
             buildBarModeGroupByDistanceMonthsPlot(
                 xAxis = "months",
                 yAxis = "Distance",
@@ -59,7 +59,8 @@ internal class ForAYearChart(activities: List<Activity>, val year: Int) : Chart(
             )
             buildEddingtonNumberPlotByType(row = 6, width = 6, activitiesForYear, Run)
             buildEddingtonNumberPlotByType(row = 6, width = 6, activitiesForYear, Ride)
-        }.makeFile()
+        }
+        renderAndOpenBrowser(plotlyPage)
     }
 
     private fun PlotGrid.buildBarModeGroupByDistanceMonthsPlot(

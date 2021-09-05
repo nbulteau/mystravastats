@@ -18,7 +18,7 @@ internal class ByYearsChart(val activities: List<Activity>) : Chart() {
         val inLineSkateByYears = ActivityHelper.sumDistanceByType(activitiesByYear, InlineSkate)
         val hikeByYears = ActivityHelper.sumDistanceByType(activitiesByYear, Hike)
 
-        val plot = Plotly.grid {
+        val plotlyPage = Plotly.grid {
             buildBarModeStackPlot(row = 1, width = 6, runByYears, rideByYears, inLineSkateByYears, hikeByYears)
             buildBarModeGroupPlot(row = 1, width = 6, runByYears, rideByYears, inLineSkateByYears, hikeByYears)
             buildCumulativePlot(row = 2, width = 12, runByYears, rideByYears, inLineSkateByYears, hikeByYears)
@@ -28,7 +28,7 @@ internal class ByYearsChart(val activities: List<Activity>) : Chart() {
             buildEddingtonNumberPlotByType(row = 6, width = 6, activities, Run)
             buildEddingtonNumberPlotByType(row = 6, width = 6, activities, Ride)
         }
-        plot.makeFile()
+        renderAndOpenBrowser(plotlyPage)
     }
 
     private fun PlotGrid.buildBarModeStackPlot(
