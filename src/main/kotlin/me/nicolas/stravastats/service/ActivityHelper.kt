@@ -2,8 +2,10 @@ package me.nicolas.stravastats.service
 
 import me.nicolas.stravastats.business.Activity
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Month
 import java.time.format.TextStyle
+import java.time.temporal.WeekFields
 import java.util.*
 
 class ActivityHelper {
@@ -42,6 +44,25 @@ class ActivityHelper {
             return activitiesByMonth.toSortedMap().mapKeys { (key, _) ->
                 Month.of(key.toInt()).getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault())
             }.toMap()
+        }
+
+        fun groupActivitiesByWeek(activities: List<Activity>): Map<String, List<Activity>> {
+            val activitiesByWeek = activities
+                .groupBy { activity ->
+                    val week = LocalDateTime.parse(activity.startDateLocal, inDateTimeFormatter)
+                        .get(WeekFields.of(Locale.getDefault()).weekOfYear())
+                    "$week".padStart(2, '0')
+                }
+                .toMutableMap()
+
+            // Add weeks without activities
+            for (week in (1..52)) {
+                if (!activitiesByWeek.contains("$week".padStart(2, '0'))) {
+                    activitiesByWeek["$week".padStart(2, '0')] = emptyList()
+                }
+            }
+
+            return activitiesByWeek.toSortedMap()
         }
 
         fun groupActivitiesByDay(activities: List<Activity>, year: Int): Map<String, List<Activity>> {

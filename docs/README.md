@@ -1,6 +1,6 @@
 # My Strava Stats
 
-A tool to calculates and displays many statistics about Strava activities.
+A tool to calculates and displays many statistics on Strava activities.
 
 This tool scans through activities :
 * Looks for best effort for a distance or time span fastest consecutive 1 km, 5 km, 10 km you've run, or the fastest 2 hours, 3 hours in ride activities.

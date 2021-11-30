@@ -157,6 +157,13 @@ class MainView(
                     isLegendVisible = false
                 }
             }
+            item("Distance by weeks") {
+                barchart("Distance by weeks for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
+                    series(Ride, mainController.buildDistanceByWeeksSeries(selectedActivity.value, selectedYear.value))
+                    verticalGridLinesVisible = false
+                    isLegendVisible = false
+                }
+            }
             item("Eddington number") {
                 eddingtonNumberChart(
                     mainController.getActiveDaysByActivityTypeByYear(

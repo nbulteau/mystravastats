@@ -15,6 +15,8 @@ internal class ForAYearChart(activities: List<Activity>, val year: Int) : Chart(
 
     private val activitiesByMonth = ActivityHelper.groupActivitiesByMonth(activitiesForYear)
 
+    private val activitiesByWeek = ActivityHelper.groupActivitiesByWeek(activitiesForYear)
+
     private val activitiesByDay = ActivityHelper.groupActivitiesByDay(activitiesForYear, year)
 
     override fun build() {
@@ -37,6 +39,16 @@ internal class ForAYearChart(activities: List<Activity>, val year: Int) : Chart(
                 rideByDays = ActivityHelper.sumDistanceByType(activitiesByDay, Ride),
                 inLineSkateByDays = ActivityHelper.sumDistanceByType(activitiesByDay, InlineSkate),
                 hikeByDays = ActivityHelper.sumDistanceByType(activitiesByDay, Hike),
+                year
+            )
+            buildBarModeStackDistanceByWeekPlot(
+                xAxis = "weeks",
+                yAxis = "Distance",
+                unit = "km/h",
+                runByDays = ActivityHelper.sumDistanceByType(activitiesByWeek, Run),
+                rideByDays = ActivityHelper.sumDistanceByType(activitiesByWeek, Ride),
+                inLineSkateByDays = ActivityHelper.sumDistanceByType(activitiesByWeek, InlineSkate),
+                hikeByDays = ActivityHelper.sumDistanceByType(activitiesByWeek, Hike),
                 year
             )
             buildBarModeGroupByDistanceMonthsPlot(
@@ -93,6 +105,44 @@ internal class ForAYearChart(activities: List<Activity>, val year: Int) : Chart(
                 }
                 legend {
                     xanchor = XAnchor.left
+                    bgcolor("#E2E2E2")
+                    traceorder = TraceOrder.normal
+                }
+            }
+        }
+    }
+
+    private fun PlotGrid.buildBarModeStackDistanceByWeekPlot(
+        xAxis: String,
+        yAxis: String,
+        unit: String,
+        runByDays: Map<String, Double>,
+        rideByDays: Map<String, Double>,
+        inLineSkateByDays: Map<String, Double>,
+        hikeByDays: Map<String, Double>,
+        year: Int
+    ) {
+        plot(row = 2, width = 12) {
+            traces(
+                buildBarByType(runByDays, Run),
+                buildBarByType(rideByDays, Ride),
+                buildBarByType(inLineSkateByDays, InlineSkate),
+                buildBarByType(hikeByDays, Hike)
+            )
+
+            layout {
+                barmode = BarMode.stack
+                title = "$yAxis by $xAxis for $year ($unit)"
+
+                xaxis {
+                    title = xAxis
+                    type = AxisType.category
+                }
+                yaxis {
+                    title = yAxis
+                }
+                legend {
+                    xanchor = XAnchor.right
                     bgcolor("#E2E2E2")
                     traceorder = TraceOrder.normal
                 }

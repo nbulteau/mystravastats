@@ -182,6 +182,24 @@ class MainController(private val clientId: String, private val activities: Obser
         })
     }
 
+    fun buildDistanceByWeeksSeries(
+        activityType: String,
+        year: Int,
+    ): ObservableList<XYChart.Data<String, Number>> {
+
+        val filteredActivities = filterActivitiesByType(activityType)
+            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+
+        val activitiesByWeek: Map<String, List<Activity>> = ActivityHelper.groupActivitiesByWeek(filteredActivities)
+        val distanceByWeek: Map<String, Double> = activitiesByWeek.mapValues { (_, activities) ->
+            activities.sumOf { activity -> activity.distance / 1000 }
+        }
+
+        return FXCollections.observableList(distanceByWeek.map { entry ->
+            XYChart.Data(entry.key, entry.value)
+        })
+    }
+
     fun buildDistanceByDaysSeries(
         activityType: String,
         year: Int,

@@ -119,11 +119,15 @@ internal class StravaApi(
             "code" to authorizationCode,
             "grant_type" to "authorization_code"
         )
-        val response = post(url, data = payload)
-        if (response.statusCode == 200) {
-            return mapper.readValue(response.content, Token::class.java)
-        } else {
-            throw RuntimeException("Something was wrong with Strava API for url $url : ${response.text}")
+        try {
+            val response = post(url, data = payload)
+            if (response.statusCode == 200) {
+                return mapper.readValue(response.content, Token::class.java)
+            } else {
+                throw RuntimeException("Something was wrong with Strava API for url $url : ${response.text}")
+            }
+        } catch (ex: Exception) {
+            throw RuntimeException("Something was wrong with Strava API for url $url", ex)
         }
     }
 
