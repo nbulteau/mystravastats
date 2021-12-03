@@ -11,7 +11,7 @@ buildscript {
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.5.30"
+    id("org.jetbrains.kotlin.jvm") version "1.6.0"
     id("org.openjfx.javafxplugin") version "0.0.10"
     id("com.github.ben-manes.versions") version "0.39.0"
 
@@ -34,10 +34,10 @@ dependencies {
 
     implementation("org.danilopianini:khttp:0.1.0-dev30+51fa9ae")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.12.5")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.5")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.5")
 
-    implementation("io.javalin:javalin:3.13.11")
+    implementation("io.javalin:javalin:4.1.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     implementation("org.slf4j:slf4j-nop:1.7.32")
 
@@ -48,7 +48,7 @@ dependencies {
 
     implementation("no.tornado:tornadofx:1.7.20")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 }
 
 javafx {
