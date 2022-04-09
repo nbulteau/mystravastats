@@ -10,10 +10,8 @@ import kotlinx.coroutines.runBlocking
 import me.nicolas.stravastats.business.*
 import me.nicolas.stravastats.openBrowser
 import me.nicolas.stravastats.strava.StravaApi
-import java.awt.Desktop
 import java.io.File
 import java.net.ConnectException
-import java.net.URI
 import java.time.LocalDateTime
 
 
@@ -251,7 +249,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
     }
 
     private fun List<Activity>.filterActivities() = this.filter { activity ->
-        activity.type == Ride || activity.type == Run || activity.type == Hike || activity.type == InlineSkate
+        activity.type == Ride || activity.type == Run || activity.type == Hike || activity.type == InlineSkate || activity.type == AlpineSki
     }
 
     private fun displayProgressBar(progressPercentage: Double) {

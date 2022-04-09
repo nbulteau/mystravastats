@@ -21,7 +21,6 @@ import me.nicolas.stravastats.business.badges.FamousClimbBadge
 import me.nicolas.stravastats.service.ActivityHelper
 import me.nicolas.stravastats.service.formatSeconds
 import me.nicolas.stravastats.service.formatSpeed
-import me.nicolas.stravastats.service.statistics.BestElevationDistanceStatistic
 import tornadofx.*
 import java.time.LocalDate
 
@@ -73,7 +72,7 @@ class MainView(
                     }
                     combobox(
                         property = selectedActivity,
-                        values = listOf("Ride", "Commute", "Run", "InlineSkate", "Hike")
+                        values = listOf("Ride", "Commute", "Run", "InlineSkate", "Hike", "AlpineSki")
                     ) {
                         selectionModel.selectedItemProperty().onChange {
                             updateTabs()
@@ -127,9 +126,12 @@ class MainView(
             readonlyColumn("Distance", ActivityDisplay::distance).cellFactory = formatDistance()
             readonlyColumn("Elapsed time", ActivityDisplay::elapsedTime).cellFactory = formatSeconds()
             readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory = formatElevation()
-            readonlyColumn("Average speed", ActivityDisplay::averageSpeed).cellFactory = formatSpeed(selectedActivity.value)
+            readonlyColumn("Average speed", ActivityDisplay::averageSpeed).cellFactory =
+                formatSpeed(selectedActivity.value)
             readonlyColumn("Best speed for 1000 m", ActivityDisplay::bestTimeForDistanceFor1000m)
-            readonlyColumn("Max slope for 250 m", ActivityDisplay::BestElevationForDistanceFor250m)
+            if (selectedActivity.value != "AlpineSki") {
+                readonlyColumn("Max slope for 250 m", ActivityDisplay::BestElevationForDistanceFor250m)
+            }
             readonlyColumn("Date", ActivityDisplay::date)
 
             resizeColumnsToFitContent()

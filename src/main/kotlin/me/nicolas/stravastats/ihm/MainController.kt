@@ -17,7 +17,7 @@ import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
 import me.nicolas.stravastats.service.statistics.calculateBestElevationForDistance
 import me.nicolas.stravastats.service.statistics.calculateBestTimeForDistance
-import tornadofx.*
+import tornadofx.Controller
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -85,6 +85,8 @@ class MainController(private val clientId: String, private val activities: Obser
             Run -> statsService.computeRunStatistics(filteredActivities)
             InlineSkate -> statsService.computeInlineSkateStatistics(filteredActivities)
             Hike -> statsService.computeHikeStatistics(filteredActivities)
+            AlpineSki -> statsService.computeAlpineSkiStatistics(filteredActivities)
+
             else -> emptyList()
         }
 
