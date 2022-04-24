@@ -36,27 +36,25 @@ internal class FitService {
         val recordMesgs = fitMessages.recordMesgs
 
         //
-        val athlete: AthleteRef = AthleteRef(0, 1)
-        // The number of athletes for taking part in a group activity
-        val athleteCount: Int = 1
+        val athlete = AthleteRef(0, 1)
         // The activity's average speed, in meters per second
         val averageSpeed: Double = sessionMesg?.avgSpeed?.toDouble() ?: 0.0
         // The effort's average cadence
         val averageCadence: Double = sessionMesg?.avgCadence?.toDouble() ?: 0.0
-        // The heart heart rate of the athlete during this effort
+        // The heart rate of the athlete during this effort
         val averageHeartrate: Double = sessionMesg?.avgHeartRate?.toDouble() ?: 0.0
         // The maximum heart rate of the athlete during this effort
         val maxHeartrate: Double = sessionMesg?.maxHeartRate?.toDouble() ?: 0.0
         //The average wattage of this effort
         val averageWatts: Double = sessionMesg?.avgPower?.toDouble() ?: 0.0 // TODO : Calculate ?
         // The number of comments for this activity
-        val commentCount: Int = 0
+        val commentCount = 0
         // Whether this activity is a commute
-        val commute: Boolean = false
+        val commute = false
         // Whether the watts are from a power meter, false if estimated
-        val deviceWatts: Boolean = false
+        val deviceWatts = false
         // ??
-        val displayHideHeartrateOption: Boolean = true
+        val displayHideHeartrateOption = true
         // The activity's distance, in meters
         val distance: Double = sessionMesg?.totalDistance?.toDouble() ?: 0.0
         // The activity's elapsed time, in seconds
@@ -68,15 +66,11 @@ internal class FitService {
         // An instance of LatLng (= List<Double>).
         val endLatlng: List<Double>? = null // TODO
         // The identifier provided at upload time
-        val externalId: String = "garmin_push_ "
-        // The id of the gear for the activity
-        val gearId: String? = null
+        val externalId = "garmin_push_${fitFile.name.replace(".FIT", "")}"
         // The unique identifier of the activity
         val id: Long = 0
         // The total work done in kilojoules during this activity. Rides only
-        val kilojoules: Double = 0.0
-        // The number of kudos given for this activity
-        val kudosCount: Int = 0
+        val kilojoules = 0.0
         //
         val locationCity: Any? = null
         //
@@ -84,49 +78,41 @@ internal class FitService {
         //
         val locationState: Any? = null
         // Whether this activity was created manually
-        val manual: Boolean = false
+        val manual = false
         // The activity's max speed, in meters per second
         val maxSpeed: Double = sessionMesg?.maxSpeed?.toDouble() ?: 0.0
         // The activity's moving time, in seconds
         val movingTime: Int = sessionMesg?.timestamp?.timestamp?.minus(sessionMesg.startTime?.timestamp!!)?.toInt()!!
         //
-        val name: String = "${extractType(sessionMesg.sport!!)} - ${fitFile.name.replace(".FIT", "")}"
+        val name = "${extractType(sessionMesg.sport!!)} - ${fitFile.name.replace(".FIT", "")}"
         //
-        val photoCount: Int = 0
-        //
-        val prCount: Int = 0
-        //
-        val resourceState: Int = 2
+        val resourceState = 2
         // The time at which the activity was started.
         val startDate: String = extractDate(sessionMesg.startTime?.timestamp!!)
         // The time at which the activity was started in the local timezone.
         val startDateLocal: String = extractDateLocal(sessionMesg.startTime?.timestamp!!)
         //
-        val startLatitude: Double = 0.0
+        val startLatitude = 0.0
         //
         val startLatlng: List<Double> = extractLatLng(sessionMesg.startPositionLat, sessionMesg.startPositionLong)
         //
-        val startLongitude: Double = 0.0
+        val startLongitude = 0.0
         //
-        val timezone: String = ""
+        val timezone = ""
         //
         val totalElevationGain: Double = sessionMesg.totalAscent?.toDouble() ?: 0.0
         //
         val type: String = extractType(sessionMesg.sport!!)
         //
-        val uploadId: Long = 0
+        val utcOffset = 0.0
         //
-        val uploadIdStr: String? = null
-        //
-        val utcOffset: Double = 0.0
-        //
-        val workoutType: Int = 0
+        val workoutType = 0
 
         val activity = Activity(
             // The number of achievements gained during this activity
             achievementCount = 0,
             athlete = athlete,
-            athleteCount = athleteCount,
+            athleteCount = 1,
             averageSpeed = averageSpeed,
             averageCadence = averageCadence,
             averageHeartrate = averageHeartrate,
@@ -144,13 +130,13 @@ internal class FitService {
             externalId = externalId,
             flagged = false,
             fromAcceptedTag = false,
-            gearId = gearId,
+            gearId = null,
             hasHeartrate = false,
             hasKudoed = false,
             heartrateOptOut = false,
             id = id,
             kilojoules = kilojoules,
-            kudosCount = kudosCount,
+            kudosCount = 0,
             locationCity = locationCity,
             locationCountry = locationCountry,
             locationState = locationState,
@@ -159,8 +145,8 @@ internal class FitService {
             maxSpeed = maxSpeed,
             movingTime = movingTime,
             name = name,
-            photoCount = photoCount,
-            prCount = prCount,
+            photoCount = 0,
+            prCount = 0,
             private = true,
             resourceState = resourceState,
             startDate = startDate,
@@ -173,8 +159,8 @@ internal class FitService {
             totalPhotoCount = 0,
             trainer = false,
             type = type,
-            uploadId = uploadId,
-            uploadIdStr = uploadIdStr,
+            uploadId = 0,
+            uploadIdStr = null,
             utcOffset = utcOffset,
             visibility = "everyone",
             workoutType = workoutType,
