@@ -10,6 +10,7 @@ import java.io.File
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
+import java.util.*
 
 internal class FitService {
 
@@ -19,8 +20,10 @@ internal class FitService {
         val activitiesDirectoryName = "fit-$clientId"
         val yearActivitiesDirectory = File(activitiesDirectoryName, "$year")
 
-        val fitFiles = yearActivitiesDirectory.listFiles { file -> file.extension == "fit" }
+        val fitFiles = yearActivitiesDirectory.listFiles { file -> file.extension.lowercase(Locale.getDefault()) == "fit" }
+
         val activities = fitFiles?.map { file ->
+            println(file)
             this.convertToActivity(file)
         }?.toList() ?: emptyList()
 
@@ -87,7 +90,7 @@ internal class FitService {
         // The activity's moving time, in seconds
         val movingTime: Int = sessionMesg?.timestamp?.timestamp?.minus(sessionMesg.startTime?.timestamp!!)?.toInt()!!
         //
-        val name: String = "${extractType(sessionMesg.sport!!)} - "
+        val name: String = "${extractType(sessionMesg.sport!!)} - ${fitFile.name.replace(".FIT", "")}"
         //
         val photoCount: Int = 0
         //
@@ -177,7 +180,11 @@ internal class FitService {
             workoutType = workoutType,
         )
 
-        activity.stream = buildStream(recordMesgs)
+        try {
+            activity.stream = buildStream(recordMesgs)
+        } catch (exception :Exception) {
+            println(exception)
+        }
 
         return activity
     }
@@ -202,6 +209,7 @@ internal class FitService {
             seriesType = "distance"
         )
         // moving
+        /*
         val dataMoving = recordMesgs.map { recordMesg -> recordMesg.speed > 0 }.toMutableList()
         val streamMoving = Moving(
             data = dataMoving,
@@ -209,6 +217,7 @@ internal class FitService {
             resolution = "high",
             seriesType = "distance"
         )
+         */
         // altitude
         val dataAltitude = recordMesgs.map { recordMesg -> recordMesg.altitude.toDouble() }.toMutableList()
         val streamAltitude = Altitude(
@@ -218,9 +227,8 @@ internal class FitService {
             seriesType = "distance"
         )
         // latitude/longitude
-
-        val dataLatitude = recordMesgs.map { recordMesg -> recordMesg.positionLat }
-        val dataLongitude = recordMesgs.map { recordMesg -> recordMesg.positionLong }
+        val dataLatitude = recordMesgs.mapNotNull { recordMesg -> recordMesg.positionLat }
+        val dataLongitude = recordMesgs.mapNotNull { recordMesg -> recordMesg.positionLong }
         val dataLatitudeLongitude = dataLatitude.zip(dataLongitude) { lat, long -> extractLatLng(lat, long) }
         val streamLatitudeLongitude = LatitudeLongitude(
             data = dataLatitudeLongitude,
@@ -229,7 +237,7 @@ internal class FitService {
             seriesType = "distance"
         )
 
-        return Stream(streamDistance, streamTime, streamMoving, streamAltitude, streamLatitudeLongitude)
+        return Stream(streamDistance, streamTime, null, streamAltitude, streamLatitudeLongitude)
     }
 
     private fun extractLatLng(startPositionLat: Int, startPositionLong: Int): List<Double> {

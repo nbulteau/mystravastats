@@ -10,7 +10,12 @@ data class DistanceBadge(
 
     override fun check(activities: List<Activity>): Pair<Activity?, Boolean> {
         val maxDistanceStatistic = MaxDistanceStatistic(activities)
-        return Pair(null, maxDistanceStatistic.activity?.distance!! >= distance)
+        val isChecked = if (maxDistanceStatistic.activity?.distance != null) {
+            maxDistanceStatistic.activity?.distance!! >= distance
+        } else {
+            false
+        }
+        return Pair(null, isChecked)
     }
 
     override fun toString() = label
