@@ -10,6 +10,9 @@ build
 # Ignore strava dowload directory
 strava-*/
 
+# Ignore fit dowload directory
+fit-*/
+
 # Ignore Strava json files
 activities-*.json
 stream-*.json

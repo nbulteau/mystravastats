@@ -10,7 +10,7 @@ import tornadofx.View
 import tornadofx.label
 import tornadofx.progressbar
 
-internal class  SplashScreenView(clientId: String, clientSecret: String?) : View("MyStravaStatistics") {
+internal class SplashScreenView(clientId: String, clientSecret: String?) : View("MyStravaStatistics") {
 
     companion object {
         const val SPLASH_WIDTH = 1024.0
@@ -22,7 +22,14 @@ internal class  SplashScreenView(clientId: String, clientSecret: String?) : View
     override val root = VBox()
 
     init {
-        val loadActivitiesTask = LoadActivitiesTask(clientId, clientSecret)
+        val loadActivitiesTask = if (clientSecret != null) {
+            StravaLoadActivitiesTask(clientId, clientSecret)
+        } else if (clientId == "xxxxx") { // TODO : something better
+            FitLoadActivitiesTask()
+        } else {
+            CacheLoadActivitiesTask(clientId)
+        }
+
 
         val initCompletionHandler = object : LoadActivitiesTaskCompletionHandler {
             override fun complete() {

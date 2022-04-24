@@ -78,7 +78,7 @@ data class Activity(
     @JsonProperty("manual")
     val manual: Boolean,
     @JsonProperty("map")
-    val map: Map<Any?, Any?>,
+    val map: Map?,
     @JsonProperty("max_speed")
     val maxSpeed: Double,
     @JsonProperty("moving_time")
@@ -90,7 +90,7 @@ data class Activity(
     @JsonProperty("pr_count")
     val prCount: Int,
     @JsonProperty("private")
-    val `private`: Boolean,
+    val private: Boolean,
     @JsonProperty("resource_state")
     val resourceState: Int,
     @JsonProperty("start_date")

@@ -33,13 +33,13 @@ dependencies {
     // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.21")
 
-    implementation("org.danilopianini:khttp:1.2.0")
+    implementation("org.danilopianini:khttp:1.2.1")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.2")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.2")
 
     implementation("io.javalin:javalin:4.4.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
     implementation("org.slf4j:slf4j-nop:1.7.36")
 
     // Some problem with 0.5.0 version
@@ -48,6 +48,8 @@ dependencies {
     }
 
     implementation("no.tornado:tornadofx:1.7.20")
+
+    implementation(files("libs/fit.jar"))
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 }
