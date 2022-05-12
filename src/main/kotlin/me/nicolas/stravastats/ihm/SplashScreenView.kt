@@ -6,9 +6,7 @@ import javafx.scene.control.Label
 import javafx.scene.control.ProgressBar
 import javafx.scene.effect.DropShadow
 import javafx.scene.layout.VBox
-import tornadofx.View
-import tornadofx.label
-import tornadofx.progressbar
+import tornadofx.*
 
 internal class SplashScreenView(clientId: String, clientSecret: String?) : View("MyStravaStatistics") {
 
@@ -16,20 +14,25 @@ internal class SplashScreenView(clientId: String, clientSecret: String?) : View(
         const val SPLASH_WIDTH = 1024.0
     }
 
+    constructor() : this("xxxxx", null)
+
     private var loadProgress: ProgressBar
     private var progressText: Label
 
     override val root = VBox()
 
     init {
-        val loadActivitiesTask = if (clientSecret != null) {
-            StravaLoadActivitiesTask(clientId, clientSecret)
-        } else if (clientId == "xxxxx") { // TODO : something better
-            FitLoadActivitiesTask()
-        } else {
-            CacheLoadActivitiesTask(clientId)
-        }
+        val feedType: String = this.primaryStage.userData as String
 
+        val loadActivitiesTask = if (feedType == "FIT") {
+            FitFilesLoadActivitiesTask(clientId)
+        } else {
+            if (clientSecret != null) {
+                StravaLoadActivitiesTask(clientId, clientSecret)
+            } else {
+                StravaCacheLoadActivitiesTask(clientId)
+            }
+        }
 
         val initCompletionHandler = object : LoadActivitiesTaskCompletionHandler {
             override fun complete() {

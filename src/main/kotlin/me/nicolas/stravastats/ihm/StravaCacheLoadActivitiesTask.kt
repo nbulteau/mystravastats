@@ -6,11 +6,12 @@ import me.nicolas.stravastats.service.StravaService
 import me.nicolas.stravastats.strava.StravaApi
 import java.time.LocalDate
 
-internal open class CacheLoadActivitiesTask(override val clientId: String) : LoadActivitiesTask(clientId) {
+internal open class StravaCacheLoadActivitiesTask(override val clientId: String) : LoadActivitiesTask(clientId) {
 
-    private val stravaService = StravaService(StravaApi(loadPropertiesFromFile()))
+    private val stravaService = StravaService(StravaApi(this.loadPropertiesFromFile()))
 
     override fun call(): Pair<Athlete?, List<Activity>> {
+        updateMessage("Load Strava activities from local cache ...")
         val athlete = stravaService.getAthleteFromCache(clientId)
 
         val activities = mutableListOf<Activity>()

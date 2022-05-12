@@ -53,14 +53,14 @@ class MainView(
         FX.primaryStage.isResizable = true
 
         with(root) {
-            left {
-                vbox {
+            top {
+                hbox {
                     prefWidth = 180.0
                     style {
                         spacing = 5.px
                         padding = box(5.px)
                     }
-                    textfield("${athlete?.firstname ?: ""} ${athlete?.lastname ?: ""}") {
+                    textfield("${athlete?.firstname ?: ""} ${athlete?.lastname ?: "xxxxx"}") {
                         isEditable = false
                         maxWidth = Double.MAX_VALUE
                     }
@@ -94,13 +94,18 @@ class MainView(
                 }
             }
             center {
-                tabpane {
-                    tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-                    tab("Activities") { activitiesTab = this }
-                    tab("Statistics") { statisticsTab = this }
-                    tab("Charts") { chartsTab = this }
-                    tab("Badges") { badgesTab = this }
-                    tab("Over years") { overYearsTab = this }
+                vbox {
+                    tabpane {
+                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                        tab("Activities") { activitiesTab = this }
+                        tab("Statistics") { statisticsTab = this }
+                        tab("Charts") { chartsTab = this }
+                        tab("Badges") { badgesTab = this }
+                        tab("Over years") { overYearsTab = this }
+                    }
+                    pane {
+
+                    }
                 }
             }
         }

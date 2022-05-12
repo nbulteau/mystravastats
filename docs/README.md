@@ -46,12 +46,17 @@ Login to Strava then click 'Authorize' and tick the required permissions if need
 
 ### Launch MyStavaStats
 
-A jdk >= 14 is needed to run mystavastats.
+A jdk >= 17 is needed to run mystavastats.
 
 ```
 ./gradlew run    
 ```
 Will download activities from 2010 to now from Strava, then display statistics and charts.
+
+```
+./gradlew run --args=FIT  
+```
+Will use activities from FIT files, then display statistics and charts.
 
 
 ### Ride distance by year chart

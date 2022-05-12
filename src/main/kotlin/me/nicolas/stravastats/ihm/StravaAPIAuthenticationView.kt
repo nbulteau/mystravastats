@@ -17,16 +17,15 @@ internal class StravaAPIAuthenticationView : View("Strava API authentication") {
     override val root = BorderPane()
 
     init {
+
         val (clientId, clientSecret) = readStravaAuthentication()
 
         with(root) {
             padding = Insets(10.0, 50.0, 50.0, 50.0)
             top {
-                hbox {
-                    padding = Insets(20.0, 20.0, 20.0, 30.0)
-                    text("Strava API authentication") {
-                        font = Font.font("Verdana", 30.0)
-                    }
+                padding = Insets(20.0, 20.0, 20.0, 30.0)
+                text("Strava API authentication") {
+                    font = Font.font("Verdana", 30.0)
                 }
             }
             center {

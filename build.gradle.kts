@@ -11,7 +11,7 @@ buildscript {
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.6.10"
+    id("org.jetbrains.kotlin.jvm") version "1.6.21"
     id("org.openjfx.javafxplugin") version "0.0.12"
     id("com.github.ben-manes.versions") version "0.42.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
@@ -23,31 +23,29 @@ plugins {
 
 repositories {
     mavenCentral()
-    jcenter()
     maven("https://repo.kotlin.link")
 }
 
 dependencies {
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.21")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
 
-    implementation("org.danilopianini:khttp:1.2.1")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.2")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.2")
-
-    implementation("io.javalin:javalin:4.4.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
     implementation("org.slf4j:slf4j-nop:1.7.36")
+
+    implementation("io.javalin:javalin:4.5.0")
+    implementation("org.danilopianini:khttp:1.2.2")
+    implementation("com.sothawo:mapjfx:3.1.0")
+    implementation("no.tornado:tornadofx:1.7.20")
 
     // Some problem with 0.5.0 version
     implementation("space.kscience:plotlykt-server:0.5.0") {
         exclude("ch.qos.logback", "logback-classic")
     }
-
-    implementation("no.tornado:tornadofx:1.7.20")
 
     implementation(files("libs/fit.jar"))
 

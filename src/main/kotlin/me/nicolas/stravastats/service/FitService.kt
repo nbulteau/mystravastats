@@ -205,7 +205,7 @@ internal class FitService {
         )
          */
         // altitude
-        val dataAltitude = recordMesgs.map { recordMesg -> recordMesg.altitude.toDouble() }.toMutableList()
+        val dataAltitude = recordMesgs.mapNotNull { recordMesg -> recordMesg.altitude?.toDouble() }.toMutableList()
         val streamAltitude = Altitude(
             data = dataAltitude,
             originalSize = dataAltitude.size,
@@ -213,8 +213,8 @@ internal class FitService {
             seriesType = "distance"
         )
         // latitude/longitude
-        val dataLatitude = recordMesgs.mapNotNull { recordMesg -> recordMesg.positionLat }
-        val dataLongitude = recordMesgs.mapNotNull { recordMesg -> recordMesg.positionLong }
+        val dataLatitude = recordMesgs.mapNotNull { recordMesg -> recordMesg?.positionLat }
+        val dataLongitude = recordMesgs.mapNotNull { recordMesg -> recordMesg?.positionLong }
         val dataLatitudeLongitude = dataLatitude.zip(dataLongitude) { lat, long -> extractLatLng(lat, long) }
         val streamLatitudeLongitude = LatitudeLongitude(
             data = dataLatitudeLongitude,
@@ -226,9 +226,13 @@ internal class FitService {
         return Stream(streamDistance, streamTime, null, streamAltitude, streamLatitudeLongitude)
     }
 
-    private fun extractLatLng(startPositionLat: Int, startPositionLong: Int): List<Double> {
-        // 11930465 = (2^32 / 360)
-        return listOf(startPositionLat.toDouble() / 11930465, startPositionLong.toDouble() / 11930465)
+    private fun extractLatLng(startPositionLat: Int?, startPositionLong: Int?): List<Double> {
+        return if(startPositionLat != null && startPositionLong != null) {
+            // 11930465 = (2^32 / 360)
+            listOf(startPositionLat.toDouble() / 11930465, startPositionLong.toDouble() / 11930465)
+        } else {
+            emptyList()
+        }
     }
 
     private fun extractType(sport: Sport): String {

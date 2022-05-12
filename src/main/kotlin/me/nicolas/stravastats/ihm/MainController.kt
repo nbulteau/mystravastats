@@ -251,9 +251,12 @@ class MainController(private val clientId: String, private val activities: Obser
 
             val hyperlink = Hyperlink("", imageView)
                 .apply {
-                    if (triple.second != null) {
-                        onAction = EventHandler {
+                    onAction = if (triple.second != null) {
+                        EventHandler {
                             openBrowser("https://www.strava.com/activities/${activity?.id}")
+                        }
+                    } else {
+                        EventHandler {
                         }
                     }
                 }
@@ -271,8 +274,13 @@ class MainController(private val clientId: String, private val activities: Obser
                 is ActivityStatistic -> {
                     val hyperlink = if (statistic.activity != null) {
                         Hyperlink(statistic.activity.toString()).apply {
-                            onAction = EventHandler {
-                                openBrowser("http://www.strava.com/activities/${statistic.activity?.id}")
+                            onAction = if (statistic.activity?.id != null) {
+                                EventHandler {
+                                    openBrowser("https://www.strava.com/activities/${statistic.activity?.id}")
+                                }
+                            } else {
+                                EventHandler {
+                                }
                             }
                         }
                     } else {
@@ -288,11 +296,18 @@ class MainController(private val clientId: String, private val activities: Obser
     }
 
     private fun buildActivitiesToDisplay(activities: List<Activity>): ObservableList<ActivityDisplay> {
+
         val activitiesToDisplay = activities.map { activity ->
 
             val hyperlink = Hyperlink(activity.name).apply {
-                onAction = EventHandler {
-                    openBrowser("http://www.strava.com/activities/${activity.id}")
+                onAction = if (activity.id != 0L) {
+                    EventHandler {
+                        openBrowser("https://www.strava.com/activities/${activity.id}")
+                    }
+                } else {
+                    EventHandler {
+                        ActivityDetailView(activity).openModal()
+                    }
                 }
             }
 
