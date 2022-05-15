@@ -17,7 +17,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
     private val markersCreatedOnClick = mutableMapOf<String, Marker>()
 
     override val root = borderpane {
-        setPrefSize(800.0, 600.0)
+        setPrefSize(1024.0, 768.0)
     }
 
     private val track: CoordinateLine =
@@ -93,7 +93,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
 
         // set  bounds and fix zoom
         mapView.setExtent(tracksExtent)
-        mapView.zoom = mapView.zoom - 1
+        mapView.zoom -= 1.0
 
         // Set the focus
         mapView.center = tracksExtent.getCenter()
