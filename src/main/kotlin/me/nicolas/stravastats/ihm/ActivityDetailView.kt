@@ -1,9 +1,8 @@
 package me.nicolas.stravastats.ihm
 
 import com.sothawo.mapjfx.*
-import javafx.beans.value.ChangeListener
+import com.sothawo.mapjfx.event.MapViewEvent
 import javafx.beans.value.ObservableValue
-import javafx.geometry.Insets
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
@@ -11,13 +10,11 @@ import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.service.formatSeconds
 import me.nicolas.stravastats.service.formatSpeed
 import tornadofx.*
-import tornadofx.Stylesheet.Companion.fieldset
-import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Paths
 
 
 class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
+
+    private val markersCreatedOnClick = mutableMapOf<String, Marker>()
 
     override val root = borderpane {
         setPrefSize(800.0, 600.0)
@@ -54,20 +51,12 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
         }
 
         // init MapView-Cache
-        val offlineCache = mapView.offlineCache
-        val cacheDir = System.getProperty("java.io.tmpdir") + "/mapjfx-cache"
-        // set the custom css file for the MapView
-        try {
-            Files.createDirectories(Paths.get(cacheDir))
-            offlineCache.setCacheDirectory(cacheDir)
-            // offlineCache.setActive(true)
-        } catch (ioException: IOException) {
-            // Nothing to do
-        }
+        // initOfflineCache()
 
         // set the custom css file for the MapView
         mapView.setCustomMapviewCssURL(javaClass.getResource("/mapview.css"))
-        // finally initialize the map view
+
+        // finally, initialize the map view
         mapView.initialize(
             Configuration.builder()
                 .showZoomControls(false)
@@ -82,10 +71,10 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
     }
 
     override fun onDock() {
-        currentWindow?.setOnCloseRequest {
-            it.consume()
+        currentWindow?.setOnCloseRequest { windowEvent ->
+            windowEvent.consume()
             mapView.close()
-            close()
+            super.close()
         }
     }
 
@@ -98,64 +87,56 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
 
         // get the extent for track
         val tracksExtent = Extent.forCoordinates(track.coordinateStream.toList())
-        val trackVisibleListener =
-            ChangeListener { _: ObservableValue<out Boolean>, _: Boolean?, _: Boolean? ->
-                mapView.setExtent(
-                    tracksExtent
-                )
-            }
-        track.visibleProperty().addListener(trackVisibleListener)
 
         // add start & end makers
         addMarkers()
 
-        // Set the focus
-        mapView.center = this.getTrackBounds().getCenter()
+        // set  bounds and fix zoom
+        mapView.setExtent(tracksExtent)
+        mapView.zoom = mapView.zoom - 1
 
+        // Set the focus
+        mapView.center = tracksExtent.getCenter()
     }
 
     private fun addMarkers() {
-        val start = activity.stream?.latitudeLongitude?.data?.first()
-        val startMarker = Marker
-            .createProvided(Marker.Provided.GREEN)
-            .setPosition(Coordinate(start?.get(0) ?: 45.0, start?.get(1) ?: 8.0))
-            .setVisible(true)
-        mapView.addMarker(startMarker)
+        mapView.addEventHandler(MapViewEvent.MAP_CLICKED) { event ->
+            event.consume()
+            if (markersCreatedOnClick.isNotEmpty()) {
+                markersCreatedOnClick.values.forEach { marker ->
+                    mapView.removeMarker(marker)
+                }
+                markersCreatedOnClick.clear()
+            } else {
+                val start = activity.stream?.latitudeLongitude?.data?.first()
+                val startMarker = Marker
+                    .createProvided(Marker.Provided.GREEN)
+                    .setPosition(Coordinate(start?.get(0) ?: 45.0, start?.get(1) ?: 8.0))
+                    .setVisible(true)
+                mapView.addMarker(startMarker)
+                markersCreatedOnClick[startMarker.id] = startMarker
 
-        val end = activity.stream?.latitudeLongitude?.data?.last()
-        val endMarker = Marker
-            .createProvided(Marker.Provided.RED)
-            .setPosition(Coordinate(end?.get(0) ?: 45.0, end?.get(1) ?: 8.0))
-            .setVisible(true)
-        mapView.addMarker(endMarker)
-        endMarker.visible = true
+                val end = activity.stream?.latitudeLongitude?.data?.last()
+                val endMarker = Marker
+                    .createProvided(Marker.Provided.RED)
+                    .setPosition(Coordinate(end?.get(0) ?: 45.0, end?.get(1) ?: 8.0))
+                    .setVisible(true)
+                mapView.addMarker(endMarker)
+                markersCreatedOnClick[endMarker.id] = endMarker
+            }
+        }
     }
 
     /**
-     * @return the center of the bounds
+     * @return the center of the Extent
      */
-    private fun Pair<Coordinate, Coordinate>.getCenter(): Coordinate {
-        val nw = this.first
-        val se = this.second
-        val lat: Double = (nw.latitude + se.latitude) * 0.5
-        val lon: Double = (nw.longitude + se.longitude) * 0.5
+    private fun Extent.getCenter(): Coordinate {
+        val northWest = this.min
+        val southEast = this.max
+        val latitude: Double = (northWest.latitude + southEast.latitude) * 0.5
+        val longitude: Double = (northWest.longitude + southEast.longitude) * 0.5
 
-        return Coordinate(lat, lon)
-    }
-
-    /**
-     * Return the bounds of the track as a Pair of two coordinates:
-     * upper left and lower right
-     * @return The bounds
-     */
-    private fun getTrackBounds(): Pair<Coordinate, Coordinate> {
-        val data = activity.stream?.latitudeLongitude?.data
-        val upperBound = data?.maxOf { it[0] }
-        val lowerBound = data?.minOf { it[0] }
-        val leftBound = data?.minOf { it[1] }
-        val rightBound = data?.maxOf { it[1] }
-
-        return Pair(Coordinate(upperBound, leftBound), Coordinate(lowerBound, rightBound))
+        return Coordinate(latitude, longitude)
     }
 }
 

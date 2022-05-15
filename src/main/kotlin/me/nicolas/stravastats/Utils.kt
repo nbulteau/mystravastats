@@ -33,7 +33,7 @@ fun openBrowser(url: String) {
             runtime.exec("rundll32 url.dll,FileProtocolHandler $url")
         }
         OSValidator.IS_MAC -> {
-            val uri = if(url.startsWith("http")) {
+            val uri = if (url.startsWith("http")) {
                 url
             } else {
                 "file://$url"
