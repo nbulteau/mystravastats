@@ -18,10 +18,7 @@ internal class ActivityHelperTest {
 
     @Test
     fun `groupActivitiesByYear 2 test`() {
-        val url = Thread.currentThread().contextClassLoader.getResource("activities.json")
-        val jsonFile = File(url.path)
-
-        val activities = ObjectMapper().readValue(jsonFile, Array<Activity>::class.java).toList()
+        val activities = loadActivities()
         val result = ActivityHelper.groupActivitiesByYear(activities)
         Assertions.assertEquals(2, result.size)
     }
@@ -36,10 +33,7 @@ internal class ActivityHelperTest {
 
     @Test
     fun `groupActivitiesByMonth 2 test`() {
-        val url = Thread.currentThread().contextClassLoader.getResource("activities.json")
-        val jsonFile = File(url.path)
-
-        val activities = ObjectMapper().readValue(jsonFile, Array<Activity>::class.java).toList()
+        val activities = loadActivities()
         val result = ActivityHelper.groupActivitiesByMonth(activities)
         Assertions.assertEquals(12, result.size)
     }
@@ -54,11 +48,14 @@ internal class ActivityHelperTest {
 
     @Test
     fun `groupActivitiesByDay 2 test`() {
-        val url = Thread.currentThread().contextClassLoader.getResource("activities.json")
-        val jsonFile = File(url.path)
-
-        val activities = ObjectMapper().readValue(jsonFile, Array<Activity>::class.java).toList()
+        val activities = loadActivities()
         val result = ActivityHelper.groupActivitiesByDay(activities, 2021)
         Assertions.assertEquals(365, result.size)
+    }
+
+    private fun loadActivities(): List<Activity> {
+        val url = Thread.currentThread().contextClassLoader.getResource("activities.json")
+        val jsonFile = File(url.path)
+        return ObjectMapper().readValue(jsonFile, Array<Activity>::class.java).toList()
     }
 }

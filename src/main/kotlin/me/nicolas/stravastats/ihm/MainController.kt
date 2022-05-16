@@ -11,7 +11,6 @@ import me.nicolas.stravastats.business.badges.Badge
 import me.nicolas.stravastats.business.badges.DistanceBadge
 import me.nicolas.stravastats.business.badges.ElevationBadge
 import me.nicolas.stravastats.business.badges.MovingTimeBadge
-import me.nicolas.stravastats.openBrowser
 import me.nicolas.stravastats.service.*
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
@@ -253,7 +252,9 @@ class MainController(private val clientId: String, private val activities: Obser
                 .apply {
                     onAction = if (triple.second != null) {
                         EventHandler {
-                            openBrowser("https://www.strava.com/activities/${activity?.id}")
+                            if (activity != null) {
+                                ActivityDetailView(activity).openModal()
+                            }
                         }
                     } else {
                         EventHandler {
@@ -274,13 +275,8 @@ class MainController(private val clientId: String, private val activities: Obser
                 is ActivityStatistic -> {
                     val hyperlink = if (statistic.activity != null) {
                         Hyperlink(statistic.activity.toString()).apply {
-                            onAction = if (statistic.activity?.id != null) {
-                                EventHandler {
-                                    openBrowser("https://www.strava.com/activities/${statistic.activity?.id}")
-                                }
-                            } else {
-                                EventHandler {
-                                }
+                            onAction = EventHandler {
+                                ActivityDetailView(statistic.activity!!).openModal()
                             }
                         }
                     } else {
@@ -300,14 +296,8 @@ class MainController(private val clientId: String, private val activities: Obser
         val activitiesToDisplay = activities.map { activity ->
 
             val hyperlink = Hyperlink(activity.name).apply {
-                onAction = if (activity.id != 0L) {
-                    EventHandler {
-                        openBrowser("https://www.strava.com/activities/${activity.id}")
-                    }
-                } else {
-                    EventHandler {
-                        ActivityDetailView(activity).openModal()
-                    }
+                onAction = EventHandler {
+                    ActivityDetailView(activity).openModal()
                 }
             }
 
