@@ -1,4 +1,4 @@
-package me.nicolas.stravastats.ihm
+package me.nicolas.stravastats.ihm.task
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory

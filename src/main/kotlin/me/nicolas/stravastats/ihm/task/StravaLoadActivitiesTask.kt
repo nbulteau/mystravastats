@@ -1,4 +1,4 @@
-package me.nicolas.stravastats.ihm
+package me.nicolas.stravastats.ihm.task
 
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete

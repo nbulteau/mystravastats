@@ -3,6 +3,7 @@ package me.nicolas.stravastats.ihm
 import com.sothawo.mapjfx.*
 import com.sothawo.mapjfx.event.MapViewEvent
 import javafx.beans.value.ObservableValue
+import javafx.geometry.Pos
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
@@ -32,14 +33,14 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
 
         with(root) {
             top {
-                hbox {
+                hbox(alignment = Pos.CENTER) {
                     label("Distance : %.02f km".format(activity.distance / 1000))
                     label("|")
                     label("Total elevation gain : %.0f m".format(activity.totalElevationGain))
                     label("|")
                     label("Moving time : ${activity.elapsedTime.formatSeconds()}")
                     label("|")
-                    label("Average speed : ${activity.averageSpeed.formatSpeed("Ride")}")
+                    label("Average speed : ${activity.averageSpeed.formatSpeed(activity.type)}")
                     children.style {
                         fontWeight = FontWeight.BOLD
                         font = Font.font("Verdana", 10.0)
@@ -48,6 +49,15 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
                 }
             }
             center = mapView
+            bottom {
+                hbox(alignment = Pos.CENTER) {
+                    button("Close") {
+                        action {
+                            closeActivityDetailView()
+                        }
+                    }
+                }
+            }
         }
 
         // init MapView-Cache
@@ -73,9 +83,13 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
     override fun onDock() {
         currentWindow?.setOnCloseRequest { windowEvent ->
             windowEvent.consume()
-            mapView.close()
-            super.close()
+            this.closeActivityDetailView()
         }
+    }
+
+    fun closeActivityDetailView() {
+        mapView.close()
+        super.close()
     }
 
     /**

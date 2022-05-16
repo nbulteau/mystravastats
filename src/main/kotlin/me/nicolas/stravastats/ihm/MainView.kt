@@ -18,6 +18,8 @@ import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.business.Ride
 import me.nicolas.stravastats.business.badges.FamousClimbBadge
+import me.nicolas.stravastats.ihm.chart.MultipleLineChart
+import me.nicolas.stravastats.ihm.chart.eddingtonNumberChart
 import me.nicolas.stravastats.service.ActivityHelper
 import me.nicolas.stravastats.service.formatSeconds
 import me.nicolas.stravastats.service.formatSpeed

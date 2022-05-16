@@ -6,6 +6,10 @@ import javafx.scene.control.Label
 import javafx.scene.control.ProgressBar
 import javafx.scene.effect.DropShadow
 import javafx.scene.layout.VBox
+import me.nicolas.stravastats.ihm.task.FitFilesLoadActivitiesTask
+import me.nicolas.stravastats.ihm.task.LoadActivitiesTaskCompletionHandler
+import me.nicolas.stravastats.ihm.task.StravaCacheLoadActivitiesTask
+import me.nicolas.stravastats.ihm.task.StravaLoadActivitiesTask
 import tornadofx.*
 
 internal class SplashScreenView(clientId: String, clientSecret: String?) : View("MyStravaStatistics") {

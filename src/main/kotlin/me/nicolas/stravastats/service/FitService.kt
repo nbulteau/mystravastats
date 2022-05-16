@@ -213,8 +213,8 @@ internal class FitService {
             seriesType = "distance"
         )
         // latitude/longitude
-        val dataLatitude = recordMesgs.mapNotNull { recordMesg -> recordMesg?.positionLat }
-        val dataLongitude = recordMesgs.mapNotNull { recordMesg -> recordMesg?.positionLong }
+        val dataLatitude = recordMesgs.mapNotNull { recordMesg -> recordMesg.positionLat }
+        val dataLongitude = recordMesgs.mapNotNull { recordMesg -> recordMesg.positionLong }
         val dataLatitudeLongitude = dataLatitude.zip(dataLongitude) { lat, long -> extractLatLng(lat, long) }
         val streamLatitudeLongitude = LatitudeLongitude(
             data = dataLatitudeLongitude,
