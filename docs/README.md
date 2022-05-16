@@ -53,13 +53,9 @@ A jdk >= 17 is needed to run mystavastats.
 ```
 Will download activities from 2010 to now from Strava, then display statistics and charts.
 
-### FIT files
+#### FIT files
 
-```
-./gradlew run --args=FIT  
-```
-Will use activities from FIT files, then display statistics and charts.
-Put FIT files in a directory structure :
+Put FIT files in a directory structure 'fit-xxxxx':
 ```
 fit-xxxxx
  |- 2022
@@ -68,6 +64,12 @@ fit-xxxxx
  |- 2021
     |¬ XCVF236.FIT
 ```
+
+```
+./gradlew run --args=FIT  
+```
+Will use activities from FIT files in the directory, then display statistics and charts.
+
 
 
 ### Ride distance by year chart
