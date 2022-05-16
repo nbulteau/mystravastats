@@ -1,7 +1,6 @@
 package me.nicolas.stravastats.business
 
 
-import me.nicolas.stravastats.business.badges.FamousClimbBadge
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 

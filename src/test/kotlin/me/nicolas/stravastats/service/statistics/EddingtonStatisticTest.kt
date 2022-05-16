@@ -83,7 +83,7 @@ internal class EddingtonStatisticTest {
         name = "",
         photoCount = 0,
         prCount = 0,
-        `private` = false,
+        private = false,
         resourceState = 0,
         startDate = "",
         startDateLocal = startDateLocal,

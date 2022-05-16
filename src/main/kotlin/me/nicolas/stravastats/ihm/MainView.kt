@@ -18,10 +18,11 @@ import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.business.Ride
 import me.nicolas.stravastats.business.badges.FamousClimbBadge
+import me.nicolas.stravastats.ihm.chart.MultipleLineChart
+import me.nicolas.stravastats.ihm.chart.eddingtonNumberChart
 import me.nicolas.stravastats.service.ActivityHelper
 import me.nicolas.stravastats.service.formatSeconds
 import me.nicolas.stravastats.service.formatSpeed
-import me.nicolas.stravastats.service.statistics.BestElevationDistanceStatistic
 import tornadofx.*
 import java.time.LocalDate
 
@@ -54,14 +55,14 @@ class MainView(
         FX.primaryStage.isResizable = true
 
         with(root) {
-            left {
-                vbox {
+            top {
+                hbox {
                     prefWidth = 180.0
                     style {
                         spacing = 5.px
                         padding = box(5.px)
                     }
-                    textfield("${athlete?.firstname ?: ""} ${athlete?.lastname ?: ""}") {
+                    textfield("${athlete?.firstname ?: ""} ${athlete?.lastname ?: "xxxxx"}") {
                         isEditable = false
                         maxWidth = Double.MAX_VALUE
                     }
@@ -73,7 +74,7 @@ class MainView(
                     }
                     combobox(
                         property = selectedActivity,
-                        values = listOf("Ride", "Commute", "Run", "InlineSkate", "Hike")
+                        values = listOf("Ride", "Commute", "Run", "InlineSkate", "Hike", "AlpineSki")
                     ) {
                         selectionModel.selectedItemProperty().onChange {
                             updateTabs()
@@ -95,13 +96,18 @@ class MainView(
                 }
             }
             center {
-                tabpane {
-                    tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-                    tab("Activities") { activitiesTab = this }
-                    tab("Statistics") { statisticsTab = this }
-                    tab("Charts") { chartsTab = this }
-                    tab("Badges") { badgesTab = this }
-                    tab("Over years") { overYearsTab = this }
+                vbox {
+                    tabpane {
+                        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                        tab("Activities") { activitiesTab = this }
+                        tab("Statistics") { statisticsTab = this }
+                        tab("Charts") { chartsTab = this }
+                        tab("Badges") { badgesTab = this }
+                        tab("Over years") { overYearsTab = this }
+                    }
+                    pane {
+
+                    }
                 }
             }
         }
@@ -127,9 +133,12 @@ class MainView(
             readonlyColumn("Distance", ActivityDisplay::distance).cellFactory = formatDistance()
             readonlyColumn("Elapsed time", ActivityDisplay::elapsedTime).cellFactory = formatSeconds()
             readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory = formatElevation()
-            readonlyColumn("Average speed", ActivityDisplay::averageSpeed).cellFactory = formatSpeed(selectedActivity.value)
+            readonlyColumn("Average speed", ActivityDisplay::averageSpeed).cellFactory =
+                formatSpeed(selectedActivity.value)
             readonlyColumn("Best speed for 1000 m", ActivityDisplay::bestTimeForDistanceFor1000m)
-            readonlyColumn("Max slope for 250 m", ActivityDisplay::BestElevationForDistanceFor250m)
+            if (selectedActivity.value != "AlpineSki") {
+                readonlyColumn("Max slope for 250 m", ActivityDisplay::BestElevationForDistanceFor250m)
+            }
             readonlyColumn("Date", ActivityDisplay::date)
 
             resizeColumnsToFitContent()

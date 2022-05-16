@@ -83,6 +83,31 @@ internal class StatisticsService {
         return statistics
     }
 
+    fun computeAlpineSkiStatistics(filteredActivities: List<Activity>): List<Statistic> {
+        val statistics = computeCommonStats(filteredActivities).toMutableList()
+        statistics.addAll(
+            listOf(
+                MaxSpeedStatistic(filteredActivities),
+                MaxMovingTimeStatistic(filteredActivities),
+                BestEffortDistanceStatistic("Best 250 m", filteredActivities, 250.0),
+                BestEffortDistanceStatistic("Best 500 m", filteredActivities, 500.0),
+                BestEffortDistanceStatistic("Best 1000 m", filteredActivities, 1000.0),
+                BestEffortDistanceStatistic("Best 5 km", filteredActivities, 5000.0),
+                BestEffortDistanceStatistic("Best 10 km", filteredActivities, 10000.0),
+                BestEffortDistanceStatistic("Best 20 km", filteredActivities, 20000.0),
+                BestEffortDistanceStatistic("Best 50 km", filteredActivities, 50000.0),
+                BestEffortDistanceStatistic("Best 100 km", filteredActivities, 100000.0),
+                BestEffortTimeStatistic("Best 30 min", filteredActivities, 30 * 60),
+                BestEffortTimeStatistic("Best 1 h", filteredActivities, 60 * 60),
+                BestEffortTimeStatistic("Best 2 h", filteredActivities, 2 * 60 * 60),
+                BestEffortTimeStatistic("Best 3 h", filteredActivities, 3 * 60 * 60),
+                BestEffortTimeStatistic("Best 4 h", filteredActivities, 4 * 60 * 60),
+                BestEffortTimeStatistic("Best 5 h", filteredActivities, 5 * 60 * 60),
+            )
+        )
+        return statistics
+    }
+
     fun computeCommuteStatistics(commuteActivities: List<Activity>): List<Statistic> {
 
         val statistics = computeCommonStats(commuteActivities).toMutableList()

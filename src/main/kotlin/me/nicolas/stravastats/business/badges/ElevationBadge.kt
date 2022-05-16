@@ -10,8 +10,12 @@ data class ElevationBadge(
 
     override fun check(activities: List<Activity>): Pair<Activity?, Boolean> {
         val maxElevationStatistic = MaxElevationStatistic(activities)
-
-        return Pair(null, maxElevationStatistic.activity?.totalElevationGain!! >= totalElevationGain)
+        val isChecked = if (maxElevationStatistic.activity?.totalElevationGain != null) {
+            maxElevationStatistic.activity?.totalElevationGain!! >= totalElevationGain
+        } else {
+            false
+        }
+        return Pair(null, isChecked)
     }
 
     override fun toString() = "${super.toString()}\n$totalElevationGain m"

@@ -11,13 +11,12 @@ import me.nicolas.stravastats.business.badges.Badge
 import me.nicolas.stravastats.business.badges.DistanceBadge
 import me.nicolas.stravastats.business.badges.ElevationBadge
 import me.nicolas.stravastats.business.badges.MovingTimeBadge
-import me.nicolas.stravastats.openBrowser
 import me.nicolas.stravastats.service.*
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
 import me.nicolas.stravastats.service.statistics.calculateBestElevationForDistance
 import me.nicolas.stravastats.service.statistics.calculateBestTimeForDistance
-import tornadofx.*
+import tornadofx.Controller
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -85,6 +84,8 @@ class MainController(private val clientId: String, private val activities: Obser
             Run -> statsService.computeRunStatistics(filteredActivities)
             InlineSkate -> statsService.computeInlineSkateStatistics(filteredActivities)
             Hike -> statsService.computeHikeStatistics(filteredActivities)
+            AlpineSki -> statsService.computeAlpineSkiStatistics(filteredActivities)
+
             else -> emptyList()
         }
 
@@ -249,9 +250,14 @@ class MainController(private val clientId: String, private val activities: Obser
 
             val hyperlink = Hyperlink("", imageView)
                 .apply {
-                    if (triple.second != null) {
-                        onAction = EventHandler {
-                            openBrowser("https://www.strava.com/activities/${activity?.id}")
+                    onAction = if (triple.second != null) {
+                        EventHandler {
+                            if (activity != null) {
+                                ActivityDetailView(activity).openModal()
+                            }
+                        }
+                    } else {
+                        EventHandler {
                         }
                     }
                 }
@@ -270,7 +276,7 @@ class MainController(private val clientId: String, private val activities: Obser
                     val hyperlink = if (statistic.activity != null) {
                         Hyperlink(statistic.activity.toString()).apply {
                             onAction = EventHandler {
-                                openBrowser("http://www.strava.com/activities/${statistic.activity?.id}")
+                                ActivityDetailView(statistic.activity!!).openModal()
                             }
                         }
                     } else {
@@ -286,11 +292,12 @@ class MainController(private val clientId: String, private val activities: Obser
     }
 
     private fun buildActivitiesToDisplay(activities: List<Activity>): ObservableList<ActivityDisplay> {
+
         val activitiesToDisplay = activities.map { activity ->
 
             val hyperlink = Hyperlink(activity.name).apply {
                 onAction = EventHandler {
-                    openBrowser("http://www.strava.com/activities/${activity.id}")
+                    ActivityDetailView(activity).openModal()
                 }
             }
 

@@ -47,7 +47,11 @@ fun Activity.calculateBestElevationForDistance(distance: Double): ActivityEffort
 
     do {
         val totalDistance = distances[idxEnd] - distances[idxStart]
-        val totalAltitude = altitudes[idxEnd] - altitudes[idxStart]
+        val totalAltitude = if (altitudes.isNotEmpty()) {
+            altitudes[idxEnd] - altitudes[idxStart]
+        } else {
+            0.0
+        }
         val totalTime = times[idxEnd] - times[idxStart]
 
         if (totalDistance < distance - 0.5) { // 999.6 m will count towards 1 km

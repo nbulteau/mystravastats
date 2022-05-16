@@ -62,7 +62,11 @@ fun Activity.calculateBestDistanceForTime(seconds: Int): ActivityEffort? {
 
     do {
         val totalDistance = distances[idxEnd] - distances[idxStart]
-        val totalAltitude = altitudes[idxEnd] - altitudes[idxStart]
+        val totalAltitude = if (altitudes.isNotEmpty()) {
+            altitudes[idxEnd] - altitudes[idxStart]
+        } else {
+            0.0
+        }
         val totalTime = times[idxEnd] - times[idxStart]
 
         if (totalTime < seconds) {

@@ -1,4 +1,4 @@
-package me.nicolas.stravastats.ihm
+package me.nicolas.stravastats.ihm.chart
 
 import javafx.application.Platform
 import javafx.collections.FXCollections

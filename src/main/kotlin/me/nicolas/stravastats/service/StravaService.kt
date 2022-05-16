@@ -10,10 +10,8 @@ import kotlinx.coroutines.runBlocking
 import me.nicolas.stravastats.business.*
 import me.nicolas.stravastats.openBrowser
 import me.nicolas.stravastats.strava.StravaApi
-import java.awt.Desktop
 import java.io.File
 import java.net.ConnectException
-import java.net.URI
 import java.time.LocalDateTime
 
 
@@ -35,24 +33,20 @@ internal class StravaService(private val stravaApi: StravaApi) {
         this.accessToken = accessToken
     }
 
-    fun getLoggedInAthlete(clientId: String, clientSecret: String?): Athlete? {
+    fun getLoggedInAthlete(clientId: String, clientSecret: String): Athlete {
         // get accessToken using client secret
-        if (clientSecret != null && this.accessToken == null) {
+        if (this.accessToken == null) {
             setAccessToken(clientId, clientSecret)
         }
 
-        return if (this.accessToken == null) {
-            getLoggedInAthleteFromCache(clientId)
-        } else {
-            try {
-                getLoggedInAthleteFromStrava(clientId)
-            } catch (connectException: ConnectException) {
-                throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
-            }
+        try {
+            return getLoggedInAthleteFromStrava(clientId)
+        } catch (connectException: ConnectException) {
+            throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
         }
     }
 
-    private fun getLoggedInAthleteFromCache(clientId: String): Athlete? {
+    fun getAthleteFromCache(clientId: String): Athlete? {
         var athlete: Athlete? = null
         val activitiesDirectoryName = getActivitiesDirectoryName(clientId)
         val athleteJsonFileName = getAthleteJsonFileName(clientId)
@@ -85,20 +79,16 @@ internal class StravaService(private val stravaApi: StravaApi) {
         return athlete
     }
 
-    fun loadActivities(clientId: String, clientSecret: String?, year: Int): List<Activity> {
+    fun loadActivitiesFromStrava(clientId: String, clientSecret: String, year: Int): List<Activity> {
         // get accessToken using client secret
-        if (clientSecret != null && this.accessToken == null) {
+        if (this.accessToken == null) {
             setAccessToken(clientId, clientSecret)
         }
 
-        return if (this.accessToken == null) {
-            getActivitiesFromCache(clientId, year)
-        } else {
-            try {
-                getActivitiesFromStrava(clientId, year)
-            } catch (connectException: ConnectException) {
-                throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
-            }
+        try {
+            return getActivitiesFromStrava(clientId, year)
+        } catch (connectException: ConnectException) {
+            throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
         }
     }
 
@@ -151,7 +141,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
         return activities
     }
 
-    private fun getActivitiesFromCache(clientId: String, year: Int): List<Activity> {
+    fun loadActivitiesFromCache(clientId: String, year: Int): List<Activity> {
 
         val activitiesDirectoryName = getActivitiesDirectoryName(clientId)
         val yearActivitiesDirectoryName = getYearActivitiesDirectoryName(clientId, year)
@@ -251,7 +241,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
     }
 
     private fun List<Activity>.filterActivities() = this.filter { activity ->
-        activity.type == Ride || activity.type == Run || activity.type == Hike || activity.type == InlineSkate
+        activity.type == Ride || activity.type == Run || activity.type == Hike || activity.type == InlineSkate || activity.type == AlpineSki
     }
 
     private fun displayProgressBar(progressPercentage: Double) {
