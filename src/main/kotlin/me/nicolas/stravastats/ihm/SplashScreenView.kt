@@ -43,12 +43,16 @@ internal class SplashScreenView : View("MyStravaStatistics") {
 
         val initCompletionHandler = object : LoadActivitiesTaskCompletionHandler {
             override fun complete() {
-                val (athlete, activities) = loadActivitiesTask.valueProperty().get()
-                this@SplashScreenView.replaceWith(
-                    replacement = MainView(clientId, athlete, FXCollections.observableArrayList(activities)),
-                    sizeToScene = true,
-                    centerOnScreen = true
-                )
+                try {
+                    val (athlete, activities) = loadActivitiesTask.valueProperty().get()
+                    this@SplashScreenView.replaceWith(
+                        replacement = MainView(clientId, athlete, FXCollections.observableArrayList(activities)),
+                        sizeToScene = true,
+                        centerOnScreen = true
+                    )
+                } catch (exception: Exception) {
+                    println(exception.message)
+                }
             }
         }
 

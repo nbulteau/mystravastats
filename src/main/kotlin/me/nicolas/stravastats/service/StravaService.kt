@@ -137,7 +137,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
         val yearActivitiesDirectory = getYearActivitiesDirectory(clientId, year)
 
         val activities = loadActivitiesAndSaveIntoCache(clientId, year, this.accessToken!!, yearActivitiesDirectory)
-        loadActivitiesStreamsAndSaveIntoCache(activities, yearActivitiesDirectory, this.accessToken!!)
+        loadActivitiesStreams(activities, yearActivitiesDirectory, this.accessToken!!)
         return activities
     }
 
@@ -160,7 +160,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
             println("done")
 
             // Load activities streams
-            loadActivitiesStreamsAndSaveIntoCache(activities, yearActivitiesDirectory)
+            loadActivitiesStreams(activities, yearActivitiesDirectory)
         }
 
         return activities
@@ -198,7 +198,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
         return yearActivitiesDirectory
     }
 
-    private fun loadActivitiesStreamsAndSaveIntoCache(
+    private fun loadActivitiesStreams(
         activities: List<Activity>,
         activitiesDirectory: File,
         accessToken: String
@@ -218,6 +218,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
                 stream = objectMapper.readValue(streamFile, Stream::class.java)
             } else {
                 stream = stravaApi.getActivityStream(accessToken, activity)
+                // save it to cache
                 if (stream != null) {
                     writer.writeValue(streamFile, stream)
                 }
@@ -227,7 +228,7 @@ internal class StravaService(private val stravaApi: StravaApi) {
         println()
     }
 
-    private fun loadActivitiesStreamsAndSaveIntoCache(activities: List<Activity>, activitiesDirectory: File) {
+    private fun loadActivitiesStreams(activities: List<Activity>, activitiesDirectory: File) {
         var index = 0.0
         activities.forEach { activity ->
             displayProgressBar(++index / activities.size)
