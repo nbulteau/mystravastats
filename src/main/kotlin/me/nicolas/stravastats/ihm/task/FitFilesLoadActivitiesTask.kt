@@ -1,5 +1,6 @@
 package me.nicolas.stravastats.ihm.task
 
+import javafx.concurrent.Task
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.service.FitCache
@@ -7,9 +8,8 @@ import java.nio.file.Path
 import java.time.LocalDate
 
 internal class FitFilesLoadActivitiesTask(
-    override val clientId: String,
     private val cachePath: Path
-) : LoadActivitiesTask(clientId) {
+) : Task<Pair<Athlete?, List<Activity>>>() {
 
     private val fitCache = FitCache(cachePath)
 

@@ -1,6 +1,6 @@
 package me.nicolas.stravastats.service
 
-import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
@@ -10,6 +10,10 @@ import java.util.*
 
 class ActivityHelper {
     companion object {
+
+        fun List<Activity>.filterActivities() = this.filter { activity ->
+            activity.type == Ride || activity.type == Run || activity.type == Hike || activity.type == InlineSkate || activity.type == AlpineSki
+        }
 
         fun groupActivitiesByYear(activities: List<Activity>): Map<String, List<Activity>> {
             val activitiesByYear = activities

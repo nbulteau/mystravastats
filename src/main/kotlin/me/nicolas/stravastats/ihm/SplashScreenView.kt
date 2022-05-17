@@ -7,12 +7,14 @@ import javafx.scene.control.ProgressBar
 import javafx.scene.effect.DropShadow
 import javafx.scene.layout.VBox
 import me.nicolas.stravastats.ihm.task.FitFilesLoadActivitiesTask
-import me.nicolas.stravastats.ihm.task.LoadActivitiesTaskCompletionHandler
 import me.nicolas.stravastats.ihm.task.StravaCacheLoadActivitiesTask
 import me.nicolas.stravastats.ihm.task.StravaLoadActivitiesTask
 import tornadofx.*
 import java.nio.file.Path
 
+internal interface LoadActivitiesTaskCompletionHandler {
+    fun complete()
+}
 internal class SplashScreenView : View("MyStravaStatistics") {
 
     companion object {
@@ -31,7 +33,7 @@ internal class SplashScreenView : View("MyStravaStatistics") {
 
         val loadActivitiesTask = if (feedType == "FIT") {
             val cachePath = userData["path"] as Path
-            FitFilesLoadActivitiesTask(clientId, cachePath)
+            FitFilesLoadActivitiesTask(cachePath)
         } else {
             val clientSecret: String? = userData["clientSecret"] as String?
             if (clientSecret != null) {

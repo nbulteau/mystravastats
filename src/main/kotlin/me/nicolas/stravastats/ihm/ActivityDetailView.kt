@@ -87,7 +87,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
         }
     }
 
-    fun closeActivityDetailView() {
+    private fun closeActivityDetailView() {
         mapView.close()
         super.close()
     }

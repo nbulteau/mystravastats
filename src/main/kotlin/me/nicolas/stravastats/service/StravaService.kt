@@ -3,206 +3,58 @@ package me.nicolas.stravastats.service
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectWriter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.javalin.Javalin
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import me.nicolas.stravastats.business.*
-import me.nicolas.stravastats.openBrowser
+import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.Athlete
+import me.nicolas.stravastats.business.Stream
+import me.nicolas.stravastats.ihm.task.ProgressBarHelper.Companion.displayProgressBar
+import me.nicolas.stravastats.service.ActivityHelper.Companion.filterActivities
 import me.nicolas.stravastats.strava.StravaApi
 import java.io.File
-import java.net.ConnectException
-import java.time.LocalDateTime
 
 
-internal class StravaService(private val stravaApi: StravaApi) {
+internal class StravaService(private val clientId: String, clientSecret: String) {
 
     private val objectMapper = jacksonObjectMapper()
 
-    private fun getActivitiesDirectoryName(clientId: String) = "strava-$clientId"
+    private val stravaApi: StravaApi = StravaApi(clientId, clientSecret)
 
-    private fun getYearActivitiesDirectoryName(clientId: String, year: Int) = "strava-$clientId-$year"
-
-    private fun getYearActivitiesJsonFileName(clientId: String, year: Int) = "activities-$clientId-$year.json"
-
-    private fun getAthleteJsonFileName(clientId: String) = "athlete-$clientId.json"
-
-    private var accessToken: String? = null
-
-    private fun setAccessToken(accessToken: String) {
-        this.accessToken = accessToken
-    }
-
-    fun getLoggedInAthlete(clientId: String, clientSecret: String): Athlete {
-        // get accessToken using client secret
-        if (this.accessToken == null) {
-            setAccessToken(clientId, clientSecret)
-        }
-
-        try {
-            return getLoggedInAthleteFromStrava(clientId)
-        } catch (connectException: ConnectException) {
-            throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
-        }
-    }
-
-    fun getAthleteFromCache(clientId: String): Athlete? {
-        var athlete: Athlete? = null
-        val activitiesDirectoryName = getActivitiesDirectoryName(clientId)
-        val athleteJsonFileName = getAthleteJsonFileName(clientId)
-
-        val activitiesDirectory = File(activitiesDirectoryName)
-        val athleteJsonFile = File(activitiesDirectory, athleteJsonFileName)
-
-        if (athleteJsonFile.exists()) {
-            athlete = objectMapper.readValue(athleteJsonFile, Athlete::class.java)
-        }
-
-        return athlete
-    }
-
-    private fun getLoggedInAthleteFromStrava(clientId: String): Athlete {
-        val activitiesDirectoryName = getActivitiesDirectoryName(clientId)
-        val activitiesDirectory = File(activitiesDirectoryName)
-        activitiesDirectory.mkdirs()
+    fun getLoggedInAthlete(): Athlete {
 
         print("\nLoad athlete description of clientId=$clientId... ")
-        val athlete = stravaApi.getLoggedInAthlete(this.accessToken!!)
+        val athlete = stravaApi.getLoggedInAthlete()
         println("done")
 
+        // Save into cache
+        val activitiesDirectory = File("strava-$clientId")
+        activitiesDirectory.mkdirs()
         val prettyWriter: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
-        prettyWriter.writeValue(
-            File(activitiesDirectoryName, getAthleteJsonFileName(activitiesDirectoryName)),
-            athlete
-        )
+        prettyWriter.writeValue(File(activitiesDirectory, "athlete-$clientId.json"), athlete)
 
         return athlete
     }
 
-    fun loadActivitiesFromStrava(clientId: String, clientSecret: String, year: Int): List<Activity> {
-        // get accessToken using client secret
-        if (this.accessToken == null) {
-            setAccessToken(clientId, clientSecret)
-        }
+    fun getActivities(year: Int): List<Activity> {
 
-        try {
-            return getActivitiesFromStrava(clientId, year)
-        } catch (connectException: ConnectException) {
-            throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
-        }
-    }
-
-    private fun setAccessToken(clientId: String, clientSecret: String) {
-        println()
-        println("To grant MyStravaStats to read your Strava activities data: copy paste this URL in a browser")
-        val url =
-            "http://www.strava.com/api/v3/oauth/authorize" +
-                    "?client_id=${clientId}" +
-                    "&response_type=code" +
-                    "&redirect_uri=http://localhost:8080/exchange_token" +
-                    "&approval_prompt=auto" +
-                    "&scope=read_all,activity:read_all,profile:read_all"
-        println(url)
-        openBrowser(url)
-        println()
-
-        runBlocking {
-            val channel = Channel<String>()
-
-            // Start a web server
-            val app = Javalin.create().start(8080)
-            // GET /exchange_token to get code
-            app.get("/exchange_token") { ctx ->
-                val authorizationCode = ctx.req.getParameter("code")
-                ctx.result("Access granted to read activities of clientId: $clientId.")
-
-                launch {
-                    // Get authorisation token with the code
-                    val token = stravaApi.getToken(clientId, clientSecret, authorizationCode)
-                    channel.send(token.accessToken)
-                    // stop de web server
-                    app.stop()
-                }
-            }
-
-            print("Waiting for your agreement to allow MyStravaStats to access to your Strava data ...")
-            val accessTokenFromToken = channel.receive()
-            println(" access granted.")
-            setAccessToken(accessTokenFromToken)
-        }
-    }
-
-    private fun getActivitiesFromStrava(clientId: String, year: Int): List<Activity> {
-
-        val yearActivitiesDirectory = getYearActivitiesDirectory(clientId, year)
-
-        val activities = loadActivitiesAndSaveIntoCache(clientId, year, this.accessToken!!, yearActivitiesDirectory)
-        loadActivitiesStreams(activities, yearActivitiesDirectory, this.accessToken!!)
-        return activities
-    }
-
-    fun loadActivitiesFromCache(clientId: String, year: Int): List<Activity> {
-
-        val activitiesDirectoryName = getActivitiesDirectoryName(clientId)
-        val yearActivitiesDirectoryName = getYearActivitiesDirectoryName(clientId, year)
-        val yearActivitiesJsonFileName = getYearActivitiesJsonFileName(clientId, year)
-
-        val yearActivitiesDirectory = File(activitiesDirectoryName, yearActivitiesDirectoryName)
-        val yearActivitiesJsonFile = File(yearActivitiesDirectory, yearActivitiesJsonFileName)
-
-        var activities = emptyList<Activity>()
-
-        if (yearActivitiesJsonFile.exists()) {
-            print("\nLoad activities of clientId=$clientId for year $year ... ")
-            activities = objectMapper.readValue(yearActivitiesJsonFile, Array<Activity>::class.java)
-                .toList()
-                .filterActivities()
-            println("done")
-
-            // Load activities streams
-            loadActivitiesStreams(activities, yearActivitiesDirectory)
-        }
-
-        return activities
-    }
-
-    private fun loadActivitiesAndSaveIntoCache(
-        clientId: String,
-        year: Int,
-        accessToken: String,
-        yearActivitiesDirectory: File
-    ): List<Activity> {
-        // only get activities of type (Run, Bike and Hike)
         print("Load activities of clientId=$clientId for year $year ... ")
-        val activities = stravaApi.getActivities(
-            accessToken = accessToken,
-            before = LocalDateTime.of(year, 12, 31, 23, 59),
-            after = LocalDateTime.of(year, 1, 1, 0, 0)
-        ).filterActivities()
+        val activities = stravaApi.getActivities(year).filterActivities()
         println("done")
 
+        // Save into cache
+        val yearActivitiesDirectory = File("strava-$clientId", "strava-$clientId-$year")
+        yearActivitiesDirectory.mkdirs()
         val prettyWriter: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
         prettyWriter.writeValue(
-            File(yearActivitiesDirectory, getYearActivitiesJsonFileName(clientId, year)),
+            File(yearActivitiesDirectory, "activities-$clientId-$year.json"),
             activities
         )
+
+        this.getActivitiesStreams(activities, yearActivitiesDirectory)
+
         return activities
     }
 
-    private fun getYearActivitiesDirectory(clientId: String, year: Int): File {
-        val activitiesDirectoryName = getActivitiesDirectoryName(clientId)
-        val yearActivitiesDirectoryName = getYearActivitiesDirectoryName(clientId, year)
+    private fun getActivitiesStreams(activities: List<Activity>, activitiesDirectory: File) {
 
-        val yearActivitiesDirectory = File(activitiesDirectoryName, yearActivitiesDirectoryName)
-        yearActivitiesDirectory.mkdirs()
-        return yearActivitiesDirectory
-    }
-
-    private fun loadActivitiesStreams(
-        activities: List<Activity>,
-        activitiesDirectory: File,
-        accessToken: String
-    ) {
         println("Load ${activities.size} activities streams ... ")
 
         var index = 0.0
@@ -217,8 +69,8 @@ internal class StravaService(private val stravaApi: StravaApi) {
             if (streamFile.exists()) {
                 stream = objectMapper.readValue(streamFile, Stream::class.java)
             } else {
-                stream = stravaApi.getActivityStream(accessToken, activity)
-                // save it to cache
+                stream = stravaApi.getActivityStream(activity)
+                // save into cache
                 if (stream != null) {
                     writer.writeValue(streamFile, stream)
                 }
@@ -226,37 +78,5 @@ internal class StravaService(private val stravaApi: StravaApi) {
             activity.stream = stream
         }
         println()
-    }
-
-    private fun loadActivitiesStreams(activities: List<Activity>, activitiesDirectory: File) {
-        var index = 0.0
-        activities.forEach { activity ->
-            displayProgressBar(++index / activities.size)
-
-            val streamFile = File(activitiesDirectory, "stream-${activity.id}")
-            if (streamFile.exists()) {
-                activity.stream = objectMapper.readValue(streamFile, Stream::class.java)
-            }
-        }
-        println()
-    }
-
-    private fun List<Activity>.filterActivities() = this.filter { activity ->
-        activity.type == Ride || activity.type == Run || activity.type == Hike || activity.type == InlineSkate || activity.type == AlpineSki
-    }
-
-    private fun displayProgressBar(progressPercentage: Double) {
-        val width = 100 // progress bar width in chars
-        print("\r[")
-        var i = 0
-        while (i <= (progressPercentage * width).toInt()) {
-            print(".")
-            i++
-        }
-        while (i < width) {
-            print(" ")
-            i++
-        }
-        print("]")
     }
 }
