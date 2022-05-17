@@ -61,9 +61,12 @@ internal class StravaAPIAuthenticationView : View("Strava API authentication") {
 
                                 if (clientIdStr.isNotEmpty()) {
                                     storeStravaAuthentication(clientIdStr, clientSecretStr)
+                                    val userData = (this@StravaAPIAuthenticationView.primaryStage.userData as MutableMap<*, *>).toMutableMap()
+                                    userData["clientId"] = clientIdStr
+                                    this@StravaAPIAuthenticationView.primaryStage.userData = userData
 
                                     this@StravaAPIAuthenticationView.replaceWith(
-                                        replacement = SplashScreenView(clientIdStr, null),
+                                        replacement = SplashScreenView(),
                                         sizeToScene = true,
                                         centerOnScreen = true
                                     )
@@ -83,9 +86,13 @@ internal class StravaAPIAuthenticationView : View("Strava API authentication") {
 
                                 if (clientIdStr.isNotEmpty() && clientSecretStr.isNotEmpty()) {
                                     storeStravaAuthentication(clientIdStr, clientSecretStr)
+                                    val userData = (this@StravaAPIAuthenticationView.primaryStage.userData as MutableMap<*, *>).toMutableMap()
+                                    userData["clientId"] = clientIdStr
+                                    userData["clientSecret"] = clientSecretStr
+                                    this@StravaAPIAuthenticationView.primaryStage.userData = userData
 
                                     this@StravaAPIAuthenticationView.replaceWith(
-                                        replacement = SplashScreenView(clientIdStr, clientSecretStr),
+                                        replacement = SplashScreenView(),
                                         sizeToScene = true,
                                         centerOnScreen = true
                                     )

@@ -9,6 +9,8 @@ import tornadofx.UIComponent
 import tornadofx.launch
 import java.awt.Taskbar
 import javax.swing.ImageIcon
+import kotlin.io.path.Path
+import kotlin.io.path.exists
 import kotlin.reflect.KClass
 
 
@@ -22,12 +24,24 @@ internal class MyStravaStatsApp : App() {
         setIcons(stage)
 
         // Add feed mode to userdata (FIT files or STRAVA)
-        stage.userData = if (parameters.raw.isNotEmpty() && parameters.raw[0] == "FIT") {
+        if (parameters.raw.isNotEmpty() && parameters.raw[0] == "FIT") {
+            val pathStr = parameters.raw.getOrElse(1) { "" }
+            val cachePath = Path(pathStr)
+            if (!cachePath.exists()) {
+                println("$cachePath does not exist")
+                throw RuntimeException("$cachePath does not exist")
+            }
+            val clientId = if (pathStr.isNotEmpty()) {
+                pathStr.substringAfterLast("fit-")
+            } else {
+                "xxxxx"
+            }
+
             primaryView = SplashScreenView::class
-            "FIT"
+            stage.userData = mapOf("type" to "FIT", "path" to cachePath, "clientId" to clientId)
         } else {
             primaryView = StravaAPIAuthenticationView::class
-            "STRAVA"
+            stage.userData = mapOf("type" to "STRAVA")
         }
 
         super.start(stage)

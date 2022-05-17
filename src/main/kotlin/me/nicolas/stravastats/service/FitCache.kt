@@ -7,23 +7,20 @@ import com.garmin.fit.SessionMesg
 import com.garmin.fit.Sport
 import me.nicolas.stravastats.business.*
 import java.io.File
+import java.nio.file.Path
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.*
 
-internal class FitService {
+internal class FitCache(private val cachePath: Path) {
 
     private val fitDecoder = FitDecoder()
 
-    fun loadActivitiesFromCache(clientId: String, year: Int): Collection<Activity> {
-        val activitiesDirectoryName = "fit-$clientId"
-        val yearActivitiesDirectory = File(activitiesDirectoryName, "$year")
-
+    fun loadActivitiesFromCache(year: Int): Collection<Activity> {
+        val yearActivitiesDirectory = File(cachePath.toFile(), "$year")
         val fitFiles = yearActivitiesDirectory.listFiles { file -> file.extension.lowercase(Locale.getDefault()) == "fit" }
-
         val activities = fitFiles?.map { file ->
-            println(file)
             this.convertToActivity(file)
         }?.toList() ?: emptyList()
 

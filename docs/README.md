@@ -57,7 +57,7 @@ Will download activities from 2010 to now from Strava, then display statistics a
 
 Put FIT files in a directory structure 'fit-xxxxx':
 ```
-fit-xxxxx
+fit-nicolas
  |- 2022
     |¬ XCVF234.FIT
     |¬ XCVF235.FIT
@@ -66,7 +66,7 @@ fit-xxxxx
 ```
 
 ```
-./gradlew run --args=FIT  
+./gradlew run --args="FIT /Users/nicolas/workspace/mystravastats/fit-nicolas"
 ```
 Will use activities from FIT files in the directory, then display statistics and charts.
 

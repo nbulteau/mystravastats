@@ -11,14 +11,13 @@ import me.nicolas.stravastats.ihm.task.LoadActivitiesTaskCompletionHandler
 import me.nicolas.stravastats.ihm.task.StravaCacheLoadActivitiesTask
 import me.nicolas.stravastats.ihm.task.StravaLoadActivitiesTask
 import tornadofx.*
+import java.nio.file.Path
 
-internal class SplashScreenView(clientId: String, clientSecret: String?) : View("MyStravaStatistics") {
+internal class SplashScreenView : View("MyStravaStatistics") {
 
     companion object {
         const val SPLASH_WIDTH = 1024.0
     }
-
-    constructor() : this("xxxxx", null)
 
     private var loadProgress: ProgressBar
     private var progressText: Label
@@ -26,11 +25,15 @@ internal class SplashScreenView(clientId: String, clientSecret: String?) : View(
     override val root = VBox()
 
     init {
-        val feedType: String = this.primaryStage.userData as String
+        val userData = this.primaryStage.userData as Map<*, *>
+        val feedType: String = userData["type"] as String
+        val clientId: String = userData["clientId"] as String
 
         val loadActivitiesTask = if (feedType == "FIT") {
-            FitFilesLoadActivitiesTask(clientId)
+            val cachePath = userData["path"] as Path
+            FitFilesLoadActivitiesTask(clientId, cachePath)
         } else {
+            val clientSecret: String? = userData["clientSecret"] as String?
             if (clientSecret != null) {
                 StravaLoadActivitiesTask(clientId, clientSecret)
             } else {
