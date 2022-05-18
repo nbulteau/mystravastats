@@ -11,6 +11,7 @@ import me.nicolas.stravastats.ihm.task.StravaCacheLoadActivitiesTask
 import me.nicolas.stravastats.ihm.task.StravaLoadActivitiesTask
 import tornadofx.*
 import java.nio.file.Path
+import kotlin.system.exitProcess
 
 internal interface LoadActivitiesTaskCompletionHandler {
     fun complete()
@@ -53,7 +54,9 @@ internal class SplashScreenView : View("MyStravaStatistics") {
                         centerOnScreen = true
                     )
                 } catch (exception: Exception) {
-                    println(exception.message)
+                    println("** Error ***")
+                    exception.printStackTrace()
+                    exitProcess(-1)
                 }
             }
         }

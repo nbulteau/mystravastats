@@ -62,7 +62,7 @@ class MainView(
                         spacing = 5.px
                         padding = box(5.px)
                     }
-                    textfield("${athlete?.firstname ?: ""} ${athlete?.lastname ?: "xxxxx"}") {
+                    textfield("${athlete?.firstname ?: ""} ${athlete?.lastname ?: clientId}") {
                         isEditable = false
                         maxWidth = Double.MAX_VALUE
                     }
