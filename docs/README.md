@@ -76,8 +76,11 @@ Will use activities from FIT files in the directory, then display statistics and
 ```
 docker build -t mystravastats .
 ```
-#### run with display
+#### run with display on linux
+
 ```
+export DISPLAY=:0.0
+xhost +local:docker
 docker run -it --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -t mystravastats
 ```
 
