@@ -70,7 +70,16 @@ fit-nicolas
 ```
 Will use activities from FIT files in the directory, then display statistics and charts.
 
+### Launch MyStavaStats using docker
 
+#### build
+```
+docker build -t mystravastats .
+```
+#### run with display
+```
+docker run -it --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -t mystravastats
+```
 
 ### Ride distance by year chart
 ![Charts](https://github.com/nbulteau/mystravastats/blob/main/docs/ride_distance_by_years_chart.png?raw=true)
