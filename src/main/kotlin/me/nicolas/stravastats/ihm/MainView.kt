@@ -17,6 +17,7 @@ import javafx.util.Callback
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.business.Ride
+import me.nicolas.stravastats.business.Run
 import me.nicolas.stravastats.business.badges.FamousClimbBadge
 import me.nicolas.stravastats.ihm.chart.MultipleLineChart
 import me.nicolas.stravastats.ihm.chart.eddingtonNumberChart
@@ -40,13 +41,17 @@ class MainView(
     private val mainController: MainController = MainController(clientId, activities)
 
     private var selectedYear = SimpleIntegerProperty(LocalDate.now().year)
-    private var selectedActivity = SimpleStringProperty("Ride")
+    private var selectedActivity = selectFirstDisplayActivity(activities)
 
     private var statisticsTab: Tab by singleAssign()
     private var activitiesTab: Tab by singleAssign()
     private var chartsTab: Tab by singleAssign()
     private var badgesTab: Tab by singleAssign()
     private var overYearsTab: Tab by singleAssign()
+
+    private var rideButton: Button by singleAssign()
+    private var runButton: Button by singleAssign()
+
 
     private val detailsWindow: AnchorPane
     private val detailsPopup: DetailsPopup
@@ -56,42 +61,103 @@ class MainView(
 
         with(root) {
             top {
-                hbox {
-                    prefWidth = 180.0
-                    style {
-                        spacing = 5.px
-                        padding = box(5.px)
-                    }
-                    textfield("${athlete?.firstname ?: ""} ${athlete?.lastname ?: clientId}") {
-                        isEditable = false
-                        maxWidth = Double.MAX_VALUE
-                    }
-                    combobox(property = selectedYear, values = (LocalDate.now().year downTo 2010).toList()) {
-                        selectionModel.selectedItemProperty().onChange {
-                            updateTabs()
+                borderpane {
+                    left {
+                        hbox {
+                            style {
+                                spacing = 5.px
+                                padding = box(5.px)
+
+                            }
+                            alignment = Pos.CENTER_LEFT
+
+                            textfield("${athlete?.firstname ?: ""} ${athlete?.lastname ?: clientId}") {
+                                isEditable = false
+                                prefWidth = 150.0
+                            }
+                            combobox(property = selectedYear, values = (LocalDate.now().year downTo 2010).toList()) {
+                                selectionModel.selectedItemProperty().onChange {
+                                    updateTabs()
+                                }
+                                prefWidth = 80.0
+                            }
                         }
-                        maxWidth = Double.MAX_VALUE
                     }
-                    combobox(
-                        property = selectedActivity,
-                        values = listOf("Ride", "Commute", "Run", "InlineSkate", "Hike", "AlpineSki")
-                    ) {
-                        selectionModel.selectedItemProperty().onChange {
-                            updateTabs()
+                    center {
+                        hbox {
+                            style {
+                                spacing = 5.px
+                                padding = box(5.px)
+
+                            }
+                            alignment = Pos.CENTER_LEFT
+
+                            rideButton = button {
+                                imageview("images/buttons/ride.png")
+                                action {
+                                    selectedActivity = SimpleStringProperty("Ride")
+                                    updateTabs()
+                                }
+                            }
+                            runButton = button {
+                                imageview("images/buttons/commute.png")
+                                action {
+                                    selectedActivity = SimpleStringProperty("Commute")
+                                    updateTabs()
+                                }
+                            }
+                            button {
+                                imageview("images/buttons/run.png")
+                                action {
+                                    selectedActivity = SimpleStringProperty("Run")
+                                    updateTabs()
+                                }
+                            }
+                            button {
+                                imageview("images/buttons/inlineskate.png")
+                                action {
+                                    selectedActivity = SimpleStringProperty("InlineSkate")
+                                    updateTabs()
+                                }
+                            }
+                            button {
+                                imageview("images/buttons/hike.png")
+                                action {
+                                    selectedActivity = SimpleStringProperty("Hike")
+                                    updateTabs()
+                                }
+                            }
+                            button {
+                                imageview("images/buttons/alpineski.png")
+                                action {
+                                    selectedActivity = SimpleStringProperty("AlpineSki")
+                                    updateTabs()
+                                }
+                            }
                         }
-                        maxWidth = Double.MAX_VALUE
                     }
-                    button("Generate CSV") {
-                        action {
-                            mainController.generateCSV(selectedYear.value)
+                    right {
+                        hbox {
+                            style {
+                                spacing = 5.px
+                                padding = box(5.px)
+
+                            }
+                            alignment = Pos.CENTER_RIGHT
+
+                            button {
+                                imageview("images/buttons/csv.png")
+                                action {
+                                    mainController.generateCSV(selectedYear.value)
+                                }
+                            }
+                            button {
+                                imageview("images/buttons/charts.png")
+                                action {
+                                    mainController.generateCharts(selectedYear.value)
+                                }
+                            }
                         }
-                        maxWidth = Double.MAX_VALUE
-                    }
-                    button("Generate Charts") {
-                        action {
-                            mainController.generateCharts(selectedYear.value)
-                        }
-                        maxWidth = Double.MAX_VALUE
                     }
                 }
             }
@@ -121,6 +187,17 @@ class MainView(
         badgesTab.tabPane.getChildList()?.add(detailsWindow)
 
         updateTabs()
+    }
+
+    private fun selectFirstDisplayActivity(activities: ObservableList<Activity>): SimpleStringProperty {
+        val nbRunActivities = activities.count { activity -> activity.type == Run }
+        val nbRideActivities = activities.count { activity -> activity.type == Ride }
+
+        return if (nbRunActivities > nbRideActivities) {
+            SimpleStringProperty(Run)
+        } else {
+            SimpleStringProperty(Ride)
+        }
     }
 
     private fun updateTabs() {
@@ -199,8 +276,27 @@ class MainView(
 
         overYearsTab.content = drawer {
             item("${selectedActivity.value} distance per year cumulative", expanded = true) {
-                val multipleAxesLineChart = cumulativeDistancePerYear(selectedActivity.value)
-                multipleAxesLineChart.attachTo(this)
+                borderpane {
+                    top {
+                        hbox {
+                            style {
+                                spacing = 5.px
+                                padding = box(5.px)
+
+                            }
+                            alignment = Pos.CENTER
+                            for (year in 2010..LocalDate.now().year) {
+                                checkbox("$year") {
+                                    isSelected = true
+                                }
+                            }
+                        }
+                    }
+                    center {
+                        val multipleAxesLineChart = cumulativeDistancePerYear(selectedActivity.value)
+                        multipleAxesLineChart.attachTo(this)
+                    }
+                }
             }
             item("${selectedActivity.value} Eddington number") {
                 eddingtonNumberChart(mainController.getActiveDaysByActivityType(selectedActivity.value))
