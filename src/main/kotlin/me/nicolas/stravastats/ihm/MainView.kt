@@ -11,6 +11,7 @@ import javafx.scene.chart.XYChart
 import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
 import javafx.util.Callback
@@ -49,12 +50,14 @@ class MainView(
     private var badgesTab: Tab by singleAssign()
     private var overYearsTab: Tab by singleAssign()
 
-    private var rideButton: Button by singleAssign()
-    private var runButton: Button by singleAssign()
-
+    // To manage year selection in MultipleLineChart
+    private lateinit var multipleAxesLineChartPane: Pane
+    private lateinit var borderPane: BorderPane
 
     private val detailsWindow: AnchorPane
     private val detailsPopup: DetailsPopup
+
+    private val activeYearsSet = (LocalDate.now().year downTo 2010).map { "$it" }.toMutableSet()
 
     init {
         FX.primaryStage.isResizable = true
@@ -92,14 +95,14 @@ class MainView(
                             }
                             alignment = Pos.CENTER_LEFT
 
-                            rideButton = button {
+                            button {
                                 imageview("images/buttons/ride.png")
                                 action {
                                     selectedActivity = SimpleStringProperty("Ride")
                                     updateTabs()
                                 }
                             }
-                            runButton = button {
+                            button {
                                 imageview("images/buttons/commute.png")
                                 action {
                                     selectedActivity = SimpleStringProperty("Commute")
@@ -107,6 +110,7 @@ class MainView(
                                 }
                             }
                             button {
+                                requestFocus()
                                 imageview("images/buttons/run.png")
                                 action {
                                     selectedActivity = SimpleStringProperty("Run")
@@ -282,19 +286,35 @@ class MainView(
                             style {
                                 spacing = 5.px
                                 padding = box(5.px)
-
                             }
                             alignment = Pos.CENTER
                             for (year in 2010..LocalDate.now().year) {
-                                checkbox("$year") {
-                                    isSelected = true
+                                val activitiesByYear = mainController.getActivitiesByYear(selectedActivity.value)
+                                if (activitiesByYear[year.toString()] != null) {
+                                    // checkboxes to activate/deactivate year series charts
+                                    checkbox("$year") {
+                                        isSelected = true
+                                        action {
+                                            if (isSelected) {
+                                                activeYearsSet.add(this.text)
+                                            } else {
+                                                activeYearsSet.remove(this.text)
+                                            }
+                                            multipleAxesLineChartPane = cumulativeDistancePerYear(selectedActivity.value)
+                                            borderPane.center.replaceChildren(multipleAxesLineChartPane)
+                                        }
+                                    }
+                                } else {
+                                    activeYearsSet.remove(year.toString())
+                                    continue
                                 }
                             }
                         }
                     }
                     center {
-                        val multipleAxesLineChart = cumulativeDistancePerYear(selectedActivity.value)
-                        multipleAxesLineChart.attachTo(this)
+                        borderPane = this
+                        multipleAxesLineChartPane = cumulativeDistancePerYear(selectedActivity.value)
+                        multipleAxesLineChartPane.attachTo(this)
                     }
                 }
             }
@@ -460,22 +480,25 @@ class MainView(
         val activitiesByYear = mainController.getActivitiesByYear(activityType)
         val allSeries = mutableListOf<XYChart.Series<String, Number>>()
         for (year in 2010..LocalDate.now().year) {
-            val activities = if (activitiesByYear[year.toString()] != null) {
+            val activities = if (activitiesByYear[year.toString()] != null && this.activeYearsSet.contains(year.toString())) {
                 activitiesByYear[year.toString()]!!
             } else {
                 continue
             }
+
             val activitiesByDay = ActivityHelper.groupActivitiesByDay(activities, year)
             val cumulativeDistance = ActivityHelper.cumulativeDistance(activitiesByDay)
+
             val data = cumulativeDistance.entries.map { entry ->
                 XYChart.Data<String, Number>(entry.key, entry.value)
             }.toObservable()
+
             allSeries.add(XYChart.Series(year.toString(), data))
         }
         return if (allSeries.isEmpty()) {
             Pane()
         } else {
-            return MultipleLineChart("$activityType distance (km) by years", allSeries)
+            MultipleLineChart("$activityType distance (km) by years", allSeries)
         }
     }
 
