@@ -9,8 +9,6 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.javalin.Javalin
-import khttp.get
-import khttp.post
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -20,8 +18,13 @@ import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.business.Stream
 import me.nicolas.stravastats.business.Token
 import me.nicolas.stravastats.openBrowser
+import okhttp3.Headers
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.eclipse.jetty.http.HttpStatus
-import java.net.ConnectException
+import java.net.*
 import java.time.LocalDateTime
 import java.time.ZoneId
 import kotlin.system.exitProcess
@@ -33,6 +36,8 @@ internal class StravaApi(clientId: String, clientSecret: String) {
 
     private val objectMapper = jacksonObjectMapper()
 
+    private val client: OkHttpClient = OkHttpClient.Builder().proxy(getupProxyFromEnvironment()).build()
+
     private var accessToken: String? = null
     private fun setAccessToken(accessToken: String) {
         this.accessToken = accessToken
@@ -40,6 +45,26 @@ internal class StravaApi(clientId: String, clientSecret: String) {
 
     init {
         setAccessToken(clientId, clientSecret)
+    }
+
+    private fun getupProxyFromEnvironment(): Proxy? {
+        var httpsProxy = System.getenv()["https_proxy"]
+        if (httpsProxy == null) {
+            httpsProxy = System.getenv()["HTTPS_PROXY"]
+        }
+        if (httpsProxy != null) {
+            try {
+                val proxyUrl = URL(httpsProxy)
+                println("Set http proxy : $proxyUrl")
+                return Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyUrl.host, proxyUrl.port))
+            } catch (malformedURLException: MalformedURLException) {
+                println("Error configuring proxy : malformedURLException")
+            }
+        } else {
+            println("No https proxy defined")
+        }
+
+        return null
     }
 
     fun getLoggedInAthlete(): Athlete {
@@ -54,16 +79,21 @@ internal class StravaApi(clientId: String, clientSecret: String) {
 
         val url = "${properties.strava.url}/api/v3/athlete"
 
-        val requestHeaders = buildRequestHeaders()
-        val response = get(url, requestHeaders)
-        if (response.statusCode == 200) {
-            try {
-                return objectMapper.readValue(response.content, Athlete::class.java)
-            } catch (jsonMappingException: JsonMappingException) {
-                throw RuntimeException("Something was wrong with Strava API", jsonMappingException)
+        val request = Request.Builder()
+            .url(url)
+            .headers(buildRequestHeaders())
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (response.isSuccessful) {
+                try {
+                    return objectMapper.readValue(response.body?.string() ?: "", Athlete::class.java)
+                } catch (jsonMappingException: JsonMappingException) {
+                    throw RuntimeException("Something was wrong with Strava API", jsonMappingException)
+                }
+            } else {
+                throw RuntimeException("Something was wrong with Strava API for url $url : ${response.body}")
             }
-        } else {
-            throw RuntimeException("Something was wrong with Strava API for url $url : ${response.text}")
         }
     }
 
@@ -88,14 +118,21 @@ internal class StravaApi(clientId: String, clientSecret: String) {
 
         val requestHeaders = buildRequestHeaders()
         do {
-            val response = get("$url&page=${page++}", requestHeaders)
-            if (response.statusCode == 401) {
-                println("Invalid accessToken : $accessToken")
-                exitProcess(-1)
-            }
-            val result: List<Activity> = objectMapper.readValue(response.content)
+            val request = Request.Builder()
+                .url("$url&page=${page++}")
+                .headers(requestHeaders)
+                .build()
 
-            activities.addAll(result)
+            val result: List<Activity>
+            client.newCall(request).execute().use { response ->
+                if (response.code == 401) {
+                    println("Invalid accessToken : $accessToken")
+                    exitProcess(-1)
+                }
+                result = objectMapper.readValue(response.body?.string() ?: "")
+
+                activities.addAll(result)
+            }
         } while (result.isNotEmpty())
 
         return activities
@@ -118,39 +155,43 @@ internal class StravaApi(clientId: String, clientSecret: String) {
         val url = "${properties.strava.url}/api/v3/activities/${activity.id}/streams" +
                 "?keys=time,distance,latlng,altitude,moving&key_by_type=true"
 
-        val requestHeaders = buildRequestHeaders()
-        val response = get(url, requestHeaders)
+        val request: Request = Request.Builder()
+            .url(url)
+            .headers(buildRequestHeaders())
+            .build()
 
-        return when {
-            response.statusCode >= HttpStatus.BAD_REQUEST_400 -> {
-                println("\nUnable to load streams for activity : $activity")
-                when (response.statusCode) {
-                    HttpStatus.TOO_MANY_REQUESTS_429 -> {
-                        println(
-                            "\nStrava API usage is limited on a per-application basis using both a 15-minute " +
-                                    "and daily request limit." +
-                                    "The default rate limit allows 100 requests every 15 minutes, " +
-                                    "with up to 1,000 requests per day."
-                        )
-                        throw RuntimeException("Something was wrong with Strava API : 429 Too Many Requests")
+        client.newCall(request).execute().use { response ->
+            return when {
+                response.code >= HttpStatus.BAD_REQUEST_400 -> {
+                    println("\nUnable to load streams for activity : $activity")
+                    when (response.code) {
+                        HttpStatus.TOO_MANY_REQUESTS_429 -> {
+                            println(
+                                "\nStrava API usage is limited on a per-application basis using both a 15-minute " +
+                                        "and daily request limit." +
+                                        "The default rate limit allows 100 requests every 15 minutes, " +
+                                        "with up to 1,000 requests per day."
+                            )
+                            throw RuntimeException("Something was wrong with Strava API : 429 Too Many Requests")
+                        }
+                        else -> {
+                            println("Something was wrong with Strava API for url $url : ${response.code} - ${response.body}")
+                            null
+                        }
                     }
-                    else -> {
-                        println("Something was wrong with Strava API for url $url : ${response.statusCode} - ${response.text}")
+                }
+                response.code == HttpStatus.OK_200 -> {
+                    return try {
+                        response.body?.let { objectMapper.readValue<Stream>(it.string()) }
+                    } catch (jsonProcessingException: JsonProcessingException) {
+                        println("\nUnable to load streams for activity : $activity")
                         null
                     }
                 }
-            }
-            response.statusCode == HttpStatus.OK_200 -> {
-                return try {
-                    objectMapper.readValue<Stream>(response.content)
-                } catch (jsonProcessingException: JsonProcessingException) {
+                else -> {
                     println("\nUnable to load streams for activity : $activity")
-                    null
+                    throw RuntimeException("Something was wrong with Strava API for url $url : ${response.code} - ${response.code}")
                 }
-            }
-            else -> {
-                println("\nUnable to load streams for activity : $activity")
-                throw RuntimeException("Something was wrong with Strava API for url $url : ${response.statusCode} - ${response.text}")
             }
         }
     }
@@ -205,23 +246,30 @@ internal class StravaApi(clientId: String, clientSecret: String) {
             "code" to authorizationCode,
             "grant_type" to "authorization_code"
         )
-        try {
-            val response = post(url, data = payload)
-            if (response.statusCode == 200) {
-                return objectMapper.readValue(response.content, Token::class.java)
-            } else {
-                throw RuntimeException("Something was wrong with Strava API for url $url : ${response.text}")
+        val body = objectMapper.writeValueAsString(payload).toRequestBody("application/json".toMediaType())
+        val request: Request = Request.Builder()
+            .url(url)
+            .post(body)
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            try {
+                if (response.code == 200) {
+                    return objectMapper.readValue(response.body?.string() ?: "", Token::class.java)
+                } else {
+                    throw RuntimeException("Something was wrong with Strava API for url $url : ${response.body}")
+                }
+            } catch (ex: Exception) {
+                throw RuntimeException("Something was wrong with Strava API for url $url", ex)
             }
-        } catch (ex: Exception) {
-            throw RuntimeException("Something was wrong with Strava API for url $url", ex)
         }
     }
 
-    private fun buildRequestHeaders() = mapOf(
-        "Accept" to "application/json",
-        "ContentType" to "application/json",
-        "Authorization" to "Bearer $accessToken"
-    )
+    private fun buildRequestHeaders() = Headers.Builder()
+        .set("Accept", "application/json")
+        .set("ContentType", "application/json")
+        .set("Authorization", "Bearer $accessToken")
+        .build()
 
     /**
      * Load properties from application.yml
