@@ -32,13 +32,13 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.21")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.2")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.2")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.3")
     implementation("org.slf4j:slf4j-nop:1.7.36")
 
-    implementation("io.javalin:javalin:4.5.0")
-    implementation("org.danilopianini:khttp:1.2.2")
+    implementation("io.javalin:javalin:4.6.0")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.sothawo:mapjfx:3.1.0")
     implementation("no.tornado:tornadofx:1.7.20")
 
