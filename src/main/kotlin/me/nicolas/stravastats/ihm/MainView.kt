@@ -1,6 +1,5 @@
 package me.nicolas.stravastats.ihm
 
-import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
 import javafx.event.EventHandler
@@ -35,20 +34,25 @@ class MainView(
     activities: ObservableList<Activity>
 ) : View("MyStravaStats") {
 
+    companion object {
+        const val overYears = "Over years"
+    }
+
     override val root = borderpane {
         setPrefSize(1200.0, 800.0)
     }
 
     private val mainController: MainController = MainController(clientId, activities)
 
-    private var selectedYear = SimpleIntegerProperty(LocalDate.now().year)
+    private var selectedYear = SimpleStringProperty("${LocalDate.now().year}")
     private var selectedActivity = selectFirstDisplayActivity(activities)
+
+    private var selectedActivityLabel: Label by singleAssign()
 
     private var statisticsTab: Tab by singleAssign()
     private var activitiesTab: Tab by singleAssign()
     private var chartsTab: Tab by singleAssign()
     private var badgesTab: Tab by singleAssign()
-    private var overYearsTab: Tab by singleAssign()
 
     // To manage year selection in MultipleLineChart
     private lateinit var multipleAxesLineChartPane: Pane
@@ -70,7 +74,6 @@ class MainView(
                             style {
                                 spacing = 5.px
                                 padding = box(5.px)
-
                             }
                             alignment = Pos.CENTER_LEFT
 
@@ -78,7 +81,15 @@ class MainView(
                                 isEditable = false
                                 prefWidth = 150.0
                             }
-                            combobox(property = selectedYear, values = (LocalDate.now().year downTo 2010).toList()) {
+                            selectedActivityLabel = label(selectedActivity.value) {
+                                prefWidth = 100.0
+                                alignment = Pos.CENTER
+                            }
+                            combobox(
+                                property = selectedYear,
+                                values = (LocalDate.now().year downTo 2010).map { "$it" }.toMutableList()
+                                    .apply { this.add(0, overYears) }
+                            ) {
                                 selectionModel.selectedItemProperty().onChange {
                                     updateTabs()
                                 }
@@ -91,7 +102,6 @@ class MainView(
                             style {
                                 spacing = 5.px
                                 padding = box(5.px)
-
                             }
                             alignment = Pos.CENTER_LEFT
 
@@ -145,20 +155,19 @@ class MainView(
                             style {
                                 spacing = 5.px
                                 padding = box(5.px)
-
                             }
                             alignment = Pos.CENTER_RIGHT
 
                             button {
                                 imageview("images/buttons/csv.png")
                                 action {
-                                    mainController.generateCSV(selectedYear.value)
+                                    mainController.generateCSV(getSelectedYear())
                                 }
                             }
                             button {
                                 imageview("images/buttons/charts.png")
                                 action {
-                                    mainController.generateCharts(selectedYear.value)
+                                    mainController.generateCharts(getSelectedYear())
                                 }
                             }
                         }
@@ -173,10 +182,6 @@ class MainView(
                         tab("Statistics") { statisticsTab = this }
                         tab("Charts") { chartsTab = this }
                         tab("Badges") { badgesTab = this }
-                        tab("Over years") { overYearsTab = this }
-                    }
-                    pane {
-
                     }
                 }
             }
@@ -193,6 +198,12 @@ class MainView(
         updateTabs()
     }
 
+    private fun getSelectedYear() = if (selectedYear.value == overYears) {
+        null
+    } else {
+        selectedYear.value.toInt()
+    }
+
     private fun selectFirstDisplayActivity(activities: ObservableList<Activity>): SimpleStringProperty {
         val nbRunActivities = activities.count { activity -> activity.type == Run }
         val nbRideActivities = activities.count { activity -> activity.type == Ride }
@@ -205,10 +216,13 @@ class MainView(
     }
 
     private fun updateTabs() {
+        val statisticsToDisplay = mainController.getStatisticsToDisplay(selectedActivity.value, getSelectedYear())
+        val activitiesToDisplay = mainController.getActivitiesToDisplay(selectedActivity.value, getSelectedYear())
+        val generalBadgesSetToDisplay =
+            mainController.getGeneralBadgesSetToDisplay(selectedActivity.value, getSelectedYear())
+
         activeYearsSet = (LocalDate.now().year downTo 2010).map { "$it" }.toMutableSet()
-        val statisticsToDisplay = mainController.getStatisticsToDisplay(selectedActivity.value, selectedYear.value)
-        val activitiesToDisplay = mainController.getActivitiesToDisplay(selectedActivity.value, selectedYear.value)
-        val generalBadgesSetToDisplay = mainController.getGeneralBadgesSetToDisplay(selectedActivity.value)
+        selectedActivityLabel.text = selectedActivity.value
 
         activitiesTab.content = tableview(activitiesToDisplay) {
             readonlyColumn("Activity", ActivityDisplay::name)
@@ -234,38 +248,96 @@ class MainView(
         }
 
         chartsTab.content = drawer {
-            item("Distance by months", expanded = true) {
-                barchart("Distance by months for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
-                    series(Ride, mainController.buildDistanceByMonthsSeries(selectedActivity.value, selectedYear.value))
-                    verticalGridLinesVisible = false
-                    isLegendVisible = false
+            val selectedYearValue = getSelectedYear()
+            if (selectedYearValue != null) {
+                item("Distance by months", expanded = true) {
+                    barchart("Distance by months for $selectedYearValue (km)", CategoryAxis(), NumberAxis()) {
+                        series(
+                            Ride,
+                            mainController.buildDistanceByMonthsSeries(selectedActivity.value, selectedYearValue)
+                        )
+                        verticalGridLinesVisible = false
+                        isLegendVisible = false
+                    }
                 }
-            }
-            item("Distance by days") {
-                barchart("Distance by days for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
-                    series(Ride, mainController.buildDistanceByDaysSeries(selectedActivity.value, selectedYear.value))
-                    verticalGridLinesVisible = false
-                    isLegendVisible = false
+                item("Distance by days") {
+                    barchart("Distance by days for $selectedYearValue (km)", CategoryAxis(), NumberAxis()) {
+                        series(
+                            Ride,
+                            mainController.buildDistanceByDaysSeries(selectedActivity.value, selectedYearValue)
+                        )
+                        verticalGridLinesVisible = false
+                        isLegendVisible = false
+                    }
                 }
-            }
-            item("Distance by weeks") {
-                barchart("Distance by weeks for ${selectedYear.value} (km)", CategoryAxis(), NumberAxis()) {
-                    series(Ride, mainController.buildDistanceByWeeksSeries(selectedActivity.value, selectedYear.value))
-                    verticalGridLinesVisible = false
-                    isLegendVisible = false
+                item("Distance by weeks") {
+                    barchart("Distance by weeks for $selectedYearValue (km)", CategoryAxis(), NumberAxis()) {
+                        series(
+                            Ride,
+                            mainController.buildDistanceByWeeksSeries(selectedActivity.value, selectedYearValue)
+                        )
+                        verticalGridLinesVisible = false
+                        isLegendVisible = false
+                    }
                 }
-            }
-            item("Eddington number") {
-                eddingtonNumberChart(
-                    mainController.getActiveDaysByActivityTypeByYear(
-                        selectedActivity.value,
-                        selectedYear.value
+                item("Eddington number") {
+                    eddingtonNumberChart(
+                        mainController.getActiveDaysByActivityTypeByYear(
+                            selectedActivity.value,
+                            selectedYearValue
+                        )
                     )
-                )
+                }
+            } else {
+                item("${selectedActivity.value} distance per year cumulative", expanded = true) {
+                    borderpane {
+                        top {
+                            hbox {
+                                style {
+                                    spacing = 5.px
+                                    padding = box(5.px)
+                                }
+                                alignment = Pos.CENTER
+                                for (year in 2010..LocalDate.now().year) {
+                                    val activitiesByYear = mainController.getActivitiesByYear(selectedActivity.value)
+                                    if (activitiesByYear[year.toString()] != null) {
+                                        // checkboxes to activate/deactivate year series charts
+                                        checkbox("$year") {
+                                            isSelected = true
+                                            action {
+                                                if (isSelected) {
+                                                    activeYearsSet.add(this.text)
+                                                } else {
+                                                    activeYearsSet.remove(this.text)
+                                                }
+                                                multipleAxesLineChartPane =
+                                                    cumulativeDistancePerYear(selectedActivity.value)
+                                                borderPane.center.replaceChildren(multipleAxesLineChartPane)
+                                            }
+                                        }
+                                    } else {
+                                        activeYearsSet.remove(year.toString())
+                                        continue
+                                    }
+                                }
+                            }
+                        }
+                        center {
+                            borderPane = this
+                            multipleAxesLineChartPane = cumulativeDistancePerYear(selectedActivity.value)
+                            multipleAxesLineChartPane.attachTo(this)
+                        }
+                    }
+                }
+                item("${selectedActivity.value} Eddington number") {
+                    eddingtonNumberChart(mainController.getActiveDaysByActivityType(selectedActivity.value))
+                }
             }
+
         }
         badgesTab.content = if (selectedActivity.value == "Ride") {
-            val famousClimbBadgesSetToDisplay = mainController.getFamousClimbBadgesSetToDisplay(selectedActivity.value)
+            val famousClimbBadgesSetToDisplay =
+                mainController.getFamousClimbBadgesSetToDisplay(selectedActivity.value, getSelectedYear())
 
             drawer {
                 item("General", expanded = true) {
@@ -277,51 +349,6 @@ class MainView(
             }
         } else {
             buildGeneralBadgesSetScrollpane(generalBadgesSetToDisplay)
-        }
-
-        overYearsTab.content = drawer {
-            item("${selectedActivity.value} distance per year cumulative", expanded = true) {
-                borderpane {
-                    top {
-                        hbox {
-                            style {
-                                spacing = 5.px
-                                padding = box(5.px)
-                            }
-                            alignment = Pos.CENTER
-                            for (year in 2010..LocalDate.now().year) {
-                                val activitiesByYear = mainController.getActivitiesByYear(selectedActivity.value)
-                                if (activitiesByYear[year.toString()] != null) {
-                                    // checkboxes to activate/deactivate year series charts
-                                    checkbox("$year") {
-                                        isSelected = true
-                                        action {
-                                            if (isSelected) {
-                                                activeYearsSet.add(this.text)
-                                            } else {
-                                                activeYearsSet.remove(this.text)
-                                            }
-                                            multipleAxesLineChartPane = cumulativeDistancePerYear(selectedActivity.value)
-                                            borderPane.center.replaceChildren(multipleAxesLineChartPane)
-                                        }
-                                    }
-                                } else {
-                                    activeYearsSet.remove(year.toString())
-                                    continue
-                                }
-                            }
-                        }
-                    }
-                    center {
-                        borderPane = this
-                        multipleAxesLineChartPane = cumulativeDistancePerYear(selectedActivity.value)
-                        multipleAxesLineChartPane.attachTo(this)
-                    }
-                }
-            }
-            item("${selectedActivity.value} Eddington number") {
-                eddingtonNumberChart(mainController.getActiveDaysByActivityType(selectedActivity.value))
-            }
         }
     }
 
@@ -473,7 +500,6 @@ class MainView(
                 }
             }
         }
-
     }
 
     private fun cumulativeDistancePerYear(activityType: String): Pane {
@@ -481,11 +507,12 @@ class MainView(
         val activitiesByYear = mainController.getActivitiesByYear(activityType)
         val allSeries = mutableListOf<XYChart.Series<String, Number>>()
         for (year in 2010..LocalDate.now().year) {
-            val activities = if (activitiesByYear[year.toString()] != null && this.activeYearsSet.contains(year.toString())) {
-                activitiesByYear[year.toString()]!!
-            } else {
-                continue
-            }
+            val activities =
+                if (activitiesByYear[year.toString()] != null && this.activeYearsSet.contains(year.toString())) {
+                    activitiesByYear[year.toString()]!!
+                } else {
+                    continue
+                }
 
             val activitiesByDay = ActivityHelper.groupActivitiesByDay(activities, year)
             val cumulativeDistance = ActivityHelper.cumulativeDistance(activitiesByDay)

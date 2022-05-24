@@ -31,15 +31,19 @@ class MainController(private val clientId: String, private val activities: Obser
 
     private val badgesService = BadgesService()
 
-    fun generateCSV(year: Int) {
-        csvService.exportCSV(clientId, activities, year)
+    fun generateCSV(year: Int?) {
+        if (year != null) {
+            csvService.exportCSV(clientId, activities, year)
+        }
     }
 
-    fun generateCharts(year: Int) {
-        chartsService.buildCharts(activities, year)
+    fun generateCharts(year: Int?) {
+        if (year != null) {
+            chartsService.buildCharts(activities, year)
+        }
     }
 
-    fun getActiveDaysByActivityTypeByYear(activityType: String, year: Int): Map<String, Int> {
+    fun getActiveDaysByActivityTypeByYear(activityType: String, year: Int?): Map<String, Int> {
 
         val filteredActivities = filterActivitiesByType(activityType)
         return filteredActivities
@@ -67,7 +71,7 @@ class MainController(private val clientId: String, private val activities: Obser
         return ActivityHelper.groupActivitiesByYear(filteredActivities)
     }
 
-    fun getActivitiesToDisplay(activityType: String, year: Int): ObservableList<ActivityDisplay> {
+    fun getActivitiesToDisplay(activityType: String, year: Int?): ObservableList<ActivityDisplay> {
 
         val filteredActivities = filterActivitiesByType(activityType)
             .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
@@ -93,9 +97,9 @@ class MainController(private val clientId: String, private val activities: Obser
     }
 
 
-    fun getGeneralBadgesSetToDisplay(activityType: String): List<List<BadgeDisplay>> {
+    fun getGeneralBadgesSetToDisplay(activityType: String, year: Int?): List<List<BadgeDisplay>> {
         val filteredActivities = filterActivitiesByType(activityType)
-
+            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
         val badgesSets = mutableListOf<List<BadgeDisplay>>()
         when (activityType) {
             Ride -> {
@@ -142,8 +146,9 @@ class MainController(private val clientId: String, private val activities: Obser
         return badgesSets
     }
 
-    fun getFamousClimbBadgesSetToDisplay(activityType: String): List<List<BadgeDisplay>> {
+    fun getFamousClimbBadgesSetToDisplay(activityType: String, year: Int?): List<List<BadgeDisplay>> {
         val filteredActivities = filterActivitiesByType(activityType)
+            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
 
         val badgesSets = mutableListOf<List<BadgeDisplay>>()
         when (activityType) {
