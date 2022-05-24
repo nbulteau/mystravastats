@@ -7,7 +7,7 @@ import me.nicolas.stravastats.service.formatSeconds
 import me.nicolas.stravastats.service.statistics.calculateBestDistanceForTime
 import me.nicolas.stravastats.service.statistics.calculateBestTimeForDistance
 
-internal class RunCSVExporter(clientId: String, activities: List<Activity>, year: Int) :
+internal class RunCSVExporter(clientId: String, activities: List<Activity>, year: String) :
     CSVExporter(clientId, activities, year, Run) {
 
     override fun generateActivities() {
