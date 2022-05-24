@@ -32,19 +32,21 @@ internal class MultipleLineChart(
 ) : StackPane() {
 
     companion object {
-        val COLORS = listOf(
-            Color.BLUE,
-            Color.GREEN,
-            Color.CORAL,
-            Color.YELLOW,
-            Color.ORANGE,
-            Color.INDIGO,
-            Color.DEEPPINK,
-            Color.DARKBLUE,
-            Color.TOMATO,
-            Color.SIENNA,
-            Color.CYAN,
-            Color.CRIMSON
+        val COLORS = mapOf<String, Color>(
+            "2010" to Color.BLUE,
+            "2011" to Color.GREEN,
+            "2012" to Color.CORAL,
+            "2013" to Color.YELLOW,
+            "2014" to Color.ORANGE,
+            "2015" to Color.INDIGO,
+            "2016" to Color.DEEPPINK,
+            "2017" to Color.DARKBLUE,
+            "2018" to Color.TOMATO,
+            "2019" to Color.SIENNA,
+            "2020" to Color.CYAN,
+            "2021" to Color.CRIMSON,
+            "2022" to Color.DARKGREEN,
+            "2023" to Color.GREY,
         )
     }
 
@@ -87,7 +89,8 @@ internal class MultipleLineChart(
         val lineChart = LineChart(xAxis, yAxis)
         lineChart.data.add(series)
 
-        val lineColor: Color = COLORS[chartColorMap.size]
+
+        val lineColor: Color = COLORS[series.name.toString()]!!
         chartColorMap[lineChart] = lineColor
 
         styleChartLine(lineChart, lineColor)
@@ -112,7 +115,7 @@ internal class MultipleLineChart(
         }
         lineChart.data.add(series)
 
-        val lineColor: Color = COLORS[chartColorMap.size]
+        val lineColor: Color = COLORS[series.name.toString()]!!
         chartColorMap[lineChart] = lineColor
 
         styleChartLine(lineChart, lineColor)

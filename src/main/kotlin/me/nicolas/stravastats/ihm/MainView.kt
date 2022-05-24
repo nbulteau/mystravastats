@@ -57,7 +57,7 @@ class MainView(
     private val detailsWindow: AnchorPane
     private val detailsPopup: DetailsPopup
 
-    private val activeYearsSet = (LocalDate.now().year downTo 2010).map { "$it" }.toMutableSet()
+    private lateinit var activeYearsSet: MutableSet<String>
 
     init {
         FX.primaryStage.isResizable = true
@@ -205,6 +205,7 @@ class MainView(
     }
 
     private fun updateTabs() {
+        activeYearsSet = (LocalDate.now().year downTo 2010).map { "$it" }.toMutableSet()
         val statisticsToDisplay = mainController.getStatisticsToDisplay(selectedActivity.value, selectedYear.value)
         val activitiesToDisplay = mainController.getActivitiesToDisplay(selectedActivity.value, selectedYear.value)
         val generalBadgesSetToDisplay = mainController.getGeneralBadgesSetToDisplay(selectedActivity.value)
