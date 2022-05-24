@@ -8,7 +8,7 @@ import me.nicolas.stravastats.service.statistics.calculateBestDistanceForTime
 import me.nicolas.stravastats.service.statistics.calculateBestElevationForDistance
 import me.nicolas.stravastats.service.statistics.calculateBestTimeForDistance
 
-internal class RideCSVExporter(clientId: String, activities: List<Activity>, year: Int) :
+internal class RideCSVExporter(clientId: String, activities: List<Activity>, year: String) :
     CSVExporter(clientId, activities, year, Ride) {
 
     override fun generateHeader() {

@@ -82,7 +82,7 @@ class MainView(
                                 prefWidth = 150.0
                             }
                             selectedActivityLabel = label(selectedActivity.value) {
-                                prefWidth = 100.0
+                                prefWidth = 150.0
                                 alignment = Pos.CENTER
                             }
                             combobox(
@@ -91,9 +91,9 @@ class MainView(
                                     .apply { this.add(0, overYears) }
                             ) {
                                 selectionModel.selectedItemProperty().onChange {
-                                    updateTabs()
+                                    updateMainView()
                                 }
-                                prefWidth = 80.0
+                                prefWidth = 150.0
                             }
                         }
                     }
@@ -109,14 +109,14 @@ class MainView(
                                 imageview("images/buttons/ride.png")
                                 action {
                                     selectedActivity = SimpleStringProperty("Ride")
-                                    updateTabs()
+                                    updateMainView()
                                 }
                             }
                             button {
                                 imageview("images/buttons/commute.png")
                                 action {
                                     selectedActivity = SimpleStringProperty("Commute")
-                                    updateTabs()
+                                    updateMainView()
                                 }
                             }
                             button {
@@ -124,28 +124,28 @@ class MainView(
                                 imageview("images/buttons/run.png")
                                 action {
                                     selectedActivity = SimpleStringProperty("Run")
-                                    updateTabs()
+                                    updateMainView()
                                 }
                             }
                             button {
                                 imageview("images/buttons/inlineskate.png")
                                 action {
                                     selectedActivity = SimpleStringProperty("InlineSkate")
-                                    updateTabs()
+                                    updateMainView()
                                 }
                             }
                             button {
                                 imageview("images/buttons/hike.png")
                                 action {
                                     selectedActivity = SimpleStringProperty("Hike")
-                                    updateTabs()
+                                    updateMainView()
                                 }
                             }
                             button {
                                 imageview("images/buttons/alpineski.png")
                                 action {
                                     selectedActivity = SimpleStringProperty("AlpineSki")
-                                    updateTabs()
+                                    updateMainView()
                                 }
                             }
                         }
@@ -195,7 +195,7 @@ class MainView(
         detailsWindow.isMouseTransparent = true
         badgesTab.tabPane.getChildList()?.add(detailsWindow)
 
-        updateTabs()
+        updateMainView()
     }
 
     private fun getSelectedYear() = if (selectedYear.value == overYears) {
@@ -215,12 +215,13 @@ class MainView(
         }
     }
 
-    private fun updateTabs() {
+    private fun updateMainView() {
         val statisticsToDisplay = mainController.getStatisticsToDisplay(selectedActivity.value, getSelectedYear())
         val activitiesToDisplay = mainController.getActivitiesToDisplay(selectedActivity.value, getSelectedYear())
         val generalBadgesSetToDisplay =
             mainController.getGeneralBadgesSetToDisplay(selectedActivity.value, getSelectedYear())
 
+        // update main view
         activeYearsSet = (LocalDate.now().year downTo 2010).map { "$it" }.toMutableSet()
         selectedActivityLabel.text = selectedActivity.value
 

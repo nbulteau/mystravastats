@@ -32,22 +32,27 @@ class MainController(private val clientId: String, private val activities: Obser
     private val badgesService = BadgesService()
 
     fun generateCSV(year: Int?) {
-        if (year != null) {
-            csvService.exportCSV(clientId, activities, year)
+
+        val activitiesForYear: List<Activity> = if(year != null) {
+            activities.groupBy { activity ->
+                    activity.startDateLocal.subSequence(0, 4).toString()
+                }[year.toString()] ?: emptyList()
+        } else {
+            activities
         }
+
+        csvService.exportCSV(clientId, activitiesForYear, (year?.toString() ?: "") )
     }
 
     fun generateCharts(year: Int?) {
-        if (year != null) {
-            chartsService.buildCharts(activities, year)
-        }
+        chartsService.buildCharts(activities, year)
     }
 
     fun getActiveDaysByActivityTypeByYear(activityType: String, year: Int?): Map<String, Int> {
 
         val filteredActivities = filterActivitiesByType(activityType)
+            .filterActivitiesByYear(year)
         return filteredActivities
-            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
             .groupBy { activity -> activity.startDateLocal.substringBefore('T') }
             .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance / 1000 } }
             .mapValues { entry -> entry.value.toInt() }
@@ -74,14 +79,14 @@ class MainController(private val clientId: String, private val activities: Obser
     fun getActivitiesToDisplay(activityType: String, year: Int?): ObservableList<ActivityDisplay> {
 
         val filteredActivities = filterActivitiesByType(activityType)
-            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+            .filterActivitiesByYear(year)
         return buildActivitiesToDisplay(filteredActivities)
     }
 
     fun getStatisticsToDisplay(activityType: String, year: Int?): ObservableList<StatisticDisplay> {
 
         val filteredActivities = filterActivitiesByType(activityType)
-            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+            .filterActivitiesByYear(year)
         val statistics = when (activityType) {
             Ride -> statsService.computeRideStatistics(filteredActivities)
             Commute -> statsService.computeCommuteStatistics(filteredActivities)
@@ -99,7 +104,7 @@ class MainController(private val clientId: String, private val activities: Obser
 
     fun getGeneralBadgesSetToDisplay(activityType: String, year: Int?): List<List<BadgeDisplay>> {
         val filteredActivities = filterActivitiesByType(activityType)
-            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+            .filterActivitiesByYear(year)
         val badgesSets = mutableListOf<List<BadgeDisplay>>()
         when (activityType) {
             Ride -> {
@@ -148,7 +153,7 @@ class MainController(private val clientId: String, private val activities: Obser
 
     fun getFamousClimbBadgesSetToDisplay(activityType: String, year: Int?): List<List<BadgeDisplay>> {
         val filteredActivities = filterActivitiesByType(activityType)
-            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+            .filterActivitiesByYear(year)
 
         val badgesSets = mutableListOf<List<BadgeDisplay>>()
         when (activityType) {
@@ -176,7 +181,7 @@ class MainController(private val clientId: String, private val activities: Obser
     ): ObservableList<XYChart.Data<String, Number>> {
 
         val filteredActivities = filterActivitiesByType(activityType)
-            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+            .filterActivitiesByYear(year)
 
         val activitiesByMonth: Map<String, List<Activity>> = ActivityHelper.groupActivitiesByMonth(filteredActivities)
         val distanceByMonth: Map<String, Double> = activitiesByMonth.mapValues { (_, activities) ->
@@ -194,7 +199,7 @@ class MainController(private val clientId: String, private val activities: Obser
     ): ObservableList<XYChart.Data<String, Number>> {
 
         val filteredActivities = filterActivitiesByType(activityType)
-            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+            .filterActivitiesByYear(year)
 
         val activitiesByWeek: Map<String, List<Activity>> = ActivityHelper.groupActivitiesByWeek(filteredActivities)
         val distanceByWeek: Map<String, Double> = activitiesByWeek.mapValues { (_, activities) ->
@@ -212,7 +217,7 @@ class MainController(private val clientId: String, private val activities: Obser
     ): ObservableList<XYChart.Data<String, Number>>? {
 
         val filteredActivities = filterActivitiesByType(activityType)
-            .filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+            .filterActivitiesByYear(year)
 
         val activitiesByDay: Map<String, List<Activity>> = ActivityHelper.groupActivitiesByDay(filteredActivities, year)
         val distanceByDay: Map<String, Double> = activitiesByDay.mapValues { (_, activities) ->
@@ -224,12 +229,20 @@ class MainController(private val clientId: String, private val activities: Obser
         })
     }
 
-    private fun filterActivitiesByType(activityType: String) = if (activityType == Commute) {
-        activities
-            .filter { activity -> activity.type == Ride && activity.commute }
-    } else {
-        activities
-            .filter { activity -> activity.type == activityType && !activity.commute }
+    private fun filterActivitiesByType(activityType: String): List<Activity> {
+        return if (activityType == Commute) {
+            activities.filter { activity -> activity.type == Ride && activity.commute }
+        } else {
+            activities.filter { activity -> activity.type == activityType && !activity.commute }
+        }
+    }
+
+    private fun List<Activity>.filterActivitiesByYear(year: Int?): List<Activity> {
+        return if (year == null) {
+            this.toList()
+        } else {
+            this.filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
+        }
     }
 
     private fun buildBadgesToDisplay(
