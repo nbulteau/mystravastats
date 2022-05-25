@@ -226,9 +226,12 @@ class MainView(
 
         activitiesTab.content = tableview(activitiesToDisplay) {
             readonlyColumn("Activity", ActivityDisplay::name)
-            readonlyColumn("Distance", ActivityDisplay::distance).cellFactory = formatDistance()
-            readonlyColumn("Elapsed time", ActivityDisplay::elapsedTime).cellFactory = formatSeconds()
-            readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory = formatElevation()
+            readonlyColumn("Distance", ActivityDisplay::distance).cellFactory =
+                formatDistance()
+            readonlyColumn("Elapsed time", ActivityDisplay::elapsedTime).cellFactory =
+                formatSeconds()
+            readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory =
+                formatElevation()
             readonlyColumn("Average speed", ActivityDisplay::averageSpeed).cellFactory =
                 formatSpeed(selectedActivity.value)
             readonlyColumn("Best speed for 1000 m", ActivityDisplay::bestTimeForDistanceFor1000m)
@@ -335,20 +338,41 @@ class MainView(
             }
 
         }
-        badgesTab.content = if (selectedActivity.value == "Ride") {
-            val famousClimbBadgesSetToDisplay =
-                mainController.getFamousClimbBadgesSetToDisplay(selectedActivity.value, getSelectedYear())
-
-            drawer {
-                item("General", expanded = true) {
-                    this.add(buildGeneralBadgesSetScrollpane(generalBadgesSetToDisplay))
-                }
-                item("Famous climb", expanded = false) {
-                    this.add(buildFamousClimbBadgesSetScrollpane(famousClimbBadgesSetToDisplay))
+        badgesTab.content = drawer {
+            item("General", expanded = true) {
+                flowpane {
+                    for (badgeSetToDisplay in generalBadgesSetToDisplay) {
+                        vgap = 15.0
+                        hgap = 15.0
+                        for (badgeToDisplay in badgeSetToDisplay) {
+                            borderpane {
+                                bottom = text {
+                                    text = badgeToDisplay.label
+                                    borderpaneConstraints {
+                                        alignment = Pos.CENTER
+                                    }
+                                }
+                                center = badgeToDisplay.activity
+                            }
+                        }
+                    }
                 }
             }
-        } else {
-            buildGeneralBadgesSetScrollpane(generalBadgesSetToDisplay)
+            if (selectedActivity.value == "Ride") {
+                val famousClimbBadgesSetToDisplay =
+                    mainController.getFamousClimbBadgesSetToDisplay(selectedActivity.value, getSelectedYear())
+                item("Famous climb") {
+                    this.add(buildFamousClimbBadgesSetScrollpane(famousClimbBadgesSetToDisplay))
+                }
+            } else {
+                item("Famous climb") {
+                    scrollpane(fitToWidth = true) {
+                        flowpane {
+                            // Nothing to display
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -472,28 +496,6 @@ class MainView(
                                 detailsPopup.isVisible = true
                             }
 
-                            center = badgeToDisplay.activity
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun buildGeneralBadgesSetScrollpane(generalBadgesSetToDisplay: List<List<BadgeDisplay>>): ScrollPane {
-        return scrollpane(fitToWidth = true) {
-            flowpane {
-                for (badgeSetToDisplay in generalBadgesSetToDisplay) {
-                    vgap = 15.0
-                    hgap = 15.0
-                    for (badgeToDisplay in badgeSetToDisplay) {
-                        borderpane {
-                            bottom = text {
-                                text = badgeToDisplay.label
-                                borderpaneConstraints {
-                                    alignment = Pos.CENTER
-                                }
-                            }
                             center = badgeToDisplay.activity
                         }
                     }

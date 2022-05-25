@@ -4,6 +4,8 @@ import com.sothawo.mapjfx.*
 import com.sothawo.mapjfx.event.MapViewEvent
 import javafx.beans.value.ObservableValue
 import javafx.geometry.Pos
+import javafx.scene.chart.NumberAxis
+import javafx.scene.chart.XYChart
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
@@ -11,6 +13,8 @@ import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.service.formatSeconds
 import me.nicolas.stravastats.service.formatSpeed
 import tornadofx.*
+import kotlin.math.max
+import kotlin.math.round
 
 
 class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
@@ -50,13 +54,42 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
             }
             center = mapView
             bottom {
-                hbox(alignment = Pos.CENTER) {
-                    button("Close") {
-                        action {
-                            closeActivityDetailView()
+                val stream = activity.stream
+                if (stream?.altitude != null) {
+                    val minAltitude = max(round(((stream.altitude.data.minOf { it } - 20) / 10)) * 10, 0.0)
+                    val maxAltitude = round(((stream.altitude.data.maxOf { it } + 10) / 10)) * 10
+                    val maxDistance = stream.distance.data.maxOf { it } / 1000
+
+                    vbox {
+                        val xAxis = NumberAxis(0.0, maxDistance, 1.0)
+                        val yAxis = NumberAxis(minAltitude, maxAltitude, 10.0)
+                        areachart("Altitude", xAxis, yAxis) {
+                            val data =
+                                stream.distance.data //.windowed(1, 10).flatten()
+                                    .zip(stream.altitude.data) { distance, altitude ->
+                                        XYChart.Data<Number, Number>(distance / 1000, altitude)
+                                    }.toObservable()
+
+                            when {
+                                maxDistance > 30.0 -> {
+                                    xAxis.tickUnit = 10.0
+                                }
+                            }
+
+                            this.isLegendVisible = false
+                            this.createSymbols = false
+                            this.data.add(XYChart.Series("", data))
+                        }
+                        hbox(alignment = Pos.CENTER) {
+                            button("Close") {
+                                action {
+                                    closeActivityDetailView()
+                                }
+                            }
                         }
                     }
                 }
+
             }
         }
 
@@ -107,7 +140,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
 
         // set  bounds and fix zoom
         mapView.setExtent(tracksExtent)
-        mapView.zoom -= 1.0
+        //mapView.zoom -= 1.0
 
         // Set the focus
         mapView.center = tracksExtent.getCenter()
