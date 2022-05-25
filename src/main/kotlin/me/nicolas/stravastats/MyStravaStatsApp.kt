@@ -20,7 +20,6 @@ internal class MyStravaStatsApp : App() {
 
     override fun start(stage: Stage) {
         stage.isResizable = false
-        stage.isAlwaysOnTop = true
         setIcons(stage)
 
         // Add feed mode to userdata (FIT files or STRAVA)

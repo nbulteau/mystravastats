@@ -120,7 +120,6 @@ class MainView(
                                 }
                             }
                             button {
-                                requestFocus()
                                 imageview("images/buttons/run.png")
                                 action {
                                     selectedActivity = SimpleStringProperty("Run")

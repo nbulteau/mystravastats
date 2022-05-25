@@ -16,7 +16,7 @@ This tool scans through activities :
 * Calculate the best vVO2max (6 min) : This is the smallest speed that requires VO2 max in an accelerated speed test.
   MyStravaStats look for with a 'sliding window' the best effort for the given time (6 minutes) on running activities.
   https://en.wikipedia.org/wiki/VVO2max
-* ...
+* ANd many others statistics 
 
 ## IHM
 
@@ -40,7 +40,19 @@ The Strava API application settings page provides *mandatory parameters* for My 
 * clientId: your application’s ID.
 * clientSecret: your client secret.
 
-### Get statistics
+### Launch mystravastats
+
+A jdk >= 17 is needed to run mystavastats.
+
+```
+git clone https://github.com/nbulteau/mystravastats.git
+cd mystavastats
+./gradlew run    
+```
+
+Will download activities from 2010 to now from Strava, then display statistics and charts.
+
+### Get activities from Strava
 
 Activities are download in a local directory, in that way only new and missing ones are downloaded from Strava.
 The first time you use My Strava Stats it will attempt to collect activities from 2010 to now.
@@ -60,18 +72,9 @@ http://www.strava.com/api/v3/oauth/authorize?client_id=[YOUR_CLIENT_ID]&response
 
 Login to Strava then click 'Authorize' and tick the required permissions if needed.
 
-### Launch MyStavaStats
-
-A jdk >= 17 is needed to run mystavastats.
-
-```
-./gradlew run    
-```
-
-Will download activities from 2010 to now from Strava, then display statistics and charts.
-
 #### FIT files
 
+mystravastats can work without Strava using the FIT files.
 Put FIT files in a directory structure 'fit-xxxxx':
 
 ```
@@ -83,29 +86,38 @@ fit-nicolas
     |¬ XCVF236.FIT
 ```
 
+Launch mystravastats with providing the FIT repository.
 ```
 ./gradlew run --args="FIT /Users/nicolas/workspace/mystravastats/fit-nicolas"
 ```
 
 Will use activities from FIT files in the directory, then display statistics and charts.
 
-### Launch MyStavaStats using docker
+### Launch mystravastats using docker
 
 #### build
 
+First build the docker image.
+
 ```
+git clone https://github.com/nbulteau/mystravastats.git
+cd mystavastats
 docker build -t mystravastats .
 ```
 
-#### run with display on linux
+#### launch mystravastats using docker with display on linux
 
+(Optional)
 ```
 export DISPLAY=:0.0
+```
+
+```
 xhost +local:docker
 docker run -it --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -t mystravastats
 ```
 
-#### run with display on macos
+#### run using docker with display on macos
 
 Open XQuartz, the X Window Server implementation for Mac. Go to “Preferences” -> Security 
 => Check Allow connections from network clients”. 
@@ -115,6 +127,8 @@ Restart your computer (Strange).
 xhost + 127.0.0.1
 docker run -it --env="DISPLAY=host.docker.internal:0" -v /tmp/.X11-unix:/tmp/.X11-unix:rw mystravastats
 ```
+
+## Provided Charts
 
 ### Ride distance by year chart
 
