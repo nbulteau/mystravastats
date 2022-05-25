@@ -23,6 +23,7 @@ This tool scans through activities :
 ![Screen shoot 1](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shoot-1.png?raw=true)
 ![Screen shoot 2](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shoot-2.png?raw=true)
 ![Screen shoot 3](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shoot-3.png?raw=true)
+![Screen shoot 4](https://github.com/nbulteau/mystravastats/blob/main/docs/screen_shoot-4.png?raw=true)
 
 <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
