@@ -20,6 +20,7 @@ import me.nicolas.stravastats.business.Ride
 import me.nicolas.stravastats.business.Run
 import me.nicolas.stravastats.business.badges.FamousClimbBadge
 import me.nicolas.stravastats.ihm.chart.MultipleLineChart
+import me.nicolas.stravastats.ihm.chart.MultipleLineChart.Companion.COLORS
 import me.nicolas.stravastats.ihm.chart.eddingtonNumberChart
 import me.nicolas.stravastats.service.ActivityHelper
 import me.nicolas.stravastats.service.formatSeconds
@@ -306,6 +307,7 @@ class MainView(
                                     if (activitiesByYear[year.toString()] != null) {
                                         // checkboxes to activate/deactivate year series charts
                                         checkbox("$year") {
+                                            textFill = COLORS["$year"]
                                             isSelected = true
                                             action {
                                                 if (isSelected) {
