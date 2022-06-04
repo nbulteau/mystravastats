@@ -13,7 +13,15 @@ import kotlin.math.floor
  */
 class SRTMService(private val cachePath: Path) {
 
+    /**
+     * SRTM files cache
+     */
     private val srtmTilescache = mutableMapOf<String, SRTMFile>()
+
+    /**
+     * Missing SRTM files to prevent multiple
+     */
+    private val missingSRTMFiles = mutableSetOf<String>()
 
     fun getElevation(latitudeLongitudeList: List<List<Double>>): List<Double> {
 
@@ -30,16 +38,27 @@ class SRTMService(private val cachePath: Path) {
 
         // get SRTM tile
         val srtmFileName = getTileFileName(latitude, longitude)
-        val srtmFile: SRTMFile
+
+        // SRTM file is missing
+        if (missingSRTMFiles.contains(srtmFileName)) {
+            return 0.0
+        }
+
+        var srtmFile: SRTMFile? = null
         if (srtmTilescache.contains(srtmFileName)) {
             srtmFile = srtmTilescache[srtmFileName]!!
         } else {
-            srtmFile = SRTMFile(File(cachePath.toFile(), "$srtmFileName.hgt"))
-            srtmTilescache[srtmFileName] = srtmFile
+            try {
+                srtmFile = SRTMFile(File(cachePath.toFile(), "$srtmFileName.hgt"))
+                srtmTilescache[srtmFileName] = srtmFile
+            } catch (instantiationException: InstantiationException) {
+                println("Download $srtmFileName.hgt from https://dwtkns.com/srtm30m/")
+                missingSRTMFiles.add(srtmFileName)
+            }
         }
 
         val point = Point(latitude, longitude)
-        return if (srtmFile.contains(point)) {
+        return if (srtmFile?.contains(point) == true) {
             srtmFile.getElevation(point).elevation
         } else {
             0.0
