@@ -25,15 +25,20 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
         setPrefSize(1024.0, 768.0)
     }
 
-    private val track: CoordinateLine =
-        CoordinateLine(activity.stream?.latitudeLongitude?.data?.map { Coordinate(it[0], it[1]) })
-            .setColor(Color.MAGENTA)
-            .setVisible(true)
+    private val track: CoordinateLine?
 
     private val mapView = MapView()
 
     init {
         FX.primaryStage.isResizable = true
+
+        track = if (activity.stream?.latitudeLongitude != null) {
+            CoordinateLine(activity.stream?.latitudeLongitude?.data?.map { Coordinate(it[0], it[1]) })
+                .setColor(Color.MAGENTA)
+                .setVisible(true)
+        } else {
+            null
+        }
 
         with(root) {
             top {
@@ -129,21 +134,23 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
      * finishes setup after the mpa is initialized
      */
     private fun afterMapIsInitialized() {
-        // add track
-        mapView.addCoordinateLine(track)
+        if(track != null) {
+            // add track
+            mapView.addCoordinateLine(track)
 
-        // get the extent for track
-        val tracksExtent = Extent.forCoordinates(track.coordinateStream.toList())
+            // get the extent for track
+            val tracksExtent = Extent.forCoordinates(track.coordinateStream.toList())
 
-        // add start & end makers
-        addMarkers()
+            // add start & end makers
+            addMarkers()
 
-        // set  bounds and fix zoom
-        mapView.setExtent(tracksExtent)
-        //mapView.zoom -= 1.0
+            // set  bounds and fix zoom
+            mapView.setExtent(tracksExtent)
+            //mapView.zoom -= 1.0
 
-        // Set the focus
-        mapView.center = tracksExtent.getCenter()
+            // Set the focus
+            mapView.center = tracksExtent.getCenter()
+        }
     }
 
     private fun addMarkers() {
