@@ -3,10 +3,18 @@ package me.nicolas.stravastats.ihm
 import com.sothawo.mapjfx.*
 import com.sothawo.mapjfx.event.MapViewEvent
 import javafx.beans.value.ObservableValue
+import javafx.event.EventHandler
 import javafx.geometry.Pos
+import javafx.scene.Cursor
+import javafx.scene.chart.AreaChart
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
+import javafx.scene.control.Label
+import javafx.scene.input.MouseEvent
+import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
+import javafx.scene.shape.Line
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import me.nicolas.stravastats.business.Activity
@@ -15,6 +23,7 @@ import me.nicolas.stravastats.service.formatSpeed
 import tornadofx.*
 import kotlin.math.max
 import kotlin.math.round
+import kotlin.math.roundToInt
 
 
 class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
@@ -29,6 +38,11 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
 
     private val mapView = MapView()
 
+    private lateinit var areaChart: AreaChart<Number, Number>
+
+    private val detailsWindow: AnchorPane
+
+
     init {
         FX.primaryStage.isResizable = true
 
@@ -39,6 +53,8 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
         } else {
             null
         }
+
+        detailsWindow = AnchorPane()
 
         with(root) {
             top {
@@ -68,7 +84,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
                     vbox {
                         val xAxis = NumberAxis(0.0, maxDistance, 1.0)
                         val yAxis = NumberAxis(minAltitude, maxAltitude, 10.0)
-                        areachart("Altitude", xAxis, yAxis) {
+                        areaChart = areachart("Altitude", xAxis, yAxis) {
                             val data =
                                 stream.distance.data //.windowed(1, 10).flatten()
                                     .zip(stream.altitude.data) { distance, altitude ->
@@ -84,6 +100,9 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
                             this.isLegendVisible = false
                             this.createSymbols = false
                             this.data.add(XYChart.Series("", data))
+
+                            children.add(detailsWindow)
+
                         }
                         hbox(alignment = Pos.CENTER) {
                             button("Close") {
@@ -102,7 +121,6 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
                         }
                     }
                 }
-
             }
         }
 
@@ -124,7 +142,86 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
                 afterMapIsInitialized()
             }
         }
+
+        bindMouseEvents()
     }
+
+
+    private fun bindMouseEvents() {
+
+        val strokeWidth = 1.5
+
+        this.areaChart.add(detailsWindow)
+
+        val detailsPopup = DetailsPopup()
+        detailsWindow.children.add(detailsPopup)
+        detailsWindow.isMouseTransparent = true
+
+        this.areaChart.onMouseMoved = null
+        this.areaChart.isMouseTransparent = false
+
+        val yAxis = this.areaChart.yAxis
+
+        val yLine = Line()
+        yLine.fill = Color.GRAY
+        yLine.strokeWidth = strokeWidth / 2
+        yLine.isVisible = false
+
+        val chartBackground = this.areaChart.lookup(".chart-plot-background")
+        for (node in chartBackground.parent.childrenUnmodifiable) {
+            if (node !== chartBackground && node !== yAxis) {
+                node.isMouseTransparent = true
+            }
+        }
+
+        chartBackground.cursor = Cursor.CROSSHAIR
+
+        chartBackground.onMouseEntered = EventHandler { event: MouseEvent ->
+            chartBackground.onMouseMoved.handle(event)
+            detailsPopup.isVisible = true
+            yLine.isVisible = true
+            detailsWindow.children.add(yLine)
+        }
+
+        chartBackground.onMouseExited = EventHandler {
+            detailsPopup.isVisible = false
+            yLine.isVisible = false
+            detailsWindow.children.remove(yLine)
+        }
+
+        chartBackground.onMouseMoved = EventHandler { event: MouseEvent ->
+            val x = event.x + chartBackground.layoutX
+            val y = event.y + chartBackground.layoutY
+
+            yLine.startX = x + 5
+            yLine.endX = x + 5
+            yLine.startY = this.areaChart.height
+            yLine.endY = detailsWindow.height - 10
+
+            println(yLine)
+
+            if (this.areaChart.xAxis.getValueForDisplay(event.x) != null) {
+
+                detailsPopup.showChartDescription(event.x)
+
+                if (y + detailsPopup.height + 10 < this.areaChart.height) {
+                    AnchorPane.setTopAnchor(detailsPopup, y + 10)
+                } else {
+                    AnchorPane.setTopAnchor(detailsPopup, y - 10 - detailsPopup.height)
+                }
+
+                if (x + detailsPopup.width + 10 < this.areaChart.width) {
+                    AnchorPane.setLeftAnchor(detailsPopup, x + 10)
+                } else {
+                    AnchorPane.setLeftAnchor(detailsPopup, x - 10 - detailsPopup.width)
+                }
+                detailsPopup.isVisible = true
+            } else {
+                detailsPopup.isVisible = false
+            }
+        }
+    }
+
 
     override fun onDock() {
         currentWindow?.setOnCloseRequest { windowEvent ->
@@ -142,7 +239,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
      * finishes setup after the mpa is initialized
      */
     private fun afterMapIsInitialized() {
-        if(track != null) {
+        if (track != null) {
             // add track
             mapView.addCoordinateLine(track)
 
@@ -199,6 +296,43 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
         val longitude: Double = (northWest.longitude + southEast.longitude) * 0.5
 
         return Coordinate(latitude, longitude)
+    }
+
+    private inner class DetailsPopup : VBox() {
+
+        init {
+            style =
+                "-fx-border-width: 1px; -fx-padding: 5 5 5 5px; -fx-border-color: gray; -fx-background-color: whitesmoke;"
+            isVisible = false
+        }
+
+        fun showChartDescription(displayPosition: Double) {
+            children.clear()
+            val xValue: Number = areaChart.xAxis.getValueForDisplay(displayPosition)
+            val baseChartPopupRow = buildPopupRow(xValue)
+            if (baseChartPopupRow != null) {
+                children.add(baseChartPopupRow)
+            }
+        }
+
+        private fun buildPopupRow(xValue: Number): Label? {
+            val roundedXValue = (xValue.toDouble() * 100).roundToInt() / 100.0
+            val yValue = getYValueForX(roundedXValue) ?: return null
+            val valueLabel = Label("$roundedXValue km - $yValue m")
+            valueLabel.font = Font.font("Arial", 15.0)
+
+            return valueLabel
+        }
+
+        fun getYValueForX(xValue: Number): Number? {
+            for (data in areaChart.data[0].data) {
+                val rounded = (data.xValue.toDouble() * 100).roundToInt() / 100.0
+                if (rounded == xValue) {
+                    return data.yValue as Number
+                }
+            }
+            return null
+        }
     }
 }
 
