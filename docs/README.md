@@ -87,11 +87,14 @@ fit-nicolas
 ```
 
 Launch mystravastats with providing the FIT repository.
+
 ```
 ./gradlew run --args="FIT /Users/nicolas/workspace/mystravastats/fit-nicolas"
 ```
 
 Will use activities from FIT files in the directory, then display statistics and charts.
+
+To download 30-Meter SRTM Tile files, use [30-Meter SRTM Tile Downloader](https://dwtkns.com/srtm30m/)
 
 ### Launch mystravastats using docker
 

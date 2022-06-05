@@ -13,16 +13,25 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.*
 
-internal class FitCache(private val cachePath: Path) {
+internal class FitService(private val cachePath: Path) {
 
     private val fitDecoder = FitDecoder()
 
-    fun loadActivitiesFromCache(year: Int): Collection<Activity> {
+    private val srtmService = SRTMService(Path.of("srtm30m"))
+
+    fun loadActivitiesFromCache(year: Int): List<Activity> {
         val yearActivitiesDirectory = File(cachePath.toFile(), "$year")
-        val fitFiles = yearActivitiesDirectory.listFiles { file -> file.extension.lowercase(Locale.getDefault()) == "fit" }
-        val activities = fitFiles?.map { file ->
-            this.convertToActivity(file)
-        }?.toList() ?: emptyList()
+        val fitFiles =
+            yearActivitiesDirectory.listFiles { file -> file.extension.lowercase(Locale.getDefault()) == "fit" }
+
+        val activities: List<Activity> = try {
+            fitFiles?.map { file ->
+                this.convertToActivity(file)
+            }?.toList() ?: emptyList()
+        } catch (exception: Exception) {
+            println(exception)
+            emptyList()
+        }
 
         return activities
     }
@@ -31,6 +40,8 @@ internal class FitCache(private val cachePath: Path) {
         val fitMessages = fitDecoder.decode(fitFile.inputStream())
         val sessionMesg = fitMessages.sessionMesgs[0]
         val recordMesgs = fitMessages.recordMesgs
+
+        val stream: Stream = buildStream(recordMesgs)
 
         //
         val athlete = AthleteRef(0, 1)
@@ -57,11 +68,24 @@ internal class FitCache(private val cachePath: Path) {
         // The activity's elapsed time, in seconds
         val elapsedTime: Int = sessionMesg?.totalElapsedTime?.toInt() ?: 0
         // The activity's highest elevation, in meters
-        val elevHigh: Double = extractElevHigh(sessionMesg) // TODO : Wrong value
+        val extractedElevHigh: Double = extractElevHigh(sessionMesg)
+        val elevHigh: Double = if (extractedElevHigh == 0.0) {
+            stream.altitude?.data?.maxOf { it }!!
+        } else {
+            extractedElevHigh
+        }
         // The activity's lowest elevation, in meters
-        val elevLow: Double = extractElevLow(sessionMesg) // TODO : Wrong value
+        val extractedElevLow: Double = extractElevLow(sessionMesg)
+        val elevLow: Double = if (extractedElevLow == 0.0) {
+            stream.altitude?.data?.maxOf { it }!!
+        } else {
+            extractedElevLow
+        }
         // An instance of LatLng (= List<Double>).
-        val endLatlng: List<Double>? = null // TODO
+        val extractedEndLatLng = extractLatLng(sessionMesg.startPositionLat, sessionMesg.startPositionLong)
+        val endLatlng: List<Double>? = extractedEndLatLng.ifEmpty {
+            stream.latitudeLongitude?.data?.last()
+        }
         // The identifier provided at upload time
         val externalId = "garmin_push_${fitFile.name.replace(".FIT", "")}"
         // The unique identifier of the activity
@@ -89,15 +113,16 @@ internal class FitCache(private val cachePath: Path) {
         // The time at which the activity was started in the local timezone.
         val startDateLocal: String = extractDateLocal(sessionMesg.startTime?.timestamp!!)
         //
-        val startLatitude = 0.0
-        //
-        val startLatlng: List<Double> = extractLatLng(sessionMesg.startPositionLat, sessionMesg.startPositionLong)
-        //
-        val startLongitude = 0.0
+        val extractedStartLatLng = extractLatLng(sessionMesg.startPositionLat, sessionMesg.startPositionLong)
+        val startLatlng: List<Double>? = extractedStartLatLng.ifEmpty {
+            stream.latitudeLongitude?.data?.first()
+        }
         //
         val timezone = ""
         //
-        val totalElevationGain: Double = sessionMesg.totalAscent?.toDouble() ?: 0.0
+        val deltas = stream.altitude?.data?.zipWithNext { a, b -> b - a }
+        val sum = deltas?.filter { it > 0 }?.sumOf { it }
+        val totalElevationGain: Double = sessionMesg.totalAscent?.toDouble() ?: sum!!
         //
         val type: String = extractType(sessionMesg.sport!!)
         //
@@ -148,9 +173,9 @@ internal class FitCache(private val cachePath: Path) {
             resourceState = resourceState,
             startDate = startDate,
             startDateLocal = startDateLocal,
-            startLatitude = startLatitude,
+            startLatitude = 0.0,
             startLatlng = startLatlng,
-            startLongitude = startLongitude,
+            startLongitude = 0.0,
             timezone = timezone,
             totalElevationGain = totalElevationGain,
             totalPhotoCount = 0,
@@ -163,11 +188,7 @@ internal class FitCache(private val cachePath: Path) {
             workoutType = workoutType,
         )
 
-        try {
-            activity.stream = buildStream(recordMesgs)
-        } catch (exception :Exception) {
-            println(exception)
-        }
+        activity.stream = stream
 
         return activity
     }
@@ -181,6 +202,7 @@ internal class FitCache(private val cachePath: Path) {
             resolution = "high",
             seriesType = "distance"
         )
+
         //  time
         val startTime = recordMesgs.first().timestamp.timestamp
         val dataTime =
@@ -191,27 +213,26 @@ internal class FitCache(private val cachePath: Path) {
             resolution = "high",
             seriesType = "distance"
         )
-        // moving
-        /*
-        val dataMoving = recordMesgs.map { recordMesg -> recordMesg.speed > 0 }.toMutableList()
-        val streamMoving = Moving(
-            data = dataMoving,
-            originalSize = dataMoving.size,
-            resolution = "high",
-            seriesType = "distance"
-        )
-         */
-        // altitude
-        val dataAltitude = recordMesgs.mapNotNull { recordMesg -> recordMesg.altitude?.toDouble() }.toMutableList()
-        val streamAltitude = Altitude(
-            data = dataAltitude,
-            originalSize = dataAltitude.size,
-            resolution = "high",
-            seriesType = "distance"
-        )
+
         // latitude/longitude
-        val dataLatitude = recordMesgs.mapNotNull { recordMesg -> recordMesg.positionLat }
-        val dataLongitude = recordMesgs.mapNotNull { recordMesg -> recordMesg.positionLong }
+        val dataLatitude = recordMesgs.map { recordMesg ->
+            if (recordMesg.positionLat == null) {
+                0
+            } else {
+                recordMesg.positionLat
+            }
+        }.toMutableList()
+        dataLatitude.fixCoordinate()
+
+        val dataLongitude = recordMesgs.map { recordMesg ->
+            if (recordMesg.positionLong == null) {
+                0
+            } else {
+                recordMesg.positionLong
+            }
+        }.toMutableList()
+        dataLongitude.fixCoordinate()
+
         val dataLatitudeLongitude = dataLatitude.zip(dataLongitude) { lat, long -> extractLatLng(lat, long) }
         val streamLatitudeLongitude = LatitudeLongitude(
             data = dataLatitudeLongitude,
@@ -220,13 +241,33 @@ internal class FitCache(private val cachePath: Path) {
             seriesType = "distance"
         )
 
+        // altitude
+        val dataAltitude: MutableList<Double> = if (recordMesgs.first().altitude != null) {
+            recordMesgs.map { recordMesg ->
+                recordMesg.altitude.toDouble()
+            }.toMutableList()
+        } else {
+            generateDataAltitude(dataLatitudeLongitude)
+        }
+        val streamAltitude = Altitude(
+            data = dataAltitude,
+            originalSize = dataAltitude.size,
+            resolution = "high",
+            seriesType = "distance"
+        )
+
         return Stream(streamDistance, streamTime, null, streamAltitude, streamLatitudeLongitude)
     }
 
-    private fun extractLatLng(startPositionLat: Int?, startPositionLong: Int?): List<Double> {
-        return if(startPositionLat != null && startPositionLong != null) {
+
+    private fun generateDataAltitude(LatitudeLongitudeList: List<List<Double>>): MutableList<Double> {
+        return srtmService.getElevation(LatitudeLongitudeList).toMutableList()
+    }
+
+    private fun extractLatLng(lat: Int?, lng: Int?): List<Double> {
+        return if (lat != null && lng != null) {
             // 11930465 = (2^32 / 360)
-            listOf(startPositionLat.toDouble() / 11930465, startPositionLong.toDouble() / 11930465)
+            listOf(lat.toDouble() / 11930465, lng.toDouble() / 11930465)
         } else {
             emptyList()
         }
@@ -282,4 +323,40 @@ internal class FitCache(private val cachePath: Path) {
             0.0
         }
     }
+
+    private fun MutableList<Int>.fixCoordinate() {
+        var index = 0
+
+        // if start with 0 : get the first valid value
+        if (this.first() == 0) {
+            val firstValidValue: Int = try {
+                this.first { it != 0 }
+            } catch (noSuchElementException: NoSuchElementException) {
+                0
+            }
+            while (index < this.size && this[index] == 0) {
+                this[index] = firstValidValue
+                index++
+            }
+        }
+
+        // if a value is missing set average value
+        while (index < this.size) {
+            if (this[index] == 0) {
+                val lastValidValue: Int = this[index - 1]
+                val firstValidValue: Int = try {
+                    this.drop(index).first { it != 0 }
+                } catch (noSuchElementException: NoSuchElementException) {
+                    lastValidValue
+                }
+                while (this[index] == 0) {
+                    this[index] = (lastValidValue + firstValidValue) / 2
+                    index++
+                }
+            }
+            index++
+        }
+    }
 }
+
+

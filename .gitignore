@@ -20,4 +20,4 @@ stream-*.json
 # Ignore mac files
 .DS_Store
 
-
+*.hgt

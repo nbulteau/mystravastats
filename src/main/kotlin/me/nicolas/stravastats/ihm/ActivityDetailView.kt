@@ -60,7 +60,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
             center = mapView
             bottom {
                 val stream = activity.stream
-                if (stream?.altitude != null) {
+                if (stream?.altitude != null && stream.altitude.data.isNotEmpty()) {
                     val minAltitude = max(round(((stream.altitude.data.minOf { it } - 20) / 10)) * 10, 0.0)
                     val maxAltitude = round(((stream.altitude.data.maxOf { it } + 10) / 10)) * 10
                     val maxDistance = stream.distance.data.maxOf { it } / 1000
@@ -90,6 +90,14 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
                                 action {
                                     closeActivityDetailView()
                                 }
+                            }
+                        }
+                    }
+                } else {
+                    hbox(alignment = Pos.CENTER) {
+                        button("Close") {
+                            action {
+                                closeActivityDetailView()
                             }
                         }
                     }
