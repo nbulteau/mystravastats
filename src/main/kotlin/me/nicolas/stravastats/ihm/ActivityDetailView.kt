@@ -198,12 +198,8 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
             yLine.startY = this.areaChart.height
             yLine.endY = detailsWindow.height - 10
 
-            println(yLine)
-
             if (this.areaChart.xAxis.getValueForDisplay(event.x) != null) {
-
                 detailsPopup.showChartDescription(event.x)
-
                 if (y + detailsPopup.height + 10 < this.areaChart.height) {
                     AnchorPane.setTopAnchor(detailsPopup, y + 10)
                 } else {
