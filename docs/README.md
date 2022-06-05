@@ -93,8 +93,9 @@ Launch mystravastats with providing the FIT repository.
 ```
 
 Will use activities from FIT files in the directory, then display statistics and charts.
-
-To download 30-Meter SRTM Tile files, use [30-Meter SRTM Tile Downloader](https://dwtkns.com/srtm30m/)
+If altitude data are missing MyStravaStats will use SRTM files to get them.
+To download 30-Meter SRTM Tile files, use [30-Meter SRTM Tile Downloader](https://dwtkns.com/srtm30m/) then drop them in
+srtm30m directory.
 
 ### Launch mystravastats using docker
 

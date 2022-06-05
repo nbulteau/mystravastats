@@ -324,6 +324,9 @@ internal class FitService(private val cachePath: Path) {
         }
     }
 
+    /**
+     * Fix missing coordinates
+     */
     private fun MutableList<Int>.fixCoordinate() {
         var index = 0
 
