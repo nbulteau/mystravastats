@@ -4,6 +4,8 @@ import me.nicolas.stravastats.business.Run
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+var timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+
 var inDateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
 var outDateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE dd MMMM yyyy - HH:mm")
