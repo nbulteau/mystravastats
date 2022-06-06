@@ -1,7 +1,7 @@
 package me.nicolas.stravastats.ihm
 
 import com.sothawo.mapjfx.*
-import com.sothawo.mapjfx.event.MapViewEvent
+import javafx.animation.Transition
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.geometry.Pos
@@ -12,15 +12,21 @@ import javafx.scene.chart.XYChart
 import javafx.scene.control.Label
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.shape.Line
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
+import javafx.util.Duration
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.service.formatSeconds
 import me.nicolas.stravastats.service.formatSpeed
+import me.nicolas.stravastats.service.inDateTimeFormatter
+import me.nicolas.stravastats.service.timeFormatter
 import tornadofx.*
+import java.time.LocalDateTime
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.round
 import kotlin.math.roundToInt
@@ -42,6 +48,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
 
     private val detailsWindow: AnchorPane
 
+    private lateinit var marker: Marker
 
     init {
         FX.primaryStage.isResizable = true
@@ -174,18 +181,20 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
             }
         }
 
-        chartBackground.cursor = Cursor.CROSSHAIR
+        chartBackground.cursor = Cursor.DEFAULT
 
         chartBackground.onMouseEntered = EventHandler { event: MouseEvent ->
             chartBackground.onMouseMoved.handle(event)
             detailsPopup.isVisible = true
             yLine.isVisible = true
+            marker.visible = true
             detailsWindow.children.add(yLine)
         }
 
         chartBackground.onMouseExited = EventHandler {
             detailsPopup.isVisible = false
             yLine.isVisible = false
+            marker.visible = false
             detailsWindow.children.remove(yLine)
         }
 
@@ -193,10 +202,10 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
             val x = event.x + chartBackground.layoutX
             val y = event.y + chartBackground.layoutY
 
-            yLine.startX = x + 5
-            yLine.endX = x + 5
-            yLine.startY = this.areaChart.height
-            yLine.endY = detailsWindow.height - 10
+            yLine.startX = x - 5
+            yLine.endX = x - 5
+            yLine.startY = this.areaChart.height - 30
+            yLine.endY = detailsWindow.height + 30
 
             if (this.areaChart.xAxis.getValueForDisplay(event.x) != null) {
                 detailsPopup.showChartDescription(event.x)
@@ -215,9 +224,37 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
             } else {
                 detailsPopup.isVisible = false
             }
+
+            // manage marker on the mapView
+            val newPosition: Coordinate? = getMarkerPosition(event.x)
+            marker.position = newPosition
+            // adding can only be done after coordinate is set
+            mapView.addMarker(marker)
         }
     }
 
+    private fun getMarkerPosition(displayPosition: Double): Coordinate? {
+        val xValue: Number = areaChart.xAxis.getValueForDisplay(displayPosition)
+        val index = findStreamDataIndex(xValue)
+        if (index != null) {
+            val latitudeLongitude = activity.stream?.latitudeLongitude?.data?.get(index)
+            return Coordinate(latitudeLongitude?.get(0), latitudeLongitude?.get(1))
+        }
+        return null
+    }
+
+    private fun findStreamDataIndex(xValue: Number): Int? {
+        val xValueRounded = (xValue.toDouble() * 10).roundToInt() / 10.0
+        var index = 0
+        while (index < areaChart.data[0].data.size) {
+            val rounded = (areaChart.data[0].data[index].xValue.toDouble() * 10).roundToInt() / 10.0
+            if (rounded == xValueRounded) {
+                return index
+            }
+            index++
+        }
+        return null
+    }
 
     override fun onDock() {
         currentWindow?.setOnCloseRequest { windowEvent ->
@@ -242,7 +279,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
             // get the extent for track
             val tracksExtent = Extent.forCoordinates(track.coordinateStream.toList())
 
-            // add start & end makers
+            // add start & end makers and position marker
             addMarkers()
 
             // set  bounds and fix zoom
@@ -255,31 +292,30 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
     }
 
     private fun addMarkers() {
-        mapView.addEventHandler(MapViewEvent.MAP_CLICKED) { event ->
-            event.consume()
-            if (markersCreatedOnClick.isNotEmpty()) {
-                markersCreatedOnClick.values.forEach { marker ->
-                    mapView.removeMarker(marker)
-                }
-                markersCreatedOnClick.clear()
-            } else {
-                val start = activity.stream?.latitudeLongitude?.data?.first()
-                val startMarker = Marker
-                    .createProvided(Marker.Provided.GREEN)
-                    .setPosition(Coordinate(start?.get(0) ?: 45.0, start?.get(1) ?: 8.0))
-                    .setVisible(true)
-                mapView.addMarker(startMarker)
-                markersCreatedOnClick[startMarker.id] = startMarker
+        val start = activity.stream?.latitudeLongitude?.data?.first()
+        val startPNGURL = javaClass.getResource("/images/startmarker.png")
+        val startMarker = Marker(startPNGURL, -16, -16)
+        startMarker.position = Coordinate(start?.get(0), start?.get(1))
+        startMarker.visible = true
 
-                val end = activity.stream?.latitudeLongitude?.data?.last()
-                val endMarker = Marker
-                    .createProvided(Marker.Provided.RED)
-                    .setPosition(Coordinate(end?.get(0) ?: 45.0, end?.get(1) ?: 8.0))
-                    .setVisible(true)
-                mapView.addMarker(endMarker)
-                markersCreatedOnClick[endMarker.id] = endMarker
-            }
-        }
+        mapView.addMarker(startMarker)
+        markersCreatedOnClick[startMarker.id] = startMarker
+
+        val end = activity.stream?.latitudeLongitude?.data?.last()
+
+        val finishPNGURL = javaClass.getResource("/images/finishmarker.png")
+        val endMarker = Marker(finishPNGURL, 0, -32)
+        endMarker.position = Coordinate(end?.get(0), end?.get(1))
+        endMarker.visible = true
+
+        mapView.addMarker(endMarker)
+        markersCreatedOnClick[endMarker.id] = endMarker
+
+        marker = Marker
+            .createProvided(Marker.Provided.BLUE)
+            .setVisible(false)
+
+        mapView.addMarker(marker)
     }
 
     /**
@@ -304,31 +340,61 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
 
         fun showChartDescription(displayPosition: Double) {
             children.clear()
+            children.add(buildPopupRow(displayPosition))
+        }
+
+        private fun buildPopupRow(displayPosition: Double): VBox {
             val xValue: Number = areaChart.xAxis.getValueForDisplay(displayPosition)
-            val baseChartPopupRow = buildPopupRow(xValue)
-            if (baseChartPopupRow != null) {
-                children.add(baseChartPopupRow)
+
+            val vbox = VBox()
+            val index = findStreamDataIndex(xValue)
+            if (index != null) {
+                val time = activity.stream?.time?.data?.get(index)?.toLong()!!
+                val datetime = LocalDateTime.parse(activity.startDateLocal, inDateTimeFormatter)
+                val timeValueLabel = Label(datetime.plusSeconds(abs(time)).format(timeFormatter))
+                vbox.add(HBox(10.0, timeValueLabel))
+
+                // Distance
+                val distance = activity.stream?.distance?.data?.get(index)
+                val distanceLabel = Label("Distance:")
+                val distanceValueLabel = Label(String.format("%.1f km", distance?.div(1000)))
+                distanceValueLabel.font = Font.font("Arial", FontWeight.EXTRA_BOLD, 15.0)
+                vbox.add(HBox(10.0, distanceLabel, distanceValueLabel))
+
+                // Distance
+                val altitude = activity.stream?.altitude?.data?.get(index)
+                val altitudeLabel = Label("Altitude:")
+                val altitudeValueLabel = Label("$altitude m")
+                altitudeValueLabel.font = Font.font("Arial", FontWeight.EXTRA_BOLD, 15.0)
+                vbox.add(HBox(10.0, altitudeLabel, altitudeValueLabel))
+            }
+
+            return vbox
+        }
+    }
+
+    /**
+     * Animate the marker to the new position
+     */
+    private fun animateMarker(oldPosition: Coordinate, newPosition: Coordinate) {
+        val transition: Transition = object : Transition() {
+            private val oldPositionLongitude = oldPosition.longitude
+            private val oldPositionLatitude = oldPosition.latitude
+            private val deltaLatitude = newPosition.latitude - oldPositionLatitude
+            private val deltaLongitude = newPosition.longitude - oldPositionLongitude
+
+            init {
+                cycleDuration = Duration.seconds(1.0)
+                setOnFinished { marker.position = newPosition }
+            }
+
+            override fun interpolate(v: Double) {
+                val latitude = oldPosition.latitude + v * deltaLatitude
+                val longitude = oldPosition.longitude + v * deltaLongitude
+                marker.position = Coordinate(latitude, longitude)
             }
         }
-
-        private fun buildPopupRow(xValue: Number): Label? {
-            val roundedXValue = (xValue.toDouble() * 100).roundToInt() / 100.0
-            val yValue = getYValueForX(roundedXValue) ?: return null
-            val valueLabel = Label("$roundedXValue km - $yValue m")
-            valueLabel.font = Font.font("Arial", 15.0)
-
-            return valueLabel
-        }
-
-        fun getYValueForX(xValue: Number): Number? {
-            for (data in areaChart.data[0].data) {
-                val rounded = (data.xValue.toDouble() * 100).roundToInt() / 100.0
-                if (rounded == xValue) {
-                    return data.yValue as Number
-                }
-            }
-            return null
-        }
+        transition.play()
     }
 }
 
