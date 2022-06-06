@@ -26,7 +26,6 @@ import me.nicolas.stravastats.service.inDateTimeFormatter
 import me.nicolas.stravastats.service.timeFormatter
 import tornadofx.*
 import java.time.LocalDateTime
-import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.round
 import kotlin.math.roundToInt
@@ -351,7 +350,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
             if (index != null) {
                 val time = activity.stream?.time?.data?.get(index)?.toLong()!!
                 val datetime = LocalDateTime.parse(activity.startDateLocal, inDateTimeFormatter)
-                val timeValueLabel = Label(datetime.plusSeconds(abs(time)).format(timeFormatter))
+                val timeValueLabel = Label(datetime.plusSeconds(time).format(timeFormatter))
                 vbox.add(HBox(10.0, timeValueLabel))
 
                 // Distance

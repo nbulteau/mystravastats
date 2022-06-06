@@ -206,7 +206,7 @@ internal class FitService(private val cachePath: Path) {
         //  time
         val startTime = recordMesgs.first().timestamp.timestamp
         val dataTime =
-            recordMesgs.map { recordMesg -> (startTime - recordMesg.timestamp.timestamp).toInt() }.toMutableList()
+            recordMesgs.map { recordMesg -> (recordMesg.timestamp.timestamp - startTime).toInt() }.toMutableList()
         val streamTime = Time(
             data = dataTime,
             originalSize = dataTime.size,
