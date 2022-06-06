@@ -2,6 +2,7 @@ package me.nicolas.stravastats.ihm
 
 import com.sothawo.mapjfx.*
 import com.sothawo.mapjfx.event.MapViewEvent
+import javafx.animation.Transition
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.geometry.Pos
@@ -17,6 +18,7 @@ import javafx.scene.paint.Color
 import javafx.scene.shape.Line
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
+import javafx.util.Duration
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.service.formatSeconds
 import me.nicolas.stravastats.service.formatSpeed
@@ -41,6 +43,8 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
     private lateinit var areaChart: AreaChart<Number, Number>
 
     private val detailsWindow: AnchorPane
+
+    private lateinit var marker: Marker
 
 
     init {
@@ -180,12 +184,14 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
             chartBackground.onMouseMoved.handle(event)
             detailsPopup.isVisible = true
             yLine.isVisible = true
+            marker.visible = true
             detailsWindow.children.add(yLine)
         }
 
         chartBackground.onMouseExited = EventHandler {
             detailsPopup.isVisible = false
             yLine.isVisible = false
+            marker.visible = false
             detailsWindow.children.remove(yLine)
         }
 
@@ -215,9 +221,45 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
             } else {
                 detailsPopup.isVisible = false
             }
+
+            val newPosition: Coordinate = getMarkerPosition()
+            val oldPosition: Coordinate = this.marker.position
+            if (oldPosition != null) {
+                animateClickMarker(oldPosition, newPosition)
+            } else {
+                marker.position = newPosition
+                // adding can only be done after coordinate is set
+                mapView.addMarker(marker)
+            }
         }
     }
 
+    private fun getMarkerPosition(): Coordinate {
+        TODO("Not yet implemented")
+    }
+
+    private fun animateClickMarker(oldPosition: Coordinate, newPosition: Coordinate) {
+
+        // animate the marker to the new position
+        val transition: Transition = object : Transition() {
+            private val oldPositionLongitude = oldPosition.longitude
+            private val oldPositionLatitude = oldPosition.latitude
+            private val deltaLatitude = newPosition.latitude - oldPositionLatitude
+            private val deltaLongitude = newPosition.longitude - oldPositionLongitude
+
+            init {
+                cycleDuration = Duration.seconds(1.0)
+                setOnFinished { marker.position = newPosition }
+            }
+
+            override fun interpolate(v: Double) {
+                val latitude = oldPosition.latitude + v * deltaLatitude
+                val longitude = oldPosition.longitude + v * deltaLongitude
+                marker.position = Coordinate(latitude, longitude)
+            }
+        }
+        transition.play()
+    }
 
     override fun onDock() {
         currentWindow?.setOnCloseRequest { windowEvent ->
@@ -245,6 +287,11 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
             // add start & end makers
             addMarkers()
 
+            marker = Marker
+                .createProvided(Marker.Provided.BLUE)
+                .setVisible(false)
+            mapView.addMarker(marker)
+
             // set  bounds and fix zoom
             mapView.setExtent(tracksExtent)
             //mapView.zoom -= 1.0
@@ -266,7 +313,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
                 val start = activity.stream?.latitudeLongitude?.data?.first()
                 val startMarker = Marker
                     .createProvided(Marker.Provided.GREEN)
-                    .setPosition(Coordinate(start?.get(0) ?: 45.0, start?.get(1) ?: 8.0))
+                    .setPosition(Coordinate(start?.get(0), start?.get(1)))
                     .setVisible(true)
                 mapView.addMarker(startMarker)
                 markersCreatedOnClick[startMarker.id] = startMarker
@@ -274,7 +321,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
                 val end = activity.stream?.latitudeLongitude?.data?.last()
                 val endMarker = Marker
                     .createProvided(Marker.Provided.RED)
-                    .setPosition(Coordinate(end?.get(0) ?: 45.0, end?.get(1) ?: 8.0))
+                    .setPosition(Coordinate(end?.get(0), end?.get(1)))
                     .setVisible(true)
                 mapView.addMarker(endMarker)
                 markersCreatedOnClick[endMarker.id] = endMarker
@@ -312,7 +359,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
         }
 
         private fun buildPopupRow(xValue: Number): Label? {
-            val roundedXValue = (xValue.toDouble() * 100).roundToInt() / 100.0
+            val roundedXValue = (xValue.toDouble() * 10).roundToInt() / 10.0
             val yValue = getYValueForX(roundedXValue) ?: return null
             val valueLabel = Label("$roundedXValue km - $yValue m")
             valueLabel.font = Font.font("Arial", 15.0)
@@ -322,7 +369,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
 
         fun getYValueForX(xValue: Number): Number? {
             for (data in areaChart.data[0].data) {
-                val rounded = (data.xValue.toDouble() * 100).roundToInt() / 100.0
+                val rounded = (data.xValue.toDouble() * 10).roundToInt() / 10.0
                 if (rounded == xValue) {
                     return data.yValue as Number
                 }
