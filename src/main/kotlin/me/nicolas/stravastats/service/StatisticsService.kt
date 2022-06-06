@@ -192,13 +192,14 @@ internal class StatisticsService {
                     .count()
             },
             MaxStreakStatistic(activities),
-
             GlobalStatistic("Total distance", activities, "%.2f km") {
                 activities.sumOf { activity: Activity -> activity.distance } / 1000
             },
-
             GlobalStatistic("Total elevation", activities, "%.2f m") {
                 activities.sumOf { activity: Activity -> activity.totalElevationGain }
+            },
+            GlobalStatistic("Km by activity", activities, "%.2f km") {
+                activities.sumOf { activity: Activity -> activity.distance }.div(activities.size) / 1000
             },
 
             MaxDistanceStatistic(activities),

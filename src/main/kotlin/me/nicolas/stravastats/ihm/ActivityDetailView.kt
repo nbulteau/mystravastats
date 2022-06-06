@@ -202,8 +202,8 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
             val x = event.x + chartBackground.layoutX
             val y = event.y + chartBackground.layoutY
 
-            yLine.startX = x - 5
-            yLine.endX = x - 5
+            yLine.startX = x + 3
+            yLine.endX = x + 3
             yLine.startY = this.areaChart.height - 30
             yLine.endY = detailsWindow.height + 30
 
