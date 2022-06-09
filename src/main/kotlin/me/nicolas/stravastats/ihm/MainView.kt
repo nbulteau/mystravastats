@@ -415,25 +415,35 @@ class MainView(
         runBlocking {
             launch {
                 val filteredActivities = mainController.getFilteredActivities(activityType, selectedYearValue)
-
-                // Remove 1 out 10 points for this map
+                // Take 1 out 10 points for this map
                 coordinateLines = filteredActivities.mapNotNull { activity ->
-                    CoordinateLine(
-                        activity.stream?.latitudeLongitude?.data?.map { Coordinate(it[0], it[1]) }?.windowed(1, 10)
-                            ?.flatten()
-                    )
-                        .setColor(Color.MAGENTA)
-                        .setVisible(true)
+                    val coordinates = activity.stream?.latitudeLongitude?.data?.map { Coordinate(it[0], it[1]) }
+                        ?.windowed(1, 10)
+                        ?.flatten()
+                    if (coordinates != null && coordinates.isNotEmpty()) {
+                        CoordinateLine(coordinates)
+                            .setColor(Color.MAGENTA)
+                            .setVisible(true)
+                    } else {
+                        CoordinateLine()
+                    }
+
                 }
                 coordinateLines.forEach { coordinateLine ->
                     mapView.addCoordinateLine(coordinateLine)
                 }
+
             }
         }
 
-        val firstTrack = coordinateLines.first()
-        val firstCoordinateOfFirstTrack = firstTrack.coordinateStream.toList().first()
-        mapView.center = Coordinate(firstCoordinateOfFirstTrack.latitude, firstCoordinateOfFirstTrack.longitude)
+        if (coordinateLines.isNotEmpty()) {
+            val firstTrack = coordinateLines.first()
+            val firstCoordinateOfFirstTrack = firstTrack.coordinateStream.toList().first()
+            mapView.center = Coordinate(firstCoordinateOfFirstTrack.latitude, firstCoordinateOfFirstTrack.longitude)
+        } else {
+            // Rennes
+            mapView.center = Coordinate(48.1606, -1.5395)
+        }
         mapView.zoom -= 3.0
     }
 
