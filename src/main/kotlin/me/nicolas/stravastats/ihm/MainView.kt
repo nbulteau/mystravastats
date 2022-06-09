@@ -20,6 +20,8 @@ import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.util.Callback
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.business.Ride
@@ -408,22 +410,30 @@ class MainView(
     }
 
     private fun afterMapIsInitialized(activityType: String, selectedYearValue: Int?, mapView: MapView) {
-        val filteredActivities =
-            mainController.getFilteredActivities(activityType, selectedYearValue)
 
-        coordinateLines = filteredActivities.mapNotNull { activity ->
-            CoordinateLine(activity.stream?.latitudeLongitude?.data?.map { Coordinate(it[0], it[1]) })
-                .setColor(Color.MAGENTA)
-                .setVisible(true)
-        }
-        coordinateLines.forEach { coordinateLine ->
-            mapView.addCoordinateLine(coordinateLine)
+        runBlocking {
+            val filteredActivities =
+                mainController.getFilteredActivities(activityType, selectedYearValue)
+            launch {
+                // Remove 1 out 10 points for this map
+                coordinateLines = filteredActivities.mapNotNull { activity ->
+                    CoordinateLine(
+                        activity.stream?.latitudeLongitude?.data?.map { Coordinate(it[0], it[1]) }?.windowed(1, 10)
+                            ?.flatten()
+                    )
+                        .setColor(Color.MAGENTA)
+                        .setVisible(true)
+                }
+                coordinateLines.forEach { coordinateLine ->
+                    mapView.addCoordinateLine(coordinateLine)
+                }
+            }
         }
 
         val firstTrack = coordinateLines.first()
         val firstCoordinateOfFirstTrack = firstTrack.coordinateStream.toList().first()
         mapView.center = Coordinate(firstCoordinateOfFirstTrack.latitude, firstCoordinateOfFirstTrack.longitude)
-        mapView.zoom -= 2
+        mapView.zoom -= 3.0
     }
 
     private inner class DetailsPopup : VBox() {
