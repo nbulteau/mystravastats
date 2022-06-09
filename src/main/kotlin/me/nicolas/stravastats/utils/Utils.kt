@@ -1,4 +1,4 @@
-package me.nicolas.stravastats
+package me.nicolas.stravastats.utils
 
 import sun.net.www.protocol.css.Handler
 import java.awt.Desktop

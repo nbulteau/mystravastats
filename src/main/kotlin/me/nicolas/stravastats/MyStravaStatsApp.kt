@@ -4,6 +4,8 @@ import javafx.scene.image.Image
 import javafx.stage.Stage
 import me.nicolas.stravastats.ihm.SplashScreenView
 import me.nicolas.stravastats.ihm.StravaAPIAuthenticationView
+import me.nicolas.stravastats.utils.OSValidator
+import me.nicolas.stravastats.utils.removeJavaFxInfoMessage
 import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch

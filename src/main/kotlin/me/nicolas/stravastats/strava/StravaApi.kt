@@ -17,7 +17,7 @@ import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.business.Stream
 import me.nicolas.stravastats.business.Token
-import me.nicolas.stravastats.openBrowser
+import me.nicolas.stravastats.utils.openBrowser
 import okhttp3.Headers
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient

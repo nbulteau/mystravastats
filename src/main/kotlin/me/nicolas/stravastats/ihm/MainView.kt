@@ -351,24 +351,25 @@ class MainView(
                 }
             }
             item("All tracks") {
-                val mapView = MapView()
-                children.add(mapView)
+                val allTracksMapView = MapView()
                 // set the custom css file for the MapView
-                mapView.setCustomMapviewCssURL(javaClass.getResource("/mapview.css"))
+                allTracksMapView.setCustomMapviewCssURL(javaClass.getResource("/mapview.css"))
 
                 // finally, initialize the map view
-                mapView.initialize(
+                allTracksMapView.initialize(
                     Configuration.builder()
                         .showZoomControls(false)
                         .build()
                 )
                 // watch the MapView's initialized property to finish initialization
-                mapView.initializedProperty()
+                allTracksMapView.initializedProperty()
                     .addListener { _: ObservableValue<out Boolean>, _: Boolean, newValue: Boolean ->
                         if (newValue) {
-                            afterMapIsInitialized(selectedActivity.value, selectedYearValue, mapView)
+                            afterMapIsInitialized(selectedActivity.value, getSelectedYear(), allTracksMapView)
                         }
                     }
+
+                children.add(allTracksMapView)
             }
         }
         badgesTab.content = drawer {
@@ -412,9 +413,9 @@ class MainView(
     private fun afterMapIsInitialized(activityType: String, selectedYearValue: Int?, mapView: MapView) {
 
         runBlocking {
-            val filteredActivities =
-                mainController.getFilteredActivities(activityType, selectedYearValue)
             launch {
+                val filteredActivities = mainController.getFilteredActivities(activityType, selectedYearValue)
+
                 // Remove 1 out 10 points for this map
                 coordinateLines = filteredActivities.mapNotNull { activity ->
                     CoordinateLine(
