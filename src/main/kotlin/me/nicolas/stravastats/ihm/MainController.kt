@@ -16,6 +16,8 @@ import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
 import me.nicolas.stravastats.service.statistics.calculateBestElevationForDistance
 import me.nicolas.stravastats.service.statistics.calculateBestTimeForDistance
+import me.nicolas.stravastats.utils.GenericCache
+import me.nicolas.stravastats.utils.SoftCache
 import tornadofx.Controller
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -31,28 +33,42 @@ class MainController(private val clientId: String, private val activities: Obser
 
     private val badgesService = BadgesService()
 
+    private val filteredActivitiesCache: GenericCache<String, List<Activity>> = SoftCache()
+
+    private val famousClimbClimbBadgesCache: GenericCache<String, List<List<BadgeDisplay>>> = SoftCache()
+
+
     fun generateCSV(year: Int?) {
 
-        val activitiesForYear: List<Activity> = if(year != null) {
+        val activitiesForYear: List<Activity> = if (year != null) {
             activities.groupBy { activity ->
-                    activity.startDateLocal.subSequence(0, 4).toString()
-                }[year.toString()] ?: emptyList()
+                activity.startDateLocal.subSequence(0, 4).toString()
+            }[year.toString()] ?: emptyList()
         } else {
             activities
         }
 
-        csvService.exportCSV(clientId, activitiesForYear, (year?.toString() ?: "") )
+        csvService.exportCSV(clientId, activitiesForYear, (year?.toString() ?: ""))
     }
 
     fun generateCharts(year: Int?) {
         chartsService.buildCharts(activities, year)
     }
 
-    fun getActiveDaysByActivityTypeByYear(activityType: String, year: Int?): Map<String, Int> {
-
-        val filteredActivities = this.activities
+    fun getFilteredActivities(activityType: String, year: Int?): List<Activity> {
+        val filteredActivities = filteredActivitiesCache["$activityType-$year"] ?: this.activities
             .filterActivitiesByType(activityType)
             .filterActivitiesByYear(year)
+        filteredActivitiesCache["$activityType-$year"] = filteredActivities
+
+        return filteredActivities
+    }
+
+
+    fun getActiveDaysByActivityTypeByYear(activityType: String, year: Int?): Map<String, Int> {
+
+        val filteredActivities = getFilteredActivities(activityType, year)
+
         return filteredActivities
             .groupBy { activity -> activity.startDateLocal.substringBefore('T') }
             .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance / 1000 } }
@@ -64,6 +80,7 @@ class MainController(private val clientId: String, private val activities: Obser
 
         val filteredActivities = this.activities
             .filterActivitiesByType(activityType)
+
         return filteredActivities
             .groupBy { activity -> activity.startDateLocal.substringBefore('T') }
             .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance / 1000 } }
@@ -75,22 +92,21 @@ class MainController(private val clientId: String, private val activities: Obser
 
         val filteredActivities = this.activities
             .filterActivitiesByType(activityType)
+
         return ActivityHelper.groupActivitiesByYear(filteredActivities)
     }
 
     fun getActivitiesToDisplay(activityType: String, year: Int?): ObservableList<ActivityDisplay> {
 
-        val filteredActivities = this.activities
-            .filterActivitiesByType(activityType)
-            .filterActivitiesByYear(year)
+        val filteredActivities = getFilteredActivities(activityType, year)
+
         return buildActivitiesToDisplay(filteredActivities)
     }
 
     fun getStatisticsToDisplay(activityType: String, year: Int?): ObservableList<StatisticDisplay> {
 
-        val filteredActivities = this.activities
-            .filterActivitiesByType(activityType)
-            .filterActivitiesByYear(year)
+        val filteredActivities = getFilteredActivities(activityType, year)
+
         val statistics = when (activityType) {
             Ride -> statsService.computeRideStatistics(filteredActivities)
             Commute -> statsService.computeCommuteStatistics(filteredActivities)
@@ -107,9 +123,8 @@ class MainController(private val clientId: String, private val activities: Obser
 
 
     fun getGeneralBadgesSetToDisplay(activityType: String, year: Int?): List<List<BadgeDisplay>> {
-        val filteredActivities = this.activities
-            .filterActivitiesByType(activityType)
-            .filterActivitiesByYear(year)
+        val filteredActivities = getFilteredActivities(activityType, year)
+
         val badgesSets = mutableListOf<List<BadgeDisplay>>()
         when (activityType) {
             Ride -> {
@@ -157,9 +172,14 @@ class MainController(private val clientId: String, private val activities: Obser
     }
 
     fun getFamousClimbBadgesSetToDisplay(activityType: String, year: Int?): List<List<BadgeDisplay>> {
-        val filteredActivities = this.activities
-            .filterActivitiesByType(activityType)
-            .filterActivitiesByYear(year)
+        val famousClimbClimbBadges = famousClimbClimbBadgesCache["$activityType-$year"] ?: buildFamousClimbBadgesSet(activityType, year)
+        famousClimbClimbBadgesCache["$activityType-$year"] = famousClimbClimbBadges
+
+        return famousClimbClimbBadges
+    }
+
+    private fun buildFamousClimbBadgesSet(activityType: String, year: Int?): List<List<BadgeDisplay>> {
+        val filteredActivities = getFilteredActivities(activityType, year)
 
         val badgesSets = mutableListOf<List<BadgeDisplay>>()
         when (activityType) {
@@ -178,21 +198,19 @@ class MainController(private val clientId: String, private val activities: Obser
                 )
             }
         }
+
         return badgesSets
     }
 
-    fun buildDistanceByMonthsSeries(
-        activityType: String,
-        year: Int,
-    ): ObservableList<XYChart.Data<String, Number>> {
+    fun buildDistanceByMonthsSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>> {
 
-        val filteredActivities = this.activities
-            .filterActivitiesByType(activityType)
-            .filterActivitiesByYear(year)
+        val filteredActivities = getFilteredActivities(activityType, year)
 
         val activitiesByMonth: Map<String, List<Activity>> = ActivityHelper.groupActivitiesByMonth(filteredActivities)
         val distanceByMonth: Map<String, Double> = activitiesByMonth.mapValues { (_, activities) ->
-            activities.sumOf { activity -> activity.distance / 1000 }
+            activities.sumOf { activity ->
+                activity.distance / 1000
+            }
         }
 
         return FXCollections.observableList(distanceByMonth.map { entry ->
@@ -200,18 +218,15 @@ class MainController(private val clientId: String, private val activities: Obser
         })
     }
 
-    fun buildDistanceByWeeksSeries(
-        activityType: String,
-        year: Int,
-    ): ObservableList<XYChart.Data<String, Number>> {
+    fun buildDistanceByWeeksSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>> {
 
-        val filteredActivities = this.activities
-            .filterActivitiesByType(activityType)
-            .filterActivitiesByYear(year)
+        val filteredActivities = getFilteredActivities(activityType, year)
 
         val activitiesByWeek: Map<String, List<Activity>> = ActivityHelper.groupActivitiesByWeek(filteredActivities)
         val distanceByWeek: Map<String, Double> = activitiesByWeek.mapValues { (_, activities) ->
-            activities.sumOf { activity -> activity.distance / 1000 }
+            activities.sumOf { activity ->
+                activity.distance / 1000
+            }
         }
 
         return FXCollections.observableList(distanceByWeek.map { entry ->
@@ -219,14 +234,9 @@ class MainController(private val clientId: String, private val activities: Obser
         })
     }
 
-    fun buildDistanceByDaysSeries(
-        activityType: String,
-        year: Int,
-    ): ObservableList<XYChart.Data<String, Number>>? {
+    fun buildDistanceByDaysSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>>? {
 
-        val filteredActivities = this.activities
-            .filterActivitiesByType(activityType)
-            .filterActivitiesByYear(year)
+        val filteredActivities = getFilteredActivities(activityType, year)
 
         val activitiesByDay: Map<String, List<Activity>> = ActivityHelper.groupActivitiesByDay(filteredActivities, year)
         val distanceByDay: Map<String, Double> = activitiesByDay.mapValues { (_, activities) ->

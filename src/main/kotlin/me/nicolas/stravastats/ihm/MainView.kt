@@ -1,6 +1,11 @@
 package me.nicolas.stravastats.ihm
 
+import com.sothawo.mapjfx.Configuration
+import com.sothawo.mapjfx.Coordinate
+import com.sothawo.mapjfx.CoordinateLine
+import com.sothawo.mapjfx.MapView
 import javafx.beans.property.SimpleStringProperty
+import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
 import javafx.event.EventHandler
 import javafx.geometry.Pos
@@ -13,7 +18,10 @@ import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
 import javafx.util.Callback
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.business.Ride
@@ -63,6 +71,8 @@ class MainView(
     private val detailsPopup: DetailsPopup
 
     private lateinit var activeYearsSet: MutableSet<String>
+
+    private var coordinateLines: Collection<CoordinateLine> = ArrayList()
 
     init {
         FX.primaryStage.isResizable = true
@@ -292,6 +302,7 @@ class MainView(
                         )
                     )
                 }
+
             } else {
                 item("${selectedActivity.value} distance per year cumulative", expanded = true) {
                     borderpane {
@@ -303,7 +314,8 @@ class MainView(
                                 }
                                 alignment = Pos.CENTER
                                 for (year in 2010..LocalDate.now().year) {
-                                    val activitiesByYear = mainController.getActivitiesByYear(selectedActivity.value)
+                                    val activitiesByYear =
+                                        mainController.getActivitiesByYear(selectedActivity.value)
                                     if (activitiesByYear[year.toString()] != null) {
                                         // checkboxes to activate/deactivate year series charts
                                         checkbox("$year") {
@@ -338,7 +350,27 @@ class MainView(
                     eddingtonNumberChart(mainController.getActiveDaysByActivityType(selectedActivity.value))
                 }
             }
+            item("All tracks") {
+                val allTracksMapView = MapView()
+                // set the custom css file for the MapView
+                allTracksMapView.setCustomMapviewCssURL(javaClass.getResource("/mapview.css"))
 
+                // finally, initialize the map view
+                allTracksMapView.initialize(
+                    Configuration.builder()
+                        .showZoomControls(false)
+                        .build()
+                )
+                // watch the MapView's initialized property to finish initialization
+                allTracksMapView.initializedProperty()
+                    .addListener { _: ObservableValue<out Boolean>, _: Boolean, newValue: Boolean ->
+                        if (newValue) {
+                            afterMapIsInitialized(selectedActivity.value, getSelectedYear(), allTracksMapView)
+                        }
+                    }
+
+                children.add(allTracksMapView)
+            }
         }
         badgesTab.content = drawer {
             item("General", expanded = true) {
@@ -376,6 +408,33 @@ class MainView(
                 }
             }
         }
+    }
+
+    private fun afterMapIsInitialized(activityType: String, selectedYearValue: Int?, mapView: MapView) {
+
+        runBlocking {
+            launch {
+                val filteredActivities = mainController.getFilteredActivities(activityType, selectedYearValue)
+
+                // Remove 1 out 10 points for this map
+                coordinateLines = filteredActivities.mapNotNull { activity ->
+                    CoordinateLine(
+                        activity.stream?.latitudeLongitude?.data?.map { Coordinate(it[0], it[1]) }?.windowed(1, 10)
+                            ?.flatten()
+                    )
+                        .setColor(Color.MAGENTA)
+                        .setVisible(true)
+                }
+                coordinateLines.forEach { coordinateLine ->
+                    mapView.addCoordinateLine(coordinateLine)
+                }
+            }
+        }
+
+        val firstTrack = coordinateLines.first()
+        val firstCoordinateOfFirstTrack = firstTrack.coordinateStream.toList().first()
+        mapView.center = Coordinate(firstCoordinateOfFirstTrack.latitude, firstCoordinateOfFirstTrack.longitude)
+        mapView.zoom -= 3.0
     }
 
     private inner class DetailsPopup : VBox() {

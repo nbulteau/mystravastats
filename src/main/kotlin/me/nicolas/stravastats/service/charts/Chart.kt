@@ -1,7 +1,7 @@
 package me.nicolas.stravastats.service.charts
 
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.openBrowser
+import me.nicolas.stravastats.utils.openBrowser
 import space.kscience.plotly.PlotGrid
 import space.kscience.plotly.PlotlyPage
 import space.kscience.plotly.UnstablePlotlyAPI
