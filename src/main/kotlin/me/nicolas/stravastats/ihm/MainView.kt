@@ -438,8 +438,13 @@ class MainView(
 
         if (coordinateLines.isNotEmpty()) {
             val firstTrack = coordinateLines.first()
-            val firstCoordinateOfFirstTrack = firstTrack.coordinateStream.toList().first()
-            mapView.center = Coordinate(firstCoordinateOfFirstTrack.latitude, firstCoordinateOfFirstTrack.longitude)
+            val coordinateOfFirstTrack = firstTrack.coordinateStream.toList()
+            if(coordinateOfFirstTrack.isNotEmpty()) {
+                mapView.center = Coordinate(coordinateOfFirstTrack.first().latitude, coordinateOfFirstTrack.first().longitude)
+            } else {
+                // Rennes
+                mapView.center = Coordinate(48.1606, -1.5395)
+            }
         } else {
             // Rennes
             mapView.center = Coordinate(48.1606, -1.5395)

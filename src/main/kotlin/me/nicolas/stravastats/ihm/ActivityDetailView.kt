@@ -47,7 +47,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
 
     private val detailsWindow: AnchorPane
 
-    private lateinit var marker: Marker
+    private var marker: Marker? = null
 
     init {
         FX.primaryStage.isResizable = true
@@ -186,14 +186,14 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
             chartBackground.onMouseMoved.handle(event)
             detailsPopup.isVisible = true
             yLine.isVisible = true
-            marker.visible = true
+            marker?.visible = true
             detailsWindow.children.add(yLine)
         }
 
         chartBackground.onMouseExited = EventHandler {
             detailsPopup.isVisible = false
             yLine.isVisible = false
-            marker.visible = false
+            marker?.visible = false
             detailsWindow.children.remove(yLine)
         }
 
@@ -226,9 +226,11 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
 
             // manage marker on the mapView
             val newPosition: Coordinate? = getMarkerPosition(event.x)
-            marker.position = newPosition
-            // adding can only be done after coordinate is set
-            mapView.addMarker(marker)
+            if(newPosition != null) {
+                marker?.position = newPosition
+                // adding can only be done after coordinate is set
+                mapView.addMarker(marker)
+            }
         }
     }
 
@@ -237,7 +239,9 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
         val index = findStreamDataIndex(xValue)
         if (index != null) {
             val latitudeLongitude = activity.stream?.latitudeLongitude?.data?.get(index)
-            return Coordinate(latitudeLongitude?.get(0), latitudeLongitude?.get(1))
+            if (latitudeLongitude != null) {
+                return Coordinate(latitudeLongitude?.get(0), latitudeLongitude?.get(1))
+            }
         }
         return null
     }
@@ -384,13 +388,13 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
 
             init {
                 cycleDuration = Duration.seconds(1.0)
-                setOnFinished { marker.position = newPosition }
+                setOnFinished { marker?.position = newPosition }
             }
 
             override fun interpolate(v: Double) {
                 val latitude = oldPosition.latitude + v * deltaLatitude
                 val longitude = oldPosition.longitude + v * deltaLongitude
-                marker.position = Coordinate(latitude, longitude)
+                marker?.position = Coordinate(latitude, longitude)
             }
         }
         transition.play()
