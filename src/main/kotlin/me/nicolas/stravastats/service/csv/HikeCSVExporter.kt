@@ -5,6 +5,7 @@ import me.nicolas.stravastats.business.Hike
 import me.nicolas.stravastats.service.formatDate
 import me.nicolas.stravastats.service.formatSeconds
 import me.nicolas.stravastats.service.statistics.calculateBestDistanceForTime
+import me.nicolas.stravastats.service.statistics.calculateBestElevationForDistance
 import me.nicolas.stravastats.service.statistics.calculateBestTimeForDistance
 
 internal class HikeCSVExporter(clientId: String, activities: List<Activity>, year: String) :
@@ -21,11 +22,13 @@ internal class HikeCSVExporter(clientId: String, activities: List<Activity>, yea
                 "Speed (km/h)",
                 "Elevation (m)",
                 "Highest point (m)",
-                "Best 200m (km/h)",
-                "Best 400m (km/h)",
                 "Best 1000m (km/h)",
-                "Best 10000m (km/h)",
                 "Best 1 h (km/h)",
+                "Max gradient for 250 m (%)",
+                "Max gradient for 500 m (%)",
+                "Max gradient for 1000 m (%)",
+                "Max gradient for 5 km (%)",
+                "Max gradient for 10 km (%)",
             )
         )
     }
@@ -42,11 +45,13 @@ internal class HikeCSVExporter(clientId: String, activities: List<Activity>, yea
                     activity.getSpeed(),
                     "%.0f".format(activity.totalElevationGain),
                     "%.0f".format(activity.elevHigh),
-                    activity.calculateBestTimeForDistance(200.0)?.getSpeed() ?: "",
-                    activity.calculateBestTimeForDistance(400.0)?.getSpeed() ?: "",
                     activity.calculateBestTimeForDistance(1000.0)?.getSpeed() ?: "",
-                    activity.calculateBestTimeForDistance(10000.0)?.getSpeed() ?: "",
                     activity.calculateBestDistanceForTime(60 * 60)?.getSpeed() ?: "",
+                    activity.calculateBestElevationForDistance(250.0)?.getSlope() ?: "",
+                    activity.calculateBestElevationForDistance(500.0)?.getSlope() ?: "",
+                    activity.calculateBestElevationForDistance(1000.0)?.getSlope() ?: "",
+                    activity.calculateBestElevationForDistance(5000.0)?.getSlope() ?: "",
+                    activity.calculateBestElevationForDistance(10000.0)?.getSlope() ?: "",
                 )
             )
         }

@@ -41,6 +41,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.sothawo:mapjfx:3.1.0")
     implementation("no.tornado:tornadofx:1.7.20")
+    implementation("org.openjfx:javafx-fxml:17.0.0.1")
+
 
     // Some problem with 0.5.0 version
     implementation("space.kscience:plotlykt-server:0.5.0") {

@@ -240,7 +240,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
         if (index != null) {
             val latitudeLongitude = activity.stream?.latitudeLongitude?.data?.get(index)
             if (latitudeLongitude != null) {
-                return Coordinate(latitudeLongitude?.get(0), latitudeLongitude?.get(1))
+                return Coordinate(latitudeLongitude[0], latitudeLongitude[1])
             }
         }
         return null
