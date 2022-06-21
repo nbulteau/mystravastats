@@ -248,6 +248,7 @@ class MainView(
             readonlyColumn("Best speed for 1000 m", ActivityDisplay::bestTimeForDistanceFor1000m)
             if (selectedActivity.value != "AlpineSki") {
                 readonlyColumn("Max slope for 250 m", ActivityDisplay::BestElevationForDistanceFor250m)
+                readonlyColumn("Max slope for 500 m", ActivityDisplay::BestElevationForDistanceFor500m)
             }
             readonlyColumn("Date", ActivityDisplay::date)
 
