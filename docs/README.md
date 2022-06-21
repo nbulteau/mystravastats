@@ -29,7 +29,7 @@ This tool scans through activities :
 
 ## Launch mystravastats
 
-### Stava access
+### Strava access
 
 All calls to the Strava API require an access_token defining the athlete and application making the call.
 Any registered Strava user can obtain an access_token by first creating an application
@@ -42,11 +42,13 @@ The Strava API application settings page provides *mandatory parameters* for My 
 
 ### Launch mystravastats
 
-A jdk >= 17 is needed to run mystavastats.
+JDK 18 is needed to run mystravastats.
 
 ```
+sdk install java 18.0.1-tem
+
 git clone https://github.com/nbulteau/mystravastats.git
-cd mystavastats
+cd mystravastats
 ./gradlew run    
 ```
 
@@ -105,7 +107,7 @@ First build the docker image.
 
 ```
 git clone https://github.com/nbulteau/mystravastats.git
-cd mystavastats
+cd mystravastats
 docker build -t mystravastats .
 ```
 

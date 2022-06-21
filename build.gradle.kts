@@ -11,8 +11,8 @@ buildscript {
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.6.21"
-    id("org.openjfx.javafxplugin") version "0.0.12"
+    id("org.jetbrains.kotlin.jvm") version "1.7.0"
+    id("org.openjfx.javafxplugin") version "0.0.13"
     id("com.github.ben-manes.versions") version "0.42.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 
@@ -30,18 +30,25 @@ dependencies {
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.21")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
 
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.3")
     implementation("org.slf4j:slf4j-nop:1.7.36")
 
-    implementation("io.javalin:javalin:4.6.0")
-    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation("io.javalin:javalin:4.6.3")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation("com.sothawo:mapjfx:3.1.0")
     implementation("no.tornado:tornadofx:1.7.20")
-    implementation("org.openjfx:javafx-fxml:17.0.0.1")
+
+    // Some trouble with javafx dependencies
+    implementation("org.openjfx:javafx-base:18.0.1")
+    implementation("org.openjfx:javafx-controls:18.0.1")
+    implementation("org.openjfx:javafx-fxml:18.0.1")
+    implementation("org.openjfx:javafx-graphics:18.0.1")
+    implementation("org.openjfx:javafx-media:18.0.1")
+    implementation("org.openjfx:javafx-web:18.0.1")
 
 
     // Some problem with 0.5.0 version
@@ -124,11 +131,11 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
-        jvmTarget = "17"
+        jvmTarget = "18"
         moduleName = "mystravastats"
     }
 }
 
 tasks.withType<JavaCompile> {
-    targetCompatibility = "17"
+    targetCompatibility = "18"
 }
