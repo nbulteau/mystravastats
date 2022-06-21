@@ -30,7 +30,7 @@ fun openBrowser(url: String) {
     val runtime = Runtime.getRuntime()
     when {
         OSValidator.IS_WINDOWS -> {
-            runtime.exec("rundll32 url.dll,FileProtocolHandler $url")
+            runtime.exec(arrayOf("rundll32 url.dll,FileProtocolHandler $url"))
         }
         OSValidator.IS_MAC -> {
             val uri = if (url.startsWith("http")) {
@@ -41,7 +41,7 @@ fun openBrowser(url: String) {
             Desktop.getDesktop().browse(URI(uri))
         }
         OSValidator.IS_UNIX -> {
-            runtime.exec("xdg-open $url")
+            runtime.exec(arrayOf("xdg-open $url"))
         }
     }
 }
