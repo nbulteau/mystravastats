@@ -172,7 +172,8 @@ class MainController(private val clientId: String, private val activities: Obser
     }
 
     fun getFamousClimbBadgesSetToDisplay(activityType: String, year: Int?): List<List<BadgeDisplay>> {
-        val famousClimbClimbBadges = famousClimbClimbBadgesCache["$activityType-$year"] ?: buildFamousClimbBadgesSet(activityType, year)
+        val famousClimbClimbBadges =
+            famousClimbClimbBadgesCache["$activityType-$year"] ?: buildFamousClimbBadgesSet(activityType, year)
         famousClimbClimbBadgesCache["$activityType-$year"] = famousClimbClimbBadges
 
         return famousClimbClimbBadges
@@ -343,6 +344,7 @@ class MainController(private val clientId: String, private val activities: Obser
                 activity.distance,
                 activity.elapsedTime,
                 activity.totalElevationGain,
+                activity.calculateTotalDescentGain(),
                 activity.averageSpeed,
                 activity.calculateBestTimeForDistance(1000.0)?.getFormattedSpeed() ?: "",
                 activity.calculateBestElevationForDistance(250.0)?.getFormattedSlope() ?: "",

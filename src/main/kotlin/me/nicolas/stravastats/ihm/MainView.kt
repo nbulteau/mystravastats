@@ -243,12 +243,14 @@ class MainView(
                 formatSeconds()
             readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory =
                 formatElevation()
+            readonlyColumn("Total descent", ActivityDisplay::totalDescent).cellFactory =
+                formatElevation()
             readonlyColumn("Average speed", ActivityDisplay::averageSpeed).cellFactory =
                 formatSpeed(selectedActivity.value)
             readonlyColumn("Best speed for 1000 m", ActivityDisplay::bestTimeForDistanceFor1000m)
             if (selectedActivity.value != "AlpineSki") {
-                readonlyColumn("Max slope for 250 m", ActivityDisplay::BestElevationForDistanceFor250m)
-                readonlyColumn("Max slope for 500 m", ActivityDisplay::BestElevationForDistanceFor500m)
+                readonlyColumn("Max slope for 250 m", ActivityDisplay::bestElevationForDistanceFor250m)
+                readonlyColumn("Max slope for 500 m", ActivityDisplay::bestElevationForDistanceFor500m)
             }
             readonlyColumn("Date", ActivityDisplay::date)
 

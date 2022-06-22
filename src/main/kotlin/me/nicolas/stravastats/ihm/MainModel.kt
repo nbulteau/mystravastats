@@ -10,10 +10,11 @@ data class ActivityDisplay(
     val distance: Double,
     val elapsedTime: Int,
     val totalElevationGain: Double,
+    val totalDescent: Double,
     val averageSpeed: Double,
     val bestTimeForDistanceFor1000m: String,
-    val BestElevationForDistanceFor250m: String,
-    val BestElevationForDistanceFor500m: String,
+    val bestElevationForDistanceFor250m: String,
+    val bestElevationForDistanceFor500m: String,
     val date: String
 )
 

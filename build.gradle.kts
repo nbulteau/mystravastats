@@ -42,6 +42,14 @@ dependencies {
     implementation("com.sothawo:mapjfx:3.1.0")
     implementation("no.tornado:tornadofx:1.7.20")
 
+    // Some trouble with javafx dependencies
+    implementation("org.openjfx:javafx-base:18.0.1")
+    implementation("org.openjfx:javafx-controls:18.0.1")
+    implementation("org.openjfx:javafx-fxml:18.0.1")
+    implementation("org.openjfx:javafx-graphics:18.0.1")
+    implementation("org.openjfx:javafx-media:18.0.1")
+    implementation("org.openjfx:javafx-web:18.0.1")
+
     // Some problem with 0.5.0 version
     implementation("space.kscience:plotlykt-server:0.5.0") {
         exclude("ch.qos.logback", "logback-classic")
