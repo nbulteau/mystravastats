@@ -1,15 +1,16 @@
 package me.nicolas.stravastats
 
+import javafx.application.HostServices
 import javafx.scene.image.Image
 import javafx.stage.Stage
 import me.nicolas.stravastats.ihm.SplashScreenView
 import me.nicolas.stravastats.ihm.StravaAPIAuthenticationView
-import me.nicolas.stravastats.utils.OSValidator
 import me.nicolas.stravastats.utils.removeJavaFxInfoMessage
 import tornadofx.App
 import tornadofx.UIComponent
 import tornadofx.launch
 import java.awt.Taskbar
+import java.util.*
 import javax.swing.ImageIcon
 import kotlin.io.path.Path
 import kotlin.io.path.exists
@@ -18,11 +19,29 @@ import kotlin.reflect.KClass
 
 internal class MyStravaStatsApp : App() {
 
+    companion object {
+        // This is a miserably ugly solution
+        private lateinit var hostServices: HostServices
+
+        fun openBrowser(url: String) {
+            hostServices.showDocument(url)
+        }
+
+        private val OS = System.getProperty("os.name").lowercase(Locale.getDefault())
+        val IS_WINDOWS = OS.indexOf("win") >= 0
+        val IS_MAC = OS.indexOf("mac") >= 0
+        val IS_UNIX = OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0
+
+    }
+
     override lateinit var primaryView: KClass<out UIComponent>
 
     override fun start(stage: Stage) {
+        MyStravaStatsApp.hostServices = hostServices
+
         stage.isResizable = false
         setIcons(stage)
+
 
         // Add feed mode to userdata (FIT files or STRAVA)
         if (parameters.raw.isNotEmpty() && parameters.raw[0] == "FIT") {
@@ -49,13 +68,13 @@ internal class MyStravaStatsApp : App() {
     }
 
     private fun setIcons(stage: Stage) {
-        val logoInputStream = javaClass.getResourceAsStream("/images/strava-logo.png")
-        stage.icons += Image(logoInputStream)
-
-        if (OSValidator.IS_MAC) {
+        if (IS_MAC) {
             val taskbar = Taskbar.getTaskbar()
             val iconURL = javaClass.getResource("/images/strava-logo.png")
             taskbar.iconImage = ImageIcon(iconURL).image
+        } else {
+            val logoInputStream = javaClass.getResourceAsStream("/images/strava-logo.png")
+            stage.icons += Image(logoInputStream)
         }
     }
 }

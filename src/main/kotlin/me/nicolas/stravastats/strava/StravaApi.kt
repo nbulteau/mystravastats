@@ -12,12 +12,12 @@ import io.javalin.Javalin
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import me.nicolas.stravastats.MyStravaStatsApp
 import me.nicolas.stravastats.MyStravaStatsProperties
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.business.Stream
 import me.nicolas.stravastats.business.Token
-import me.nicolas.stravastats.utils.openBrowser
 import okhttp3.Headers
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -197,17 +197,17 @@ internal class StravaApi(clientId: String, clientSecret: String) {
     }
 
     private fun setAccessToken(clientId: String, clientSecret: String) {
+        val url = "https://www.strava.com/api/v3/oauth/authorize" +
+                "?client_id=$clientId" +
+                "&response_type=code" +
+                "&redirect_uri=http://localhost:8080/exchange_token" +
+                "&approval_prompt=auto" +
+                "&scope=read_all,activity:read_all,profile:read_all"
+        MyStravaStatsApp.openBrowser(url)
+
         println()
         println("To grant MyStravaStats to read your Strava activities data: copy paste this URL in a browser")
-        val url =
-            "http://www.strava.com/api/v3/oauth/authorize" +
-                    "?client_id=${clientId}" +
-                    "&response_type=code" +
-                    "&redirect_uri=http://localhost:8080/exchange_token" +
-                    "&approval_prompt=auto" +
-                    "&scope=read_all,activity:read_all,profile:read_all"
         println(url)
-        openBrowser(url)
         println()
 
         runBlocking {

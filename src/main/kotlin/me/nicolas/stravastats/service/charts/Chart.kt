@@ -1,7 +1,7 @@
 package me.nicolas.stravastats.service.charts
 
+import me.nicolas.stravastats.MyStravaStatsApp
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.utils.openBrowser
 import space.kscience.plotly.PlotGrid
 import space.kscience.plotly.PlotlyPage
 import space.kscience.plotly.UnstablePlotlyAPI
@@ -41,8 +41,8 @@ abstract class Chart {
         val actualFile = Files.createTempFile("tempPlot", ".html")
         Files.createDirectories(actualFile.parent)
         Files.writeString(actualFile, plot.render())
-        // Desktop.getDesktop().browse(actualFile.toFile().toURI())
-        openBrowser(actualFile.toString())
+
+        MyStravaStatsApp.openBrowser(actualFile.toString())
     }
 
     fun PlotGrid.buildEddingtonNumberPlotByType(

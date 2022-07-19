@@ -8,6 +8,7 @@ import java.lang.ref.SoftReference
  * [SoftCache] caches items with a [SoftReference] wrapper.
  * A soft reference is a reference that is garbage-collected less aggressively.
  */
+@Suppress("UNCHECKED_CAST")
 class SoftCache<K, V : Any> : GenericCache<K, V> {
 
     private val cache = HashMap<K, SoftEntry<K, V>>()

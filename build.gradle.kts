@@ -11,11 +11,11 @@ buildscript {
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.7.0"
+    id("org.jetbrains.kotlin.jvm") version "1.7.10"
     id("org.openjfx.javafxplugin") version "0.0.13"
     id("com.github.ben-manes.versions") version "0.42.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
-
+    //id("org.beryx.jlink") version "2.25.0"
 
     // Apply the application plugin to add support for building a CLI application.
     application
@@ -30,14 +30,14 @@ dependencies {
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.21")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.3")
     implementation("org.slf4j:slf4j-nop:1.7.36")
 
-    implementation("io.javalin:javalin:4.6.3")
+    implementation("io.javalin:javalin:4.6.4")
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation("com.sothawo:mapjfx:3.1.0")
     implementation("no.tornado:tornadofx:1.7.20")
@@ -69,6 +69,7 @@ application {
     mainClass.set("me.nicolas.stravastats.MyStravaStatsAppKt")
     applicationDefaultJvmArgs = listOf(
         "-Xmx2048m",
+        "-Dprism.maxvram=2G",
         "--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED",
         "--add-opens=java.base/java.lang=ALL-UNNAMED",
         "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
@@ -129,7 +130,7 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
+        freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn"
         jvmTarget = "18"
         moduleName = "mystravastats"
     }
@@ -138,3 +139,4 @@ tasks.withType<KotlinCompile> {
 tasks.withType<JavaCompile> {
     targetCompatibility = "18"
 }
+

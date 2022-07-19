@@ -35,20 +35,116 @@
     "name": "Col de Portet",
     "topOfTheAscent": 2115,
     "geoCoordinate": {
-      "latitude": 42.8333037,
-      "longitude": 0.1452852
+      "latitude": 42.8332285,
+      "longitude": 0.236803
     },
     "alternatives": [
       {
         "name": "Saint Lary Soulan",
         "geoCoordinate": {
-          "latitude": 42.8260457,
-          "longitude": 0.3179257
+          "latitude": 42.826117,
+          "longitude": 0.317891
         },
         "length": 16.1,
         "totalAscent": 1409,
         "difficulty": 1381,
         "averageGradient": 8.7
+      }
+    ]
+  },
+  {
+    "name": "Col d'Aspin",
+    "topOfTheAscent": 1490,
+    "geoCoordinate": {
+      "latitude": 42.9422104,
+      "longitude": 0.327221
+    },
+    "alternatives": [
+      {
+        "name": "Arreau",
+        "geoCoordinate": {
+          "latitude": 42.9094358,
+          "longitude": 0.3599414
+        },
+        "length": 12.4,
+        "totalAscent": 802,
+        "difficulty": 589,
+        "averageGradient": 6.5
+      },
+      {
+        "name": "Sainte Marie de Campan",
+        "geoCoordinate": {
+          "latitude": 42.9845237,
+          "longitude": 0.227609
+        },
+        "length": 12.9,
+        "totalAscent": 652,
+        "difficulty": 431,
+        "averageGradient": 5.1
+      }
+    ]
+  },
+  {
+    "name": "Col d'Azet",
+    "topOfTheAscent": 1580,
+    "geoCoordinate": {
+      "latitude": 42.7917574,
+      "longitude": 0.3793701
+    },
+    "alternatives": [
+      {
+        "name": "Génos",
+        "geoCoordinate": {
+          "latitude": 42.8092997,
+          "longitude": 0.4017553
+        },
+        "length": 7.4,
+        "totalAscent": 622,
+        "difficulty": 613,
+        "averageGradient": 8.4
+      },
+      {
+        "name": "Bourisp",
+        "geoCoordinate": {
+          "latitude": 42.8268864,
+          "longitude": 0.3377524
+        },
+        "length": 10.5,
+        "totalAscent": 770,
+        "difficulty": 647,
+        "averageGradient": 7.4
+      }
+    ]
+  },
+  {
+    "name": "La Hourquette d'Ancizan",
+    "topOfTheAscent": 1563,
+    "geoCoordinate": {
+      "latitude": 42.7951011,
+      "longitude": 0.3717856
+    },
+    "alternatives": [
+      {
+        "name": "Ancizan",
+        "geoCoordinate": {
+          "latitude": 42.871930,
+          "longitude": 0.340950
+        },
+        "length": 12.4,
+        "totalAscent": 802,
+        "difficulty": 589,
+        "averageGradient": 6.5
+      },
+      {
+        "name": "Campan",
+        "geoCoordinate": {
+          "latitude": 42.943493,
+          "longitude": 0.278038
+        },
+        "length": 22.6,
+        "totalAscent": 957,
+        "difficulty": 563,
+        "averageGradient": 4.2
       }
     ]
   }
