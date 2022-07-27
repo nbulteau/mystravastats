@@ -8,7 +8,7 @@ class MyStravaStatsProperties {
         /**
          * Activities page size
          */
-        var pagesize: Int = 100
+        var pagesize: Int = 150
         lateinit var url: String
     }
 }
