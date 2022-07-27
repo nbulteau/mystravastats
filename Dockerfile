@@ -1,5 +1,5 @@
 # Use an OpenJDK Runtime as a parent image
-FROM amd64/openjdk:17.0.2-buster
+FROM arm64/openjdk:18.0.2-slim-buster
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update &&  \
