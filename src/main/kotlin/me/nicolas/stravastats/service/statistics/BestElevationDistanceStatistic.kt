@@ -20,7 +20,7 @@ internal open class BestElevationDistanceStatistic(
     }
 
     override val value: String
-        get() = bestActivityEffort?.getFormattedSlope() ?: "Not available"
+        get() = bestActivityEffort?.getFormattedGradient() ?: "Not available"
 }
 
 /**
@@ -30,7 +30,7 @@ internal open class BestElevationDistanceStatistic(
 fun Activity.calculateBestElevationForDistance(distance: Double): ActivityEffort? {
 
     // no stream -> return null
-    if (stream == null || stream?.distance == null || stream?.time == null || stream?.altitude == null) {
+    if (stream == null || stream?.altitude == null) {
         return null
     }
 

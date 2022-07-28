@@ -20,6 +20,7 @@ import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import javafx.util.Duration
 import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.GeoCoordinate
 import me.nicolas.stravastats.service.formatSeconds
 import me.nicolas.stravastats.service.formatSpeed
 import me.nicolas.stravastats.service.inDateTimeFormatter
@@ -226,7 +227,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
 
             // manage marker on the mapView
             val newPosition: Coordinate? = getMarkerPosition(event.x)
-            if(newPosition != null) {
+            if (newPosition != null) {
                 marker?.position = newPosition
                 // adding can only be done after coordinate is set
                 mapView.addMarker(marker)
@@ -364,7 +365,41 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
                 distanceValueLabel.font = Font.font("Arial", FontWeight.EXTRA_BOLD, 15.0)
                 vbox.add(HBox(10.0, distanceLabel, distanceValueLabel))
 
-                // Distance
+                // Speed
+                val coordinate1 = activity.stream?.latitudeLongitude?.data?.getOrNull(index - 1)
+                val coordinate2 = activity.stream?.latitudeLongitude?.data?.getOrNull(index)
+                val speedLabel = Label("Speed:")
+                val speedValueLabel: Label = if (coordinate1 != null && coordinate2 != null) {
+                    val start = GeoCoordinate(coordinate1[0], coordinate1[1])
+                    val distanceBetweenCoordinates = start.haversineInM(coordinate2[0], coordinate2[1])
+                    val timeBetweenCoordinates =
+                        activity.stream?.time?.data?.get(index)!! - activity.stream?.time?.data?.get(index - 1)!!
+                    val speed = distanceBetweenCoordinates.toDouble() / timeBetweenCoordinates
+                    Label(speed.formatSpeed(activity.type))
+                } else {
+                    Label("-")
+                }
+                speedValueLabel.font = Font.font("Arial", FontWeight.EXTRA_BOLD, 15.0)
+                vbox.add(HBox(10.0, speedLabel, speedValueLabel))
+
+                // Gradient
+                val altitude1 = activity.stream?.altitude?.data?.getOrNull(index - 1)
+                val altitude2 = activity.stream?.altitude?.data?.getOrNull(index)
+                val gradientLabel = Label("Gradient:")
+                val gradientValueLabel: Label = if (coordinate1 != null && coordinate2 != null && altitude1 != null && altitude2 != null) {
+                    val elevationDiff = altitude2 - altitude1
+                    val distance1 = activity.stream?.distance?.data?.get(index - 1)
+                    val distance2 = activity.stream?.distance?.data?.get(index)
+                    val distanceBetweenCoordinates = distance2!! - distance1!!
+                    val gradient = elevationDiff / distanceBetweenCoordinates
+                    Label("%.2f %%".format(gradient * 100))
+                } else {
+                    Label("-")
+                }
+                gradientValueLabel.font = Font.font("Arial", FontWeight.EXTRA_BOLD, 15.0)
+                vbox.add(HBox(10.0, gradientLabel, gradientValueLabel))
+
+                // Altitude
                 val altitude = activity.stream?.altitude?.data?.get(index)
                 val altitudeLabel = Label("Altitude:")
                 val altitudeValueLabel = Label("$altitude m")

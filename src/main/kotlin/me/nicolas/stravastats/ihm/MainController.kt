@@ -347,8 +347,8 @@ class MainController(private val clientId: String, private val activities: Obser
                 activity.calculateTotalDescentGain(),
                 activity.averageSpeed,
                 activity.calculateBestTimeForDistance(1000.0)?.getFormattedSpeed() ?: "",
-                activity.calculateBestElevationForDistance(250.0)?.getFormattedSlope() ?: "",
-                activity.calculateBestElevationForDistance(500.0)?.getFormattedSlope() ?: "",
+                activity.calculateBestElevationForDistance(250.0)?.getFormattedGradient() ?: "",
+                activity.calculateBestElevationForDistance(500.0)?.getFormattedGradient() ?: "",
                 activity.startDateLocal.formatDate()
             )
         }

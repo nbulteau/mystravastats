@@ -68,12 +68,12 @@ internal class AlpineSkiCSVExporter(clientId: String, activities: List<Activity>
                     activity.calculateBestDistanceForTime(3 * 60 * 60)?.getSpeed() ?: "",
                     activity.calculateBestDistanceForTime(4 * 60 * 60)?.getSpeed() ?: "",
                     activity.calculateBestDistanceForTime(5 * 60 * 60)?.getSpeed() ?: "",
-                    activity.calculateBestElevationForDistance(250.0)?.getSlope() ?: "",
-                    activity.calculateBestElevationForDistance(500.0)?.getSlope() ?: "",
-                    activity.calculateBestElevationForDistance(1000.0)?.getSlope() ?: "",
-                    activity.calculateBestElevationForDistance(5000.0)?.getSlope() ?: "",
-                    activity.calculateBestElevationForDistance(10000.0)?.getSlope() ?: "",
-                    activity.calculateBestElevationForDistance(20000.0)?.getSlope() ?: "",
+                    activity.calculateBestElevationForDistance(250.0)?.getGradient() ?: "",
+                    activity.calculateBestElevationForDistance(500.0)?.getGradient() ?: "",
+                    activity.calculateBestElevationForDistance(1000.0)?.getGradient() ?: "",
+                    activity.calculateBestElevationForDistance(5000.0)?.getGradient() ?: "",
+                    activity.calculateBestElevationForDistance(10000.0)?.getGradient() ?: "",
+                    activity.calculateBestElevationForDistance(20000.0)?.getGradient() ?: "",
                 )
             )
         }

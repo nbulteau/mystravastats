@@ -47,11 +47,11 @@ internal class HikeCSVExporter(clientId: String, activities: List<Activity>, yea
                     "%.0f".format(activity.elevHigh),
                     activity.calculateBestTimeForDistance(1000.0)?.getSpeed() ?: "",
                     activity.calculateBestDistanceForTime(60 * 60)?.getSpeed() ?: "",
-                    activity.calculateBestElevationForDistance(250.0)?.getSlope() ?: "",
-                    activity.calculateBestElevationForDistance(500.0)?.getSlope() ?: "",
-                    activity.calculateBestElevationForDistance(1000.0)?.getSlope() ?: "",
-                    activity.calculateBestElevationForDistance(5000.0)?.getSlope() ?: "",
-                    activity.calculateBestElevationForDistance(10000.0)?.getSlope() ?: "",
+                    activity.calculateBestElevationForDistance(250.0)?.getGradient() ?: "",
+                    activity.calculateBestElevationForDistance(500.0)?.getGradient() ?: "",
+                    activity.calculateBestElevationForDistance(1000.0)?.getGradient() ?: "",
+                    activity.calculateBestElevationForDistance(5000.0)?.getGradient() ?: "",
+                    activity.calculateBestElevationForDistance(10000.0)?.getGradient() ?: "",
                 )
             )
         }
