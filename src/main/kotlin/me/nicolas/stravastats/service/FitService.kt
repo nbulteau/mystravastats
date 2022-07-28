@@ -247,7 +247,7 @@ internal class FitService(private val cachePath: Path) {
                 recordMesg.altitude.toDouble()
             }.toMutableList()
         } else {
-            generateDataAltitude(dataLatitudeLongitude)
+            smooth(generateDataAltitude(dataLatitudeLongitude))
         }
         val streamAltitude = Altitude(
             data = dataAltitude,
@@ -257,6 +257,20 @@ internal class FitService(private val cachePath: Path) {
         )
 
         return Stream(streamDistance, streamTime, null, streamAltitude, streamLatitudeLongitude)
+    }
+
+    private fun smooth(data: MutableList<Double>, size: Int = 5): MutableList<Double> {
+        val smooth = DoubleArray(data.size)
+        for (i in 0 until size) {
+            smooth[i] = data[i]
+        }
+        for (i in size until data.size - size) {
+            smooth[i] = data.subList(i - size, i + size).sum() / (2 * size + 1)
+        }
+        for (i in data.size - size until data.size) {
+            smooth[i] = data[i]
+        }
+        return smooth.toMutableList()
     }
 
 

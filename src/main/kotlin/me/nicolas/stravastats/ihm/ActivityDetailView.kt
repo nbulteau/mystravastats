@@ -402,7 +402,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
                 // Altitude
                 val altitude = activity.stream?.altitude?.data?.get(index)
                 val altitudeLabel = Label("Altitude:")
-                val altitudeValueLabel = Label("$altitude m")
+                val altitudeValueLabel = Label("%d m".format(altitude?.toInt()))
                 altitudeValueLabel.font = Font.font("Arial", FontWeight.EXTRA_BOLD, 15.0)
                 vbox.add(HBox(10.0, altitudeLabel, altitudeValueLabel))
             }
