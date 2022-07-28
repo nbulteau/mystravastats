@@ -21,6 +21,9 @@ internal class FitFilesLoadActivitiesTask(
             val loadedActivities = fitService.loadActivitiesFromCache(currentYear)
             activities.addAll(loadedActivities)
         }
+        activities.sortByDescending { activity ->
+            activity.startDateLocal
+        }
         updateMessage("${activities.size} fit files loaded")
 
         return Pair(null, activities)
