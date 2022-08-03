@@ -1,0 +1,25 @@
+package me.nicolas.stravastats.business
+
+import me.nicolas.stravastats.business.badges.loadColAgnelActivity
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+
+internal class ActivityEffortTest {
+
+    @Test
+    fun getSpeed() {
+
+        // Given
+        val colAgnelActivity = loadColAgnelActivity()
+
+        // When
+        val colAgnelActivityEffort = ActivityEffort(colAgnelActivity, colAgnelActivity.distance, colAgnelActivity.elapsedTime, colAgnelActivity.totalElevationGain)
+
+        // Then
+        assertEquals("15,48 km/h", colAgnelActivityEffort.getFormattedSpeed())
+        assertEquals("15,48", colAgnelActivityEffort.getSpeed())
+
+        assertEquals("2,33 %", colAgnelActivityEffort.getFormattedGradient())
+        assertEquals("2,33", colAgnelActivityEffort.getGradient())
+    }
+}

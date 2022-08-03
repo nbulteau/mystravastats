@@ -1,20 +1,16 @@
 package me.nicolas.stravastats.business.badges
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.GeoCoordinate
-import me.nicolas.stravastats.business.Stream
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
-import java.io.File
 
 internal class FamousClimbBadgeTest {
 
     @Test
-    fun check() {
+    fun check_ok() {
         // Given
-        val famousClimbBadge = FamousClimbBadge(
+        val colAgnelBadge = FamousClimbBadge(
             label = "Col_Agnel",
             name = "Col Agnel",
             topOfTheAscent = 2500,
@@ -25,23 +21,31 @@ internal class FamousClimbBadgeTest {
             averageGradient = 6.6,
             difficulty = 1030
         )
-        val colAgnel = loadColAgnelActivity()
+        val colAgnelActivity = loadColAgnelActivity()
 
 
-        val result = famousClimbBadge.check(listOf(colAgnel))
+        val result = colAgnelBadge.check(listOf(colAgnelActivity))
         assertTrue(result.second)
     }
 
-    private fun loadColAgnelActivity(): Activity {
-        val objectMapper = ObjectMapper()
-        var url = Thread.currentThread().contextClassLoader.getResource("colagnel-activity.json")
-        var jsonFile = File(url.path)
-        val activity =  objectMapper.readValue(jsonFile, Activity::class.java)
+    @Test
+    fun check_ko() {
+        // Given
+        val colAgnelBadge = FamousClimbBadge(
+            label = "Col d'Izoard",
+            name = "Col d'Izoard",
+            topOfTheAscent = 2362,
+            start = GeoCoordinate(44.6839194, 6.9795741),
+            end = GeoCoordinate(44.8200267, 6.7350408),
+            length = 14.1,
+            totalAscent = 1000,
+            averageGradient = 7.0,
+            difficulty = 810
+        )
+        val colAgnelActivity = loadColAgnelActivity()
 
-        url = Thread.currentThread().contextClassLoader.getResource("colagnel-stream.json")
-        jsonFile = File(url.path)
-        activity.stream = objectMapper.readValue(jsonFile, Stream::class.java)
 
-        return activity
+        val result = colAgnelBadge.check(listOf(colAgnelActivity))
+        assertFalse(result.second)
     }
 }

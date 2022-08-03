@@ -2,6 +2,7 @@ package me.nicolas.stravastats.service.charts
 
 import me.nicolas.stravastats.MyStravaStatsApp
 import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.service.statistics.EddingtonStatistic
 import space.kscience.plotly.PlotGrid
 import space.kscience.plotly.PlotlyPage
 import space.kscience.plotly.UnstablePlotlyAPI
@@ -51,35 +52,8 @@ abstract class Chart {
         activities: List<Activity>,
         activityType: String
     ) {
-
-        val activeDaysList: Map<String, Int> = activities
-            .filter { activity -> activity.type == activityType }
-            .groupBy { activity -> activity.startDateLocal.substringBefore('T') }
-            .mapValues { (_, activities) -> activities.sumOf { activity -> activity.distance / 1000 } }
-            .mapValues { entry -> entry.value.toInt() }
-            .toMap()
-
-        if (activeDaysList.isEmpty()) {
-            return // No Plot
-        }
-
-        // counts = number of time we reach a distance
-        val counts: MutableList<Int> = // init to 0
-            activeDaysList.maxOf { entry -> entry.value }.let { List(it) { 0 }.toMutableList() }
-
-        var eddingtonNumber = 0
-        activeDaysList.forEach { entry: Map.Entry<String, Int> ->
-            for (day in entry.value downTo 1) {
-                counts[day - 1] += 1
-            }
-        }
-
-        for (day in counts.size downTo 1) {
-            if (counts[day - 1] >= day) {
-                eddingtonNumber = day
-                break
-            }
-        }
+        val eddingtonStatistic = EddingtonStatistic(activities.filter { activity -> activity.type == activityType })
+        val eddingtonNumber = eddingtonStatistic.eddingtonNumber
 
         val eddingtonBar = Bar {
             x.set(listOf(eddingtonNumber))
@@ -87,16 +61,18 @@ abstract class Chart {
             showlegend = false
         }
 
+        val nbDaysDistanceIsReached = eddingtonStatistic.nbDaysDistanceIsReached
+
         val eddingtonScatter = Scatter {
-            x.set((0..counts.size).toList())
-            y.set((0..counts.size).toList())
+            x.set((0..nbDaysDistanceIsReached.size).toList())
+            y.set((0..nbDaysDistanceIsReached.size).toList())
             val stringsBefore =
-                (0 until (eddingtonNumber + 1).coerceAtMost(counts.size - 1)).map { i -> "On ${counts[i] + 1} days you covered at least $i km." }
+                (0 until (eddingtonNumber + 1).coerceAtMost(nbDaysDistanceIsReached.size - 1)).map { i -> "On ${nbDaysDistanceIsReached[i] + 1} days you covered at least $i km." }
                     .toList()
             val stringsAfter =
-                (eddingtonNumber - 1 until counts.size - 1).map { i ->
-                    "On ${counts[i] + 1} days you covered at least ${i + 1} km." +
-                            "You need ${abs(i - counts[i] + 1)} more days (of ${i + 1} km or more) to achieve an Eddington number of ${i + 1}"
+                (eddingtonNumber - 1 until nbDaysDistanceIsReached.size - 1).map { i ->
+                    "On ${nbDaysDistanceIsReached[i] + 1} days you covered at least ${i + 1} km." +
+                            "You need ${abs(i - nbDaysDistanceIsReached[i] + 1)} more days (of ${i + 1} km or more) to achieve an Eddington number of ${i + 1}"
                 }
                     .toList()
             text(*(stringsBefore + stringsAfter).toTypedArray())
@@ -111,8 +87,8 @@ abstract class Chart {
         plot(row = row, width = width) {
             traces(
                 Bar {
-                    x.set((1..counts.size).toList())
-                    y.set(counts)
+                    x.set((1..nbDaysDistanceIsReached.size).toList())
+                    y.set(nbDaysDistanceIsReached)
                     name = "Times completed"
                     hoverinfo = "skip"
                 },
@@ -127,7 +103,7 @@ abstract class Chart {
                 xaxis {
                     title = "Km"
                     type = AxisType.linear
-                    range(0.0.rangeTo(counts.size.toDouble()))
+                    range(0.0.rangeTo(nbDaysDistanceIsReached.size.toDouble()))
                 }
 
                 yaxis {

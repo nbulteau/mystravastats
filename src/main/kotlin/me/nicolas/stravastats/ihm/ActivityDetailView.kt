@@ -383,12 +383,12 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
                 vbox.add(HBox(10.0, speedLabel, speedValueLabel))
 
                 // Gradient
-                val altitude1 = activity.stream?.altitude?.data?.getOrNull(index - 1)
+                val altitude1 = activity.stream?.altitude?.data?.getOrNull(index - 5)
                 val altitude2 = activity.stream?.altitude?.data?.getOrNull(index)
                 val gradientLabel = Label("Gradient:")
                 val gradientValueLabel: Label = if (coordinate1 != null && coordinate2 != null && altitude1 != null && altitude2 != null) {
                     val elevationDiff = altitude2 - altitude1
-                    val distance1 = activity.stream?.distance?.data?.get(index - 1)
+                    val distance1 = activity.stream?.distance?.data?.get(index - 5)
                     val distance2 = activity.stream?.distance?.data?.get(index)
                     val distanceBetweenCoordinates = distance2!! - distance1!!
                     val gradient = elevationDiff / distanceBetweenCoordinates

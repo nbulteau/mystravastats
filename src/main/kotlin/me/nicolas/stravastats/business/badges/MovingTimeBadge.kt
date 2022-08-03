@@ -10,8 +10,8 @@ data class MovingTimeBadge(
 
     override fun check(activities: List<Activity>): Pair<Activity?, Boolean> {
         val maxMovingTimeStatistic = MaxMovingTimeStatistic(activities)
-        val isChecked = if (maxMovingTimeStatistic.activity?.totalElevationGain != null) {
-            maxMovingTimeStatistic.activity?.totalElevationGain!! >= movingTime
+        val isChecked = if (maxMovingTimeStatistic.activity?.movingTime != null) {
+            maxMovingTimeStatistic.activity?.movingTime!! >= movingTime
         } else {
             false
         }

@@ -28,7 +28,7 @@ data class ActivityEffort(
         }
     }
 
-    fun getFormattedGradient() = "%.02f %%".format(100 * altitude / distance)
+    fun getFormattedGradient() = "${this.getGradient()} %"
 
     fun getGradient() = "%.02f".format(100 * altitude / distance)
 }

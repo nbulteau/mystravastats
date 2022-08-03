@@ -9,7 +9,17 @@ internal class EddingtonStatistic(
     activities: List<Activity>
 ) : Statistic("Eddington number", activities) {
 
-    val eddingtonNumber = processEddingtonNumber()
+    val eddingtonNumber: Int
+
+    init {
+        eddingtonNumber = processEddingtonNumber()
+    }
+
+    // counts = total up the number of days that you have ridden each distance
+    private lateinit var counts: MutableList<Int>
+
+    val nbDaysDistanceIsReached: List<Int>
+        get() = counts.toList()
 
     override val value: String
         get() = "$eddingtonNumber km"
@@ -28,8 +38,7 @@ internal class EddingtonStatistic(
                 .mapValues { entry: Map.Entry<String, Double> -> entry.value.toInt() }
                 .toMap()
 
-            // counts = total up the number of days that you have ridden each distance
-            val counts: MutableList<Int> = // init to 0
+            counts = // init to 0
                 List(activeDaysList.maxOf { entry: Map.Entry<String, Int> -> entry.value }) { 0 }.toMutableList()
 
             activeDaysList.forEach { entry: Map.Entry<String, Int> ->

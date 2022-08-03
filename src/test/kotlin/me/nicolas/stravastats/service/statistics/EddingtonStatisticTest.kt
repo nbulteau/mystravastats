@@ -9,6 +9,24 @@ import org.junit.jupiter.api.Test
 internal class EddingtonStatisticTest {
 
     @Test
+    fun `eddingtonTest 2`() {
+
+        // Given
+        val activities = listOf(
+            buildActivity("2020-01-01T12:16:22Z", 1000.0),
+            buildActivity("2020-02-02T12:13:52Z", 2000.0),
+            buildActivity("2020-02-03T12:13:52Z", 3000.0),
+            buildActivity("2020-02-04T12:13:52Z", 4000.0),
+        )
+
+        // When
+        val eddingtonStatistic = EddingtonStatistic(activities)
+
+        //Then
+        assertEquals(2, eddingtonStatistic.eddingtonNumber)
+        assertEquals(listOf(4, 3, 2, 1), eddingtonStatistic.nbDaysDistanceIsReached)
+    }
+    @Test
     fun `eddingtonTest 4`() {
 
         // Given
@@ -21,10 +39,11 @@ internal class EddingtonStatisticTest {
         )
 
         // When
-        val result = EddingtonStatistic(activities).eddingtonNumber
+        val eddingtonStatistic = EddingtonStatistic(activities)
 
         //Then
-        assertEquals(4, result)
+        assertEquals(4, eddingtonStatistic.eddingtonNumber)
+        assertEquals(listOf(4, 4, 4, 4), eddingtonStatistic.nbDaysDistanceIsReached)
     }
 
     @Test
@@ -39,11 +58,14 @@ internal class EddingtonStatisticTest {
         )
 
         // When
-        val result = EddingtonStatistic(activities).eddingtonNumber
+        val eddingtonStatistic = EddingtonStatistic(activities)
 
         //Then
-        assertEquals(3, result)
+        assertEquals(3, eddingtonStatistic.eddingtonNumber)
+        assertEquals(listOf(3, 3, 3, 3), eddingtonStatistic.nbDaysDistanceIsReached)
     }
+
+
 
     private fun buildActivity(startDateLocal: String, distance: Double) = Activity(
         achievementCount = 0,

@@ -19,8 +19,8 @@ internal class ByYearsChart(val activities: List<Activity>) : Chart() {
         val hikeByYears = ActivityHelper.sumDistanceByType(activitiesByYear, Hike)
 
         val plotlyPage = Plotly.grid {
-            buildBarModeStackPlot(row = 1, width = 6, runByYears, rideByYears, inLineSkateByYears, hikeByYears)
-            buildBarModeGroupPlot(row = 1, width = 6, runByYears, rideByYears, inLineSkateByYears, hikeByYears)
+            buildBarModePlot(row = 1, width = 6, runByYears, rideByYears, inLineSkateByYears, hikeByYears, BarMode.stack)
+            buildBarModePlot(row = 1, width = 6, runByYears, rideByYears, inLineSkateByYears, hikeByYears, BarMode.group)
             buildCumulativePlot(row = 2, width = 12, runByYears, rideByYears, inLineSkateByYears, hikeByYears)
             buildCumulativeKilometers(row = 3, width = 12, activitiesByYear, Run)
             buildCumulativeKilometers(row = 4, width = 12, activitiesByYear, Ride)
@@ -31,13 +31,14 @@ internal class ByYearsChart(val activities: List<Activity>) : Chart() {
         renderAndOpenBrowser(plotlyPage)
     }
 
-    private fun PlotGrid.buildBarModeStackPlot(
+    private fun PlotGrid.buildBarModePlot(
         row: Int,
         width: Int,
         runByYears: Map<String, Double>,
         bikeByYears: Map<String, Double>,
         inLineSkateByYears: Map<String, Double>,
-        hikeByYears: Map<String, Double>
+        hikeByYears: Map<String, Double>,
+        barMode: BarMode
     ) {
         plot(row = row, width = width) {
             traces(
@@ -48,43 +49,7 @@ internal class ByYearsChart(val activities: List<Activity>) : Chart() {
             )
 
             layout {
-                barmode = BarMode.stack
-                title = "Kilometers by year"
-
-                xaxis {
-                    title = "Year"
-                    type = AxisType.category
-                }
-                yaxis {
-                    title = "Km"
-                }
-                legend {
-                    xanchor = XAnchor.left
-                    bgcolor("#E2E2E2")
-                    traceorder = TraceOrder.normal
-                }
-            }
-        }
-    }
-
-    private fun PlotGrid.buildBarModeGroupPlot(
-        row: Int,
-        width: Int,
-        runByYears: Map<String, Double>,
-        bikeByYears: Map<String, Double>,
-        inLineSkateByYears: Map<String, Double>,
-        hikeByYears: Map<String, Double>
-    ) {
-        plot(row = row, width = width) {
-            traces(
-                buildBarByType(runByYears, Run),
-                buildBarByType(bikeByYears, Ride),
-                buildBarByType(inLineSkateByYears, InlineSkate),
-                buildBarByType(hikeByYears, Hike)
-            )
-
-            layout {
-                barmode = BarMode.group
+                barmode = barMode
                 title = "Kilometers by year"
 
                 xaxis {
