@@ -31,8 +31,8 @@ import me.nicolas.stravastats.ihm.chart.MultipleLineChart
 import me.nicolas.stravastats.ihm.chart.MultipleLineChart.Companion.COLORS
 import me.nicolas.stravastats.ihm.chart.eddingtonNumberChart
 import me.nicolas.stravastats.service.ActivityHelper
-import me.nicolas.stravastats.service.formatSeconds
-import me.nicolas.stravastats.service.formatSpeed
+import me.nicolas.stravastats.utils.formatSeconds
+import me.nicolas.stravastats.utils.formatSpeed
 import tornadofx.*
 import java.time.LocalDate
 

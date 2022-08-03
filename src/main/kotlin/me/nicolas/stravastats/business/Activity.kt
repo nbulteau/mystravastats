@@ -3,8 +3,8 @@ package me.nicolas.stravastats.business
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import me.nicolas.stravastats.service.formatDate
-import me.nicolas.stravastats.service.formatSeconds
+import me.nicolas.stravastats.utils.formatDate
+import me.nicolas.stravastats.utils.formatSeconds
 import kotlin.math.abs
 
 const val Run = "Run"
@@ -174,9 +174,9 @@ data class Activity(
 
     fun getFormattedSpeed(): String {
         return if (type == "Run") {
-            "${(elapsedTime * 1000 / distance).formatSeconds()}/km"
+            "${getSpeed()}/km"
         } else {
-            "%.02f km/h".format(distance / elapsedTime * 3600 / 1000)
+            "${getSpeed()} km/h"
         }
     }
 
@@ -189,7 +189,7 @@ data class Activity(
     }
 
     fun calculateTotalAscentGain(): Double {
-        if(stream?.altitude?.data != null) {
+        if (stream?.altitude?.data != null) {
             val deltas = stream?.altitude?.data?.zipWithNext { a, b -> b - a }
             return abs(deltas?.filter { it < 0 }?.sumOf { it }!!)
         }
@@ -197,7 +197,7 @@ data class Activity(
     }
 
     fun calculateTotalDescentGain(): Double {
-        if(stream?.altitude?.data != null) {
+        if (stream?.altitude?.data != null) {
             val deltas = stream?.altitude?.data?.zipWithNext { a, b -> b - a }
             return deltas?.filter { it > 0 }?.sumOf { it }!!
         }

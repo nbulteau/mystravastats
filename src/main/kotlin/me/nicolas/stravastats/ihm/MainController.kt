@@ -18,6 +18,7 @@ import me.nicolas.stravastats.service.statistics.calculateBestElevationForDistan
 import me.nicolas.stravastats.service.statistics.calculateBestTimeForDistance
 import me.nicolas.stravastats.utils.GenericCache
 import me.nicolas.stravastats.utils.SoftCache
+import me.nicolas.stravastats.utils.formatDate
 import tornadofx.Controller
 import kotlin.collections.component1
 import kotlin.collections.component2

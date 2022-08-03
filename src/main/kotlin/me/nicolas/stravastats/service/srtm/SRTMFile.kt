@@ -20,20 +20,20 @@ class SRTMFile(file: File) : AbstractFileBasedTerrain(file) {
         private const val DATA_SIZE_BYTES = 2
     }
 
-    var level: SRTMLevelEnum
+    private var level: SRTMLevelEnum
 
-    val tile: BoundingBox
+    private val tile: BoundingBox
 
-    val southWestCorner: Point
+    private val southWestCorner: Point
         get() = Point(tile.south, tile.west)
 
-    val northWestCorner: Point
+    private val northWestCorner: Point
         get() = Point(tile.north, tile.west)
 
-    val northEastCorner: Point
+    private val northEastCorner: Point
         get() = Point(tile.north, tile.east)
 
-    val southEastCorner: Point
+    private val southEastCorner: Point
         get() = Point(tile.south, tile.east)
 
     init {

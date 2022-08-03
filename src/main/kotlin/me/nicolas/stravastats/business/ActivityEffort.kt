@@ -1,6 +1,6 @@
 package me.nicolas.stravastats.business
 
-import me.nicolas.stravastats.service.formatSeconds
+import me.nicolas.stravastats.utils.formatSeconds
 
 
 /**

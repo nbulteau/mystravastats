@@ -21,10 +21,10 @@ import javafx.scene.text.FontWeight
 import javafx.util.Duration
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.GeoCoordinate
-import me.nicolas.stravastats.service.formatSeconds
-import me.nicolas.stravastats.service.formatSpeed
-import me.nicolas.stravastats.service.inDateTimeFormatter
-import me.nicolas.stravastats.service.timeFormatter
+import me.nicolas.stravastats.utils.formatSeconds
+import me.nicolas.stravastats.utils.formatSpeed
+import me.nicolas.stravastats.utils.inDateTimeFormatter
+import me.nicolas.stravastats.utils.timeFormatter
 import tornadofx.*
 import java.time.LocalDateTime
 import kotlin.math.max

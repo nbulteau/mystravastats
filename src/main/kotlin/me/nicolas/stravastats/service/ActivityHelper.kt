@@ -1,6 +1,7 @@
 package me.nicolas.stravastats.service
 
 import me.nicolas.stravastats.business.*
+import me.nicolas.stravastats.utils.inDateTimeFormatter
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
@@ -126,7 +127,7 @@ class ActivityHelper {
                 averageSpeedByType(activities, type)
             }
 
-        fun averageSpeedByType(activities: List<Activity>, type: String) =
+        private fun averageSpeedByType(activities: List<Activity>, type: String) =
             activities
                 .filter { activity -> activity.type == type }
                 .map { activity -> activity.averageSpeed * 3.6 }

@@ -1,7 +1,7 @@
 package me.nicolas.stravastats.service.statistics
 
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.service.formatSeconds
+import me.nicolas.stravastats.utils.formatSeconds
 
 internal class MaxMovingTimeStatistic(
     activities: List<Activity>

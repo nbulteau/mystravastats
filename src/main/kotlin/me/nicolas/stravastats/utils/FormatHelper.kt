@@ -1,4 +1,4 @@
-package me.nicolas.stravastats.service
+package me.nicolas.stravastats.utils
 
 import me.nicolas.stravastats.business.Run
 import java.time.LocalDateTime

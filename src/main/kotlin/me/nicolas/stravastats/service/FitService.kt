@@ -6,6 +6,7 @@ import com.garmin.fit.RecordMesg
 import com.garmin.fit.SessionMesg
 import com.garmin.fit.Sport
 import me.nicolas.stravastats.business.*
+import me.nicolas.stravastats.utils.inDateTimeFormatter
 import java.io.File
 import java.nio.file.Path
 import java.time.LocalDateTime
