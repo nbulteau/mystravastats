@@ -50,20 +50,22 @@ internal class EddingtonNumberChart(activeByDaysMap: Map<String, Int>) : StackPa
             counts = mutableListOf()
         } else {
             counts = IntArray(activeByDaysMap.maxOf { entry -> entry.value }) { 0 }.toMutableList()
-            // counts = number of time we reach a distance
-            activeByDaysMap.forEach { entry: Map.Entry<String, Int> ->
-                for (day in entry.value downTo 1) {
-                    counts[day - 1] += 1
+            if(counts.isNotEmpty()) {
+                // counts = number of time we reach a distance
+                activeByDaysMap.forEach { entry: Map.Entry<String, Int> ->
+                    for (day in entry.value downTo 1) {
+                        counts[day - 1] += 1
+                    }
                 }
-            }
 
-            for (day in counts.size downTo 1) {
-                if (counts[day - 1] >= day) {
-                    eddingtonNumber = day
-                    break
+                for (day in counts.size downTo 1) {
+                    if (counts[day - 1] >= day) {
+                        eddingtonNumber = day
+                        break
+                    }
                 }
+                upperBound = counts[0]
             }
-            upperBound = counts[0]
         }
 
         eddingtonBars = createEddingtonBars(counts, upperBound)

@@ -208,44 +208,31 @@ class MainController(private val clientId: String, private val activities: Obser
 
         val filteredActivities = getFilteredActivities(activityType, year)
 
-        val activitiesByMonth: Map<String, List<Activity>> = ActivityHelper.groupActivitiesByMonth(filteredActivities)
-        val distanceByMonth: Map<String, Double> = activitiesByMonth.mapValues { (_, activities) ->
-            activities.sumOf { activity ->
-                activity.distance / 1000
-            }
-        }
-
-        return FXCollections.observableList(distanceByMonth.map { entry ->
-            XYChart.Data(entry.key, entry.value)
-        })
+        return buildSeries(ActivityHelper.groupActivitiesByMonth(filteredActivities))
     }
 
     fun buildDistanceByWeeksSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>> {
 
         val filteredActivities = getFilteredActivities(activityType, year)
 
-        val activitiesByWeek: Map<String, List<Activity>> = ActivityHelper.groupActivitiesByWeek(filteredActivities)
-        val distanceByWeek: Map<String, Double> = activitiesByWeek.mapValues { (_, activities) ->
+        return buildSeries(ActivityHelper.groupActivitiesByWeek(filteredActivities))
+    }
+
+    fun buildDistanceByDaysSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>> {
+
+        val filteredActivities = getFilteredActivities(activityType, year)
+
+        return buildSeries(ActivityHelper.groupActivitiesByDay(filteredActivities, year))
+    }
+
+    private fun buildSeries(activities: Map<String, List<Activity>>): ObservableList<XYChart.Data<String, Number>> {
+        val distanceByMonth: Map<String, Double> = activities.mapValues { (_, activities) ->
             activities.sumOf { activity ->
                 activity.distance / 1000
             }
         }
 
-        return FXCollections.observableList(distanceByWeek.map { entry ->
-            XYChart.Data(entry.key, entry.value)
-        })
-    }
-
-    fun buildDistanceByDaysSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>>? {
-
-        val filteredActivities = getFilteredActivities(activityType, year)
-
-        val activitiesByDay: Map<String, List<Activity>> = ActivityHelper.groupActivitiesByDay(filteredActivities, year)
-        val distanceByDay: Map<String, Double> = activitiesByDay.mapValues { (_, activities) ->
-            activities.sumOf { activity -> activity.distance / 1000 }
-        }
-
-        return FXCollections.observableList(distanceByDay.map { entry ->
+        return FXCollections.observableList(distanceByMonth.map { entry ->
             XYChart.Data(entry.key, entry.value)
         })
     }
@@ -333,11 +320,15 @@ class MainController(private val clientId: String, private val activities: Obser
     private fun buildActivitiesToDisplay(activities: List<Activity>): ObservableList<ActivityDisplay> {
 
         val activitiesToDisplay = activities.map { activity ->
-
-            val hyperlink = Hyperlink(activity.name).apply {
-                onAction = EventHandler {
-                    ActivityDetailView(activity).openModal()
+            val hyperlink = if (activity.stream?.latitudeLongitude != null) {
+                Hyperlink(activity.name).apply {
+                    onAction = EventHandler {
+                        ActivityDetailView(activity).openModal()
+                    }
                 }
+            } else {
+                // No maps to display
+                Hyperlink(activity.name)
             }
 
             ActivityDisplay(
