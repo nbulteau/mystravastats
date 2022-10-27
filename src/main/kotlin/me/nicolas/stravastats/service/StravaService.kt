@@ -10,6 +10,8 @@ import me.nicolas.stravastats.ihm.task.ProgressBarHelper.Companion.displayProgre
 import me.nicolas.stravastats.service.ActivityHelper.Companion.filterActivities
 import me.nicolas.stravastats.strava.StravaApi
 import java.io.File
+import java.nio.file.Files
+import kotlin.io.path.name
 
 
 internal class StravaService(private val clientId: String, clientSecret: String) {
@@ -17,6 +19,8 @@ internal class StravaService(private val clientId: String, clientSecret: String)
     private val objectMapper = jacksonObjectMapper()
 
     private val stravaApi: StravaApi = StravaApi(clientId, clientSecret)
+
+    private val prettyWriter: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
 
     fun getLoggedInAthlete(): Athlete {
 
@@ -27,7 +31,6 @@ internal class StravaService(private val clientId: String, clientSecret: String)
         // Save into cache
         val activitiesDirectory = File("strava-$clientId")
         activitiesDirectory.mkdirs()
-        val prettyWriter: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
         prettyWriter.writeValue(File(activitiesDirectory, "athlete-$clientId.json"), athlete)
 
         return athlete
@@ -42,7 +45,6 @@ internal class StravaService(private val clientId: String, clientSecret: String)
         // Save into cache
         val yearActivitiesDirectory = File("strava-$clientId", "strava-$clientId-$year")
         yearActivitiesDirectory.mkdirs()
-        val prettyWriter: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
         prettyWriter.writeValue(
             File(yearActivitiesDirectory, "activities-$clientId-$year.json"),
             activities
@@ -60,13 +62,20 @@ internal class StravaService(private val clientId: String, clientSecret: String)
         var index = 0.0
         val writer: ObjectWriter = objectMapper.writer()
 
+        // stream id files list
+        val streamIdsSet = Files.walk(activitiesDirectory.toPath())
+            .filter { Files.isRegularFile(it) }
+            .filter { it.name.startsWith("stream-") }
+            .map { it.name.substringAfter("stream-").toLong() }
+            .toList().toSet()
+
         activities.forEach { activity ->
             displayProgressBar(++index / activities.size)
 
             // stream
             val streamFile = File(activitiesDirectory, "stream-${activity.id}")
             val stream: Stream?
-            if (streamFile.exists()) {
+            if (streamIdsSet.contains(activity.id)) {
                 stream = objectMapper.readValue(streamFile, Stream::class.java)
             } else {
                 stream = stravaApi.getActivityStream(activity)
@@ -77,6 +86,7 @@ internal class StravaService(private val clientId: String, clientSecret: String)
             }
             activity.stream = stream
         }
+
         println()
     }
 }
