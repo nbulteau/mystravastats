@@ -53,6 +53,8 @@ internal class EddingtonStatistic(
                     break
                 }
             }
+        } else {
+            counts = mutableListOf()
         }
 
         return eddingtonNumber
