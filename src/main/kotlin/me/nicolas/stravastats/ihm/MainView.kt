@@ -118,6 +118,7 @@ class MainView(
 
                             button {
                                 imageview("images/buttons/ride.png")
+                                tooltip("Ride")
                                 action {
                                     selectedActivity = SimpleStringProperty("Ride")
                                     updateMainView()
@@ -125,6 +126,7 @@ class MainView(
                             }
                             button {
                                 imageview("images/buttons/commute.png")
+                                tooltip("Commute")
                                 action {
                                     selectedActivity = SimpleStringProperty("Commute")
                                     updateMainView()
@@ -132,6 +134,7 @@ class MainView(
                             }
                             button {
                                 imageview("images/buttons/run.png")
+                                tooltip("Run")
                                 action {
                                     selectedActivity = SimpleStringProperty("Run")
                                     updateMainView()
@@ -139,6 +142,7 @@ class MainView(
                             }
                             button {
                                 imageview("images/buttons/inlineskate.png")
+                                tooltip("InlineSkate")
                                 action {
                                     selectedActivity = SimpleStringProperty("InlineSkate")
                                     updateMainView()
@@ -146,6 +150,7 @@ class MainView(
                             }
                             button {
                                 imageview("images/buttons/hike.png")
+                                tooltip("Hike")
                                 action {
                                     selectedActivity = SimpleStringProperty("Hike")
                                     updateMainView()
@@ -153,6 +158,7 @@ class MainView(
                             }
                             button {
                                 imageview("images/buttons/alpineski.png")
+                                tooltip("AlpineSki")
                                 action {
                                     selectedActivity = SimpleStringProperty("AlpineSki")
                                     updateMainView()
@@ -170,6 +176,7 @@ class MainView(
 
                             button {
                                 imageview("images/buttons/csv.png")
+                                tooltip("Generate CSV")
                                 action {
                                     mainController.generateCSV(getSelectedYear())
                                 }
