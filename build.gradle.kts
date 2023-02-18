@@ -1,5 +1,6 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.*
 
 
 buildscript {
@@ -11,11 +12,10 @@ buildscript {
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.7.10"
+    id("org.jetbrains.kotlin.jvm") version "1.8.10"
     id("org.openjfx.javafxplugin") version "0.0.13"
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.45.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    //id("org.beryx.jlink") version "2.25.0"
 
     // Apply the application plugin to add support for building a CLI application.
     application
@@ -29,16 +29,16 @@ repositories {
 dependencies {
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.21")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.3")
-    implementation("org.slf4j:slf4j-nop:1.7.36")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2")
 
-    implementation("io.javalin:javalin:4.6.4")
+    implementation("org.slf4j:slf4j-nop:2.0.6")
+    implementation("io.javalin:javalin:5.3.2")
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
+
     implementation("com.sothawo:mapjfx:3.1.0")
     implementation("no.tornado:tornadofx:1.7.20")
 
@@ -47,8 +47,8 @@ dependencies {
     //implementation("org.openjfx:javafx-controls:18.0.1")
     implementation("org.openjfx:javafx-fxml:18.0.1")
     //implementation("org.openjfx:javafx-graphics:18.0.1")
-    //implementation("org.openjfx:javafx-media:18.0.1")
-    //implementation("org.openjfx:javafx-web:18.0.1")
+    implementation("org.openjfx:javafx-media:18.0.1")
+    implementation("org.openjfx:javafx-web:18.0.1")
 
     // Some problem with 0.5.0 version
     implementation("space.kscience:plotlykt-server:0.5.0") {
@@ -57,7 +57,7 @@ dependencies {
 
     implementation(files("libs/fit.jar"))
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 }
 
 javafx {
@@ -94,7 +94,7 @@ tasks.withType(Jar::class) {
 }
 
 fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase(Locale.getDefault()).contains(it) }
     val regex = "^[0-9,.v-]+(-r)?$".toRegex()
     val isStable = stableKeyword || regex.matches(version)
     return isStable.not()

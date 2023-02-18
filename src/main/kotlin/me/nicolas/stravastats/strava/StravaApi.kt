@@ -217,7 +217,7 @@ internal class StravaApi(clientId: String, clientSecret: String) {
             val app = Javalin.create().start(8080)
             // GET /exchange_token to get code
             app.get("/exchange_token") { ctx ->
-                val authorizationCode = ctx.req.getParameter("code")
+                val authorizationCode = ctx.req().getParameter("code")
                 ctx.result("Access granted to read activities of clientId: $clientId.")
 
                 launch {
