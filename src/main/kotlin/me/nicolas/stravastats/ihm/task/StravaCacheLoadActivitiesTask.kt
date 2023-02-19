@@ -10,7 +10,8 @@ import me.nicolas.stravastats.service.ActivityHelper.Companion.filterActivities
 import java.io.File
 import java.time.LocalDate
 
-internal open class StravaCacheLoadActivitiesTask(private val clientId: String) : Task<Pair<Athlete?, List<Activity>>>() {
+internal open class StravaCacheLoadActivitiesTask(private val clientId: String) :
+    Task<Pair<Athlete?, List<Activity>>>() {
 
     private val objectMapper = jacksonObjectMapper()
 
@@ -19,10 +20,11 @@ internal open class StravaCacheLoadActivitiesTask(private val clientId: String) 
         val athlete = getAthleteFromCache()
 
         val activities = mutableListOf<Activity>()
-        for (currentYear in LocalDate.now().year downTo 2010) {
+        for (currentYear in LocalDate.now().year  downTo 2010) {
             updateMessage("Loading $currentYear activities ...")
             activities.addAll(loadActivitiesFromCache(currentYear))
         }
+
         updateMessage("All activities are loaded.")
 
         return Pair(athlete, activities)
@@ -41,7 +43,7 @@ internal open class StravaCacheLoadActivitiesTask(private val clientId: String) 
         return athlete
     }
 
-    private fun loadActivitiesFromCache(year: Int): List<Activity> {
+    protected fun loadActivitiesFromCache(year: Int): List<Activity> {
         var activities = emptyList<Activity>()
 
         val yearActivitiesDirectory = File("strava-$clientId", "strava-$clientId-$year")

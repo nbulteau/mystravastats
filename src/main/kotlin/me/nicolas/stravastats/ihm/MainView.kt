@@ -142,7 +142,7 @@ class MainView(
                             }
                             button {
                                 imageview("images/buttons/inlineskate.png")
-                                tooltip("InlineSkate")
+                                tooltip("Inline Skate")
                                 action {
                                     selectedActivity = SimpleStringProperty("InlineSkate")
                                     updateMainView()
@@ -158,7 +158,7 @@ class MainView(
                             }
                             button {
                                 imageview("images/buttons/alpineski.png")
-                                tooltip("AlpineSki")
+                                tooltip("Alpine Ski")
                                 action {
                                     selectedActivity = SimpleStringProperty("AlpineSki")
                                     updateMainView()
@@ -183,6 +183,7 @@ class MainView(
                             }
                             button {
                                 imageview("images/buttons/charts.png")
+                                tooltip("Generate charts")
                                 action {
                                     mainController.generateCharts(getSelectedYear())
                                 }

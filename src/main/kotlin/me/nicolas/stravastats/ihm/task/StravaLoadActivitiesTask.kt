@@ -1,14 +1,14 @@
 package me.nicolas.stravastats.ihm.task
 
-import javafx.concurrent.Task
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.service.StravaService
 import java.time.LocalDate
+import kotlin.concurrent.thread
 import kotlin.system.measureTimeMillis
 
-internal class StravaLoadActivitiesTask(clientId: String, clientSecret: String) :
-    Task<Pair<Athlete?, List<Activity>>>() {
+internal class StravaLoadActivitiesTask(clientId: String, clientSecret: String, private val allYears: Boolean = true) :
+    StravaCacheLoadActivitiesTask(clientId) {
 
     private val stravaService = StravaService(clientId, clientSecret)
 
@@ -18,9 +18,20 @@ internal class StravaLoadActivitiesTask(clientId: String, clientSecret: String) 
 
         val activities = mutableListOf<Activity>()
         val elapsed = measureTimeMillis {
-            for (currentYear in LocalDate.now().year downTo 2010) {
-                updateMessage("Loading $currentYear activities ...")
-                activities.addAll(stravaService.getActivities(currentYear))
+            if (allYears) {
+                for (currentYear in LocalDate.now().year downTo 2010) {
+                    updateMessage("Loading $currentYear activities ...")
+                    activities.addAll(stravaService.getActivities(currentYear))
+                }
+            } else {
+                thread(start = true) {
+                    updateMessage("Loading ${LocalDate.now().year} activities ...")
+                    activities.addAll(stravaService.getActivities(LocalDate.now().year))
+                }
+                for (currentYear in LocalDate.now().year - 1 downTo 2010) {
+                    updateMessage("Loading $currentYear activities ...")
+                    activities.addAll(loadActivitiesFromCache(currentYear))
+                }
             }
         }
         updateMessage("All activities are loaded.")

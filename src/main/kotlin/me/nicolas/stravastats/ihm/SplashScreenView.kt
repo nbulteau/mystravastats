@@ -9,13 +9,16 @@ import javafx.scene.layout.VBox
 import me.nicolas.stravastats.ihm.task.FitFilesLoadActivitiesTask
 import me.nicolas.stravastats.ihm.task.StravaCacheLoadActivitiesTask
 import me.nicolas.stravastats.ihm.task.StravaLoadActivitiesTask
-import tornadofx.*
+import tornadofx.View
+import tornadofx.label
+import tornadofx.progressbar
 import java.nio.file.Path
 import kotlin.system.exitProcess
 
 internal interface LoadActivitiesTaskCompletionHandler {
     fun complete()
 }
+
 internal class SplashScreenView : View("MyStravaStatistics") {
 
     companion object {
@@ -48,6 +51,7 @@ internal class SplashScreenView : View("MyStravaStatistics") {
             override fun complete() {
                 try {
                     val (athlete, activities) = loadActivitiesTask.valueProperty().get()
+
                     this@SplashScreenView.replaceWith(
                         replacement = MainView(clientId, athlete, FXCollections.observableArrayList(activities)),
                         sizeToScene = true,
