@@ -89,6 +89,36 @@ internal class StravaAPIAuthenticationView : View("Strava API authentication") {
                                     val userData = (this@StravaAPIAuthenticationView.primaryStage.userData as MutableMap<*, *>).toMutableMap()
                                     userData["clientId"] = clientIdStr
                                     userData["clientSecret"] = clientSecretStr
+                                    userData["download"] = "new"
+
+                                    this@StravaAPIAuthenticationView.primaryStage.userData = userData
+
+                                    this@StravaAPIAuthenticationView.replaceWith(
+                                        replacement = SplashScreenView(),
+                                        sizeToScene = true,
+                                        centerOnScreen = true
+                                    )
+                                } else {
+                                    messageLabel.text = "Client Id and client secret are mandatory."
+                                    messageLabel.textFill = Color.RED
+                                }
+                            }
+                        }
+                        button("Download all activities from Strava") {
+                            gridpaneConstraints {
+                                columnRowIndex(1, 2)
+                            }
+                            setOnAction {
+                                val clientIdStr = clientIdTextField.text.toString().trim()
+                                val clientSecretStr = clientSecretPasswordField.text.toString().trim()
+
+                                if (clientIdStr.isNotEmpty() && clientSecretStr.isNotEmpty()) {
+                                    storeStravaAuthentication(clientIdStr, clientSecretStr)
+                                    val userData = (this@StravaAPIAuthenticationView.primaryStage.userData as MutableMap<*, *>).toMutableMap()
+                                    userData["clientId"] = clientIdStr
+                                    userData["clientSecret"] = clientSecretStr
+                                    userData["download"] = "all"
+
                                     this@StravaAPIAuthenticationView.primaryStage.userData = userData
 
                                     this@StravaAPIAuthenticationView.replaceWith(

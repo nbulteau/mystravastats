@@ -40,10 +40,15 @@ internal class SplashScreenView : View("MyStravaStatistics") {
             FitFilesLoadActivitiesTask(cachePath)
         } else {
             val clientSecret: String? = userData["clientSecret"] as String?
-            if (clientSecret != null) {
-                StravaLoadActivitiesTask(clientId, clientSecret)
-            } else {
+            if (clientSecret == null) {
                 StravaCacheLoadActivitiesTask(clientId)
+            } else {
+                val download: String = userData["download"] as String
+                if (download == "all") {
+                    StravaLoadActivitiesTask(clientId, clientSecret, true)
+                } else {
+                    StravaLoadActivitiesTask(clientId, clientSecret, false)
+                }
             }
         }
 

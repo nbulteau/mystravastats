@@ -12,10 +12,10 @@ buildscript {
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.8.10"
+    id("org.jetbrains.kotlin.jvm") version "1.8.20"
     id("org.openjfx.javafxplugin") version "0.0.13"
-    id("com.github.ben-manes.versions") version "0.45.0"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.ben-manes.versions") version "0.46.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 
     // Apply the application plugin to add support for building a CLI application.
     application
@@ -36,7 +36,7 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2")
 
     implementation("org.slf4j:slf4j-nop:2.0.6")
-    implementation("io.javalin:javalin:5.3.2")
+    implementation("io.javalin:javalin:5.4.2")
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
 
     implementation("com.sothawo:mapjfx:3.1.0")

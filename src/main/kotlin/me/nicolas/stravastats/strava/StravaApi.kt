@@ -30,7 +30,14 @@ import java.time.ZoneId
 import kotlin.system.exitProcess
 
 
-internal class StravaApi(clientId: String, clientSecret: String) {
+interface IStravaApi {
+    fun getLoggedInAthlete(): Athlete
+    fun getActivities(year: Int): List<Activity>
+    fun getActivities(after: LocalDateTime): List<Activity>
+    fun getActivityStream(activity: Activity): Stream?
+}
+
+internal class StravaApi(clientId: String, clientSecret: String) : IStravaApi {
 
     private val properties: MyStravaStatsProperties = loadPropertiesFromFile()
 
@@ -45,6 +52,41 @@ internal class StravaApi(clientId: String, clientSecret: String) {
 
     init {
         setAccessToken(clientId, clientSecret)
+    }
+
+    override fun getLoggedInAthlete(): Athlete {
+        try {
+            return doGetLoggedInAthlete()
+        } catch (connectException: ConnectException) {
+            throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
+        }
+    }
+
+    override fun getActivities(year: Int): List<Activity> {
+        try {
+            return doGetActivities(
+                before = LocalDateTime.of(year, 12, 31, 23, 59),
+                after = LocalDateTime.of(year, 1, 1, 0, 0)
+            )
+        } catch (connectException: ConnectException) {
+            throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
+        }
+    }
+
+    override fun getActivityStream(activity: Activity): Stream? {
+        try {
+            return doGetActivityStream(activity)
+        } catch (connectException: ConnectException) {
+            throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
+        }
+    }
+
+    override fun getActivities(after: LocalDateTime): List<Activity> {
+        try {
+            return doGetActivities(after = after)
+        } catch (connectException: ConnectException) {
+            throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
+        }
     }
 
     private fun getupProxyFromEnvironment(): Proxy? {
@@ -65,14 +107,6 @@ internal class StravaApi(clientId: String, clientSecret: String) {
         }
 
         return null
-    }
-
-    fun getLoggedInAthlete(): Athlete {
-        try {
-            return doGetLoggedInAthlete()
-        } catch (connectException: ConnectException) {
-            throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
-        }
     }
 
     private fun doGetLoggedInAthlete(): Athlete {
@@ -97,23 +131,15 @@ internal class StravaApi(clientId: String, clientSecret: String) {
         }
     }
 
-    fun getActivities(year: Int): List<Activity> {
-        try {
-            return doGetActivities(
-                before = LocalDateTime.of(year, 12, 31, 23, 59),
-                after = LocalDateTime.of(year, 1, 1, 0, 0)
-            )
-        } catch (connectException: ConnectException) {
-            throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
-        }
-    }
 
-    private fun doGetActivities(before: LocalDateTime, after: LocalDateTime): List<Activity> {
+    private fun doGetActivities(before: LocalDateTime? = null, after: LocalDateTime): List<Activity> {
 
         val activities = mutableListOf<Activity>()
         var page = 1
         var url = "${properties.strava.url}/api/v3/athlete/activities?per_page=${properties.strava.pagesize}"
-        url += "&before=${before.atZone(ZoneId.of("Europe/Paris")).toEpochSecond()}"
+        if(before != null) {
+            url += "&before=${before.atZone(ZoneId.of("Europe/Paris")).toEpochSecond()}"
+        }
         url += "&after=${after.atZone(ZoneId.of("Europe/Paris")).toEpochSecond()}"
 
         val requestHeaders = buildRequestHeaders()
@@ -136,14 +162,6 @@ internal class StravaApi(clientId: String, clientSecret: String) {
         } while (result.isNotEmpty())
 
         return activities
-    }
-
-    fun getActivityStream(activity: Activity): Stream? {
-        try {
-            return doGetActivityStream(activity)
-        } catch (connectException: ConnectException) {
-            throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
-        }
     }
 
     private fun doGetActivityStream(activity: Activity): Stream? {

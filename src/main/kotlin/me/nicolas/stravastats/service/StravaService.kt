@@ -8,6 +8,7 @@ import me.nicolas.stravastats.business.Athlete
 import me.nicolas.stravastats.business.Stream
 import me.nicolas.stravastats.ihm.task.ProgressBarHelper.Companion.displayProgressBar
 import me.nicolas.stravastats.service.ActivityHelper.Companion.filterActivities
+import me.nicolas.stravastats.strava.IStravaApi
 import me.nicolas.stravastats.strava.StravaApi
 import java.io.File
 import java.nio.file.Files
@@ -18,7 +19,7 @@ internal class StravaService(private val clientId: String, clientSecret: String)
 
     private val objectMapper = jacksonObjectMapper()
 
-    private val stravaApi: StravaApi = StravaApi(clientId, clientSecret)
+    private val stravaApi: IStravaApi = StravaApi(clientId, clientSecret)
 
     private val prettyWriter: ObjectWriter = objectMapper.writer(DefaultPrettyPrinter())
 
