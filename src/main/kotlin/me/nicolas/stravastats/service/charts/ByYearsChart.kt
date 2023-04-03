@@ -1,10 +1,10 @@
 package me.nicolas.stravastats.service.charts
 
-import space.kscience.plotly.*
-import space.kscience.plotly.models.*
 import me.nicolas.stravastats.business.*
 import me.nicolas.stravastats.service.ActivityHelper
 import space.kscience.dataforge.values.Value
+import space.kscience.plotly.*
+import space.kscience.plotly.models.*
 import java.time.LocalDate
 
 @OptIn(UnstablePlotlyAPI::class)
@@ -19,26 +19,26 @@ internal class ByYearsChart(val activities: List<Activity>) : Chart() {
         val hikeByYears = ActivityHelper.sumDistanceByType(activitiesByYear, Hike)
 
         val plotlyPage = Plotly.grid {
-            buildBarModePlot(row = 1, width = 6, runByYears, rideByYears, inLineSkateByYears, hikeByYears, BarMode.stack)
-            buildBarModePlot(row = 1, width = 6, runByYears, rideByYears, inLineSkateByYears, hikeByYears, BarMode.group)
-            buildCumulativePlot(row = 2, width = 12, runByYears, rideByYears, inLineSkateByYears, hikeByYears)
-            buildCumulativeKilometers(row = 3, width = 12, activitiesByYear, Run)
-            buildCumulativeKilometers(row = 4, width = 12, activitiesByYear, Ride)
-            buildCumulativeElevation(row = 5, width = 12, activitiesByYear, Ride)
-            buildEddingtonNumberPlotByType(row = 6, width = 6, activities, Run)
-            buildEddingtonNumberPlotByType(row = 6, width = 6, activities, Ride)
+            buildBarModePlot(runByYears, rideByYears, inLineSkateByYears, hikeByYears, barMode = BarMode.stack)
+            buildBarModePlot(runByYears, rideByYears, inLineSkateByYears, hikeByYears, barMode = BarMode.group)
+            buildCumulativePlot(runByYears, rideByYears, inLineSkateByYears, hikeByYears)
+            buildCumulativeKilometers(activitiesByYear, activityType = Run)
+            buildCumulativeKilometers(activitiesByYear, activityType = Ride, row = 4)
+            buildCumulativeElevation(activitiesByYear, activityType = Ride)
+            buildEddingtonNumberPlotByType(activities, activityType = Run)
+            buildEddingtonNumberPlotByType(activities, activityType = Ride)
         }
         renderAndOpenBrowser(plotlyPage)
     }
 
     private fun PlotGrid.buildBarModePlot(
-        row: Int,
-        width: Int,
         runByYears: Map<String, Double>,
         bikeByYears: Map<String, Double>,
         inLineSkateByYears: Map<String, Double>,
         hikeByYears: Map<String, Double>,
-        barMode: BarMode
+        barMode: BarMode,
+        row: Int = 1,
+        width: Int = 6
     ) {
         plot(row = row, width = width) {
             traces(
@@ -69,12 +69,12 @@ internal class ByYearsChart(val activities: List<Activity>) : Chart() {
     }
 
     private fun PlotGrid.buildCumulativePlot(
-        row: Int,
-        width: Int,
         runByYears: Map<String, Double>,
         bikeByYears: Map<String, Double>,
         inLineSkateByYears: Map<String, Double>,
-        hikeByYears: Map<String, Double>
+        hikeByYears: Map<String, Double>,
+        row: Int = 2,
+        width: Int = 12
     ) {
         val annotationsList = mutableListOf<Text>()
 
@@ -117,10 +117,10 @@ internal class ByYearsChart(val activities: List<Activity>) : Chart() {
     }
 
     private fun PlotGrid.buildCumulativeKilometers(
-        row: Int,
-        width: Int,
         activitiesByYear: Map<String, List<Activity>>,
-        activityType: String
+        activityType: String,
+        row: Int = 3,
+        width: Int = 12
     ) {
 
         val annotationsList = mutableListOf<Text>()
@@ -178,10 +178,10 @@ internal class ByYearsChart(val activities: List<Activity>) : Chart() {
     }
 
     private fun PlotGrid.buildCumulativeElevation(
-        row: Int,
-        width: Int,
         activitiesByYear: Map<String, List<Activity>>,
-        activityType: String
+        activityType: String,
+        row: Int = 5,
+        width: Int = 12
     ) {
         val annotationsList = mutableListOf<Text>()
 

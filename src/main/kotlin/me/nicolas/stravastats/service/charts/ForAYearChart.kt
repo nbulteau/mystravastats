@@ -69,8 +69,8 @@ internal class ForAYearChart(activities: List<Activity>, val year: Int) : Chart(
                 inLineSkateByDays = ActivityHelper.averageSpeedByType(activitiesByDay, InlineSkate),
                 year
             )
-            buildEddingtonNumberPlotByType(row = 6, width = 6, activitiesForYear, Run)
-            buildEddingtonNumberPlotByType(row = 6, width = 6, activitiesForYear, Ride)
+            buildEddingtonNumberPlotByType(activitiesForYear, Run, row = 6, width = 6)
+            buildEddingtonNumberPlotByType(activitiesForYear, Ride, row = 6, width = 6)
         }
         renderAndOpenBrowser(plotlyPage)
     }

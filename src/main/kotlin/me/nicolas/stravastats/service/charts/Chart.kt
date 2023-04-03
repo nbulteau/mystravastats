@@ -47,10 +47,10 @@ abstract class Chart {
     }
 
     fun PlotGrid.buildEddingtonNumberPlotByType(
-        row: Int,
-        width: Int,
         activities: List<Activity>,
-        activityType: String
+        activityType: String,
+        row: Int = 6,
+        width: Int = 6
     ) {
         val eddingtonStatistic = EddingtonStatistic(activities.filter { activity -> activity.type == activityType })
         val eddingtonNumber = eddingtonStatistic.eddingtonNumber
