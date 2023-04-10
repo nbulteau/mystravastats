@@ -21,3 +21,4 @@ stream-*.json
 .DS_Store
 
 *.hgt
+.strava
