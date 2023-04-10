@@ -35,7 +35,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2")
 
-    implementation("org.slf4j:slf4j-nop:2.0.6")
+    implementation("org.slf4j:slf4j-nop:2.0.7")
     implementation("io.javalin:javalin:5.4.2")
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
 

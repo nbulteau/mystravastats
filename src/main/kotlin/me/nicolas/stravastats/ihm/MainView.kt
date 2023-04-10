@@ -22,10 +22,7 @@ import javafx.scene.paint.Color
 import javafx.util.Callback
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.Athlete
-import me.nicolas.stravastats.business.Ride
-import me.nicolas.stravastats.business.Run
+import me.nicolas.stravastats.business.*
 import me.nicolas.stravastats.business.badges.FamousClimbBadge
 import me.nicolas.stravastats.ihm.chart.MultipleLineChart
 import me.nicolas.stravastats.ihm.chart.MultipleLineChart.Companion.COLORS
@@ -256,7 +253,7 @@ class MainView(
             readonlyColumn("Average speed", ActivityDisplay::averageSpeed).cellFactory =
                 formatSpeed(selectedActivity.value)
             readonlyColumn("Best speed for 1000 m", ActivityDisplay::bestTimeForDistanceFor1000m)
-            if (selectedActivity.value != "AlpineSki") {
+            if (selectedActivity.value != AlpineSki) {
                 readonlyColumn("Max gradient for 250 m", ActivityDisplay::bestElevationForDistanceFor250m)
                 readonlyColumn("Max gradient for 500 m", ActivityDisplay::bestElevationForDistanceFor500m)
             }
@@ -305,13 +302,15 @@ class MainView(
                         isLegendVisible = false
                     }
                 }
-                item("Eddington number") {
-                    eddingtonNumberChart(
-                        mainController.getActiveDaysByActivityTypeByYear(
-                            selectedActivity.value,
-                            selectedYearValue
+                if (selectedActivity.value !in listOf(AlpineSki, Commute)) {
+                    item("Eddington number") {
+                        eddingtonNumberChart(
+                            mainController.getActiveDaysByActivityTypeByYear(
+                                selectedActivity.value,
+                                selectedYearValue
+                            )
                         )
-                    )
+                    }
                 }
 
             } else {

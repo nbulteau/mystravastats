@@ -11,6 +11,8 @@ data class ActivityEffort(
     val distance: Double,
     val seconds: Int,
     val altitude: Double,
+    val ixStart: Int,
+    val ixEnd: Int
 ) {
     fun getFormattedSpeed(): String {
         return if (activity.type == Run) {

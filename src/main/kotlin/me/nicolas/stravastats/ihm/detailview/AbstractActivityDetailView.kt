@@ -1,15 +1,17 @@
-package me.nicolas.stravastats.ihm
+package me.nicolas.stravastats.ihm.detailview
 
 import com.sothawo.mapjfx.*
 import javafx.animation.Transition
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
+import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.chart.AreaChart
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.control.Label
+import javafx.scene.control.ToggleGroup
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.HBox
@@ -20,7 +22,9 @@ import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import javafx.util.Duration
 import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.ActivityEffort
 import me.nicolas.stravastats.business.GeoCoordinate
+import me.nicolas.stravastats.service.statistics.calculateBestTimeForDistance
 import me.nicolas.stravastats.utils.formatSeconds
 import me.nicolas.stravastats.utils.formatSpeed
 import me.nicolas.stravastats.utils.inDateTimeFormatter
@@ -32,15 +36,29 @@ import kotlin.math.round
 import kotlin.math.roundToInt
 
 
-class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
+abstract class AbstractActivityDetailView(protected val activity: Activity) : View(activity.toString()) {
 
     private val markersCreatedOnClick = mutableMapOf<String, Marker>()
 
     override val root = borderpane {
-        setPrefSize(1024.0, 768.0)
+        setPrefSize(1200.0, 800.0)
     }
 
-    private val track: CoordinateLine?
+    private val activityTrack: CoordinateLine?
+
+    protected val tracks = mutableListOf<CoordinateLine>()
+
+    private val bestTimeFor500m = activity.calculateBestTimeForDistance(500.0)
+    private val bestTimeFor500mTrack: CoordinateLine = buildTrack(bestTimeFor500m)
+
+    private val bestTimeFor1000m = activity.calculateBestTimeForDistance(1000.0)
+    private val bestTimeFor1000mTrack: CoordinateLine = buildTrack(bestTimeFor1000m)
+
+    private val bestTimeFor5000m = activity.calculateBestTimeForDistance(5000.0)
+    private val bestTimeFor5000mTrack: CoordinateLine = buildTrack(bestTimeFor5000m)
+
+    private val bestTimeFor10000m = activity.calculateBestTimeForDistance(10000.0)
+    private val bestTimeFor10000mTrack: CoordinateLine = buildTrack(bestTimeFor10000m)
 
     private val mapView = MapView()
 
@@ -53,17 +71,40 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
     init {
         FX.primaryStage.isResizable = true
 
-        track = if (activity.stream?.latitudeLongitude != null) {
-            CoordinateLine(activity.stream?.latitudeLongitude?.data?.map { Coordinate(it[0], it[1]) })
-                .setColor(Color.MAGENTA)
-                .setVisible(true)
+        activityTrack = if (activity.stream?.latitudeLongitude != null) {
+            CoordinateLine(activity.stream?.latitudeLongitude?.data?.map {
+                Coordinate(it[0], it[1])
+            }).setColor(Color.MAGENTA).setVisible(true)
         } else {
             null
         }
 
-        detailsWindow = AnchorPane()
+        tracks.add(bestTimeFor500mTrack)
+        tracks.add(bestTimeFor1000mTrack)
+        tracks.add(bestTimeFor5000mTrack)
+        tracks.add(bestTimeFor10000mTrack)
 
+        detailsWindow = AnchorPane()
+    }
+
+    protected fun buildTrack(activityEffort: ActivityEffort?): CoordinateLine {
+        return if (activityEffort != null) {
+            CoordinateLine(activity.stream?.latitudeLongitude?.data?.mapIndexedNotNull { index, coord ->
+                if (index >= activityEffort.ixStart && index <= activityEffort.ixEnd) {
+                    Coordinate(coord[0], coord[1])
+                } else {
+                    null
+                }
+            }).setColor(Color.BLUE).setWidth(5)
+        } else {
+            CoordinateLine()
+        }
+    }
+
+
+    private fun buildBorderPane() {
         with(root) {
+
             top {
                 hbox(alignment = Pos.CENTER) {
                     label("Distance : %.02f km".format(activity.distance / 1000))
@@ -80,56 +121,97 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
                     }
                 }
             }
-            center = mapView
+
+            center {
+                useMaxHeight = true
+                useMaxWidth = true
+                mapView.prefHeight(850.0)
+                padding = Insets(5.0, 10.0, 5.0, 5.0)
+                center = mapView
+            }
+
             bottom {
                 val stream = activity.stream
                 if (stream?.altitude != null && stream.altitude.data.isNotEmpty()) {
-                    val minAltitude = max(round(((stream.altitude.data.minOf { it } - 20) / 10)) * 10, 0.0)
-                    val maxAltitude = round(((stream.altitude.data.maxOf { it } + 10) / 10)) * 10
+                    val minAltitude = max(round(stream.altitude.data.minOf { it } - 20), 0.0)
+                    val maxAltitude = round(stream.altitude.data.maxOf { it } + 10)
                     val maxDistance = stream.distance.data.maxOf { it } / 1000
 
-                    vbox {
+                    vbox(alignment = Pos.CENTER) {
                         val xAxis = NumberAxis(0.0, maxDistance, 1.0)
                         val yAxis = NumberAxis(minAltitude, maxAltitude, 10.0)
                         areaChart = areachart("Altitude", xAxis, yAxis) {
-                            val data =
-                                stream.distance.data //.windowed(1, 10).flatten()
-                                    .zip(stream.altitude.data) { distance, altitude ->
-                                        XYChart.Data<Number, Number>(distance / 1000, altitude)
-                                    }.toObservable()
+                            val data = stream.distance.data //.windowed(1, 10).flatten()
+                                .zip(stream.altitude.data) { distance, altitude ->
+                                    XYChart.Data<Number, Number>(distance / 1000, altitude)
+                                }.toObservable()
 
                             when {
                                 maxDistance > 30.0 -> {
                                     xAxis.tickUnit = 10.0
                                 }
                             }
-
                             this.isLegendVisible = false
                             this.createSymbols = false
                             this.data.add(XYChart.Series("", data))
 
                             children.add(detailsWindow)
-
                         }
-                        hbox(alignment = Pos.CENTER) {
-                            button("Close") {
-                                action {
-                                    closeActivityDetailView()
-                                }
+                        maxHeight = 200.0
+                    }
+                }
+            }
+            right {
+                val toggleGroup = ToggleGroup()
+                vbox {
+                    if(bestTimeFor500m != null) {
+                        radiobutton("Best speed for 500 m : ${bestTimeFor500m.getFormattedSpeed()}", toggleGroup) {
+                            action {
+                                tracks.forEach { track -> track.setVisible(false) }
+                                bestTimeFor500mTrack.setVisible(true)
                             }
                         }
                     }
-                } else {
-                    hbox(alignment = Pos.CENTER) {
-                        button("Close") {
+                    if(bestTimeFor1000m != null) {
+                        radiobutton("Best speed for 1000 m : ${bestTimeFor1000m.getFormattedSpeed()}", toggleGroup) {
                             action {
-                                closeActivityDetailView()
+                                tracks.forEach { track -> track.setVisible(false) }
+                                bestTimeFor1000mTrack.setVisible(true)
                             }
                         }
+                    }
+                    if (bestTimeFor5000m != null) {
+                        radiobutton("Best speed for 5000 m : ${bestTimeFor5000m.getFormattedSpeed()}", toggleGroup) {
+                            action {
+                                tracks.forEach { track -> track.setVisible(false) }
+                                bestTimeFor5000mTrack.setVisible(true)
+                            }
+                        }
+                    }
+                    if (bestTimeFor10000m != null) {
+                        radiobutton("Best speed for 10000 m : ${bestTimeFor10000m.getFormattedSpeed()}", toggleGroup) {
+                            action {
+                                tracks.forEach { track -> track.setVisible(false) }
+                                bestTimeFor10000mTrack.setVisible(true)
+                            }
+                        }
+                    }
+                    this.addRadioButtons(toggleGroup)
+                    children.style {
+                        fontWeight = FontWeight.BOLD
+                        font = Font.font("Verdana", 10.0)
+                        padding = box(5.px)
                     }
                 }
             }
         }
+    }
+
+    protected abstract fun VBox.addRadioButtons(toggleGroup: ToggleGroup)
+
+    protected fun initMapView() {
+
+        buildBorderPane()
 
         // init MapView-Cache
         // initOfflineCache()
@@ -139,9 +221,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
 
         // finally, initialize the map view
         mapView.initialize(
-            Configuration.builder()
-                .showZoomControls(false)
-                .build()
+            Configuration.builder().showZoomControls(false).build()
         )
         // watch the MapView's initialized property to finish initialization
         mapView.initializedProperty().addListener { _: ObservableValue<out Boolean>, _: Boolean, newValue: Boolean ->
@@ -152,7 +232,6 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
 
         bindMouseEvents()
     }
-
 
     private fun bindMouseEvents() {
 
@@ -276,12 +355,15 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
      * finishes setup after the mpa is initialized
      */
     private fun afterMapIsInitialized() {
-        if (track != null) {
-            // add track
-            mapView.addCoordinateLine(track)
+        if (activityTrack != null) {
+            // add tracks
+            mapView.addCoordinateLine(activityTrack)
+            for (track in tracks) {
+                mapView.addCoordinateLine(track)
+            }
 
             // get the extent for track
-            val tracksExtent = Extent.forCoordinates(track.coordinateStream.toList())
+            val tracksExtent = Extent.forCoordinates(activityTrack.coordinateStream.toList())
 
             // add start & end makers and position marker
             addMarkers()
@@ -315,9 +397,7 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
         mapView.addMarker(endMarker)
         markersCreatedOnClick[endMarker.id] = endMarker
 
-        marker = Marker
-            .createProvided(Marker.Provided.BLUE)
-            .setVisible(false)
+        marker = Marker.createProvided(Marker.Provided.BLUE).setVisible(false)
 
         mapView.addMarker(marker)
     }
@@ -386,16 +466,17 @@ class ActivityDetailView(val activity: Activity) : View(activity.toString()) {
                 val altitude1 = activity.stream?.altitude?.data?.getOrNull(index - 5)
                 val altitude2 = activity.stream?.altitude?.data?.getOrNull(index)
                 val gradientLabel = Label("Gradient:")
-                val gradientValueLabel: Label = if (coordinate1 != null && coordinate2 != null && altitude1 != null && altitude2 != null) {
-                    val elevationDiff = altitude2 - altitude1
-                    val distance1 = activity.stream?.distance?.data?.get(index - 5)
-                    val distance2 = activity.stream?.distance?.data?.get(index)
-                    val distanceBetweenCoordinates = distance2!! - distance1!!
-                    val gradient = elevationDiff / distanceBetweenCoordinates
-                    Label("%.2f %%".format(gradient * 100))
-                } else {
-                    Label("-")
-                }
+                val gradientValueLabel: Label =
+                    if (coordinate1 != null && coordinate2 != null && altitude1 != null && altitude2 != null) {
+                        val elevationDiff = altitude2 - altitude1
+                        val distance1 = activity.stream?.distance?.data?.get(index - 5)
+                        val distance2 = activity.stream?.distance?.data?.get(index)
+                        val distanceBetweenCoordinates = distance2!! - distance1!!
+                        val gradient = elevationDiff / distanceBetweenCoordinates
+                        Label("%.2f %%".format(gradient * 100))
+                    } else {
+                        Label("-")
+                    }
                 gradientValueLabel.font = Font.font("Arial", FontWeight.EXTRA_BOLD, 15.0)
                 vbox.add(HBox(10.0, gradientLabel, gradientValueLabel))
 

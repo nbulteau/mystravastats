@@ -66,7 +66,7 @@ fun Activity.calculateBestTimeForDistance(distance: Double): ActivityEffort? {
             // estimatedTimeForDistance > 1 to prevent corrupted data
             if (estimatedTimeForDistance < bestTime && estimatedTimeForDistance > 1) {
                 bestTime = estimatedTimeForDistance
-                bestEffort = ActivityEffort(this, distance, bestTime.toInt(), totalAltitude)
+                bestEffort = ActivityEffort(this, distance, bestTime.toInt(), totalAltitude, idxStart, idxEnd)
             }
             ++idxStart
         }

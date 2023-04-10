@@ -76,7 +76,7 @@ fun Activity.calculateBestDistanceForTime(seconds: Int): ActivityEffort? {
 
             if (estimatedDistanceForTime > maxDist) {
                 maxDist = estimatedDistanceForTime
-                bestEffort = ActivityEffort(this, maxDist, seconds, totalAltitude)
+                bestEffort = ActivityEffort(this, maxDist, seconds, totalAltitude, idxStart, idxEnd)
             }
             ++idxStart
         }

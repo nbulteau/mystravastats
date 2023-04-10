@@ -10,6 +10,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.time.LocalDate
 import java.util.*
 
 internal class StravaAPIAuthenticationView : View("Strava API authentication") {
@@ -61,7 +62,8 @@ internal class StravaAPIAuthenticationView : View("Strava API authentication") {
 
                                 if (clientIdStr.isNotEmpty()) {
                                     storeStravaAuthentication(clientIdStr, clientSecretStr)
-                                    val userData = (this@StravaAPIAuthenticationView.primaryStage.userData as MutableMap<*, *>).toMutableMap()
+                                    val userData =
+                                        (this@StravaAPIAuthenticationView.primaryStage.userData as MutableMap<*, *>).toMutableMap()
                                     userData["clientId"] = clientIdStr
                                     this@StravaAPIAuthenticationView.primaryStage.userData = userData
 
@@ -76,7 +78,7 @@ internal class StravaAPIAuthenticationView : View("Strava API authentication") {
                                 }
                             }
                         }
-                        button("Download new activities from Strava") {
+                        button("Download ${LocalDate.now().year} activities from Strava") {
                             gridpaneConstraints {
                                 columnRowIndex(1, 2)
                             }
@@ -86,7 +88,8 @@ internal class StravaAPIAuthenticationView : View("Strava API authentication") {
 
                                 if (clientIdStr.isNotEmpty() && clientSecretStr.isNotEmpty()) {
                                     storeStravaAuthentication(clientIdStr, clientSecretStr)
-                                    val userData = (this@StravaAPIAuthenticationView.primaryStage.userData as MutableMap<*, *>).toMutableMap()
+                                    val userData =
+                                        (this@StravaAPIAuthenticationView.primaryStage.userData as MutableMap<*, *>).toMutableMap()
                                     userData["clientId"] = clientIdStr
                                     userData["clientSecret"] = clientSecretStr
                                     userData["download"] = "new"
@@ -114,7 +117,8 @@ internal class StravaAPIAuthenticationView : View("Strava API authentication") {
 
                                 if (clientIdStr.isNotEmpty() && clientSecretStr.isNotEmpty()) {
                                     storeStravaAuthentication(clientIdStr, clientSecretStr)
-                                    val userData = (this@StravaAPIAuthenticationView.primaryStage.userData as MutableMap<*, *>).toMutableMap()
+                                    val userData =
+                                        (this@StravaAPIAuthenticationView.primaryStage.userData as MutableMap<*, *>).toMutableMap()
                                     userData["clientId"] = clientIdStr
                                     userData["clientSecret"] = clientSecretStr
                                     userData["download"] = "all"

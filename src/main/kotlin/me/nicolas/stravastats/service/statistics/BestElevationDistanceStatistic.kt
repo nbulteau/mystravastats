@@ -59,7 +59,7 @@ fun Activity.calculateBestElevationForDistance(distance: Double): ActivityEffort
         } else {
             if (totalAltitude > bestElevation) {
                 bestElevation = totalAltitude
-                bestEffort = ActivityEffort(this, distance, totalTime, bestElevation)
+                bestEffort = ActivityEffort(this, distance, totalTime, bestElevation, idxStart, idxEnd)
             }
             ++idxStart
         }

@@ -11,6 +11,8 @@ import me.nicolas.stravastats.business.badges.Badge
 import me.nicolas.stravastats.business.badges.DistanceBadge
 import me.nicolas.stravastats.business.badges.ElevationBadge
 import me.nicolas.stravastats.business.badges.MovingTimeBadge
+import me.nicolas.stravastats.ihm.detailview.ActivityDetailView
+import me.nicolas.stravastats.ihm.detailview.RideActivityDetailView
 import me.nicolas.stravastats.service.*
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
@@ -278,8 +280,12 @@ class MainController(private val clientId: String, private val activities: Obser
                 .apply {
                     onAction = if (triple.second != null) {
                         EventHandler {
-                            if (activity != null) {
-                                ActivityDetailView(activity).openModal()
+                            if (activity != null && activity.stream?.latitudeLongitude?.data != null) {
+                                if (activity.type == Ride) {
+                                    RideActivityDetailView(activity).openModal()
+                                } else {
+                                    ActivityDetailView(activity).openModal()
+                                }
                             }
                         }
                     } else {
@@ -302,7 +308,13 @@ class MainController(private val clientId: String, private val activities: Obser
                     val hyperlink = if (statistic.activity != null) {
                         Hyperlink(statistic.activity.toString()).apply {
                             onAction = EventHandler {
-                                ActivityDetailView(statistic.activity!!).openModal()
+                                if (statistic.activity != null && statistic.activity?.stream?.latitudeLongitude?.data != null) {
+                                    if (statistic.activity?.type == Ride) {
+                                        RideActivityDetailView(statistic.activity!!).openModal()
+                                    } else {
+                                        ActivityDetailView(statistic.activity!!).openModal()
+                                    }
+                                }
                             }
                         }
                     } else {
@@ -323,8 +335,13 @@ class MainController(private val clientId: String, private val activities: Obser
             val hyperlink = if (activity.stream?.latitudeLongitude != null) {
                 Hyperlink(activity.name).apply {
                     onAction = EventHandler {
-                        ActivityDetailView(activity).openModal()
-                    }
+                        if (activity.stream?.latitudeLongitude?.data != null) {
+                            if (activity.type == Ride) {
+                                RideActivityDetailView(activity).openModal()
+                            } else {
+                                ActivityDetailView(activity).openModal()
+                            }
+                        }                    }
                 }
             } else {
                 // No maps to display
