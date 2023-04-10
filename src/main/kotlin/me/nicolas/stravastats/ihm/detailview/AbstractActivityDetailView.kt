@@ -46,7 +46,7 @@ abstract class AbstractActivityDetailView(protected val activity: Activity) : Vi
 
     private val activityTrack: CoordinateLine?
 
-    protected val tracks = mutableListOf<CoordinateLine>()
+    private val tracks = mutableListOf<CoordinateLine>()
 
     private val bestTimeFor500m = activity.calculateBestTimeForDistance(500.0)
     private val bestTimeFor500mTrack: CoordinateLine = buildTrack(bestTimeFor500m)
@@ -72,23 +72,18 @@ abstract class AbstractActivityDetailView(protected val activity: Activity) : Vi
         FX.primaryStage.isResizable = true
 
         activityTrack = if (activity.stream?.latitudeLongitude != null) {
-            CoordinateLine(activity.stream?.latitudeLongitude?.data?.map {
-                Coordinate(it[0], it[1])
+            CoordinateLine(activity.stream?.latitudeLongitude?.data?.map { coord ->
+                Coordinate(coord[0], coord[1])
             }).setColor(Color.MAGENTA).setVisible(true)
         } else {
             null
         }
 
-        tracks.add(bestTimeFor500mTrack)
-        tracks.add(bestTimeFor1000mTrack)
-        tracks.add(bestTimeFor5000mTrack)
-        tracks.add(bestTimeFor10000mTrack)
-
         detailsWindow = AnchorPane()
     }
 
     protected fun buildTrack(activityEffort: ActivityEffort?): CoordinateLine {
-        return if (activityEffort != null) {
+        val coordinateLine = if (activityEffort != null) {
             CoordinateLine(activity.stream?.latitudeLongitude?.data?.mapIndexedNotNull { index, coord ->
                 if (index >= activityEffort.ixStart && index <= activityEffort.ixEnd) {
                     Coordinate(coord[0], coord[1])
@@ -99,8 +94,10 @@ abstract class AbstractActivityDetailView(protected val activity: Activity) : Vi
         } else {
             CoordinateLine()
         }
-    }
+        tracks.add(coordinateLine)
 
+        return coordinateLine
+    }
 
     private fun buildBorderPane() {
         with(root) {
@@ -133,8 +130,8 @@ abstract class AbstractActivityDetailView(protected val activity: Activity) : Vi
             bottom {
                 val stream = activity.stream
                 if (stream?.altitude != null && stream.altitude.data.isNotEmpty()) {
-                    val minAltitude = max(round(stream.altitude.data.minOf { it } - 20), 0.0)
-                    val maxAltitude = round(stream.altitude.data.maxOf { it } + 10)
+                    val minAltitude = max(round(stream.altitude.data.minOf { it } - 10), 0.0)
+                    val maxAltitude = round(stream.altitude.data.maxOf { it } + 20)
                     val maxDistance = stream.distance.data.maxOf { it } / 1000
 
                     vbox(alignment = Pos.CENTER) {
@@ -146,11 +143,20 @@ abstract class AbstractActivityDetailView(protected val activity: Activity) : Vi
                                     XYChart.Data<Number, Number>(distance / 1000, altitude)
                                 }.toObservable()
 
-                            when {
-                                maxDistance > 30.0 -> {
-                                    xAxis.tickUnit = 10.0
-                                }
+
+                            if (maxDistance > 30.0) {
+                                xAxis.tickUnit = 10.0
                             }
+                            if (maxAltitude - minAltitude > 500.0) {
+                                yAxis.tickUnit = 100.0
+                                yAxis.isMinorTickVisible = true
+                            }
+                            if (maxAltitude - minAltitude > 1000.0) {
+                                yAxis.tickUnit = 200.0
+                                yAxis.isMinorTickVisible = false
+                            }
+
+                            this.isAlternativeRowFillVisible = false
                             this.isLegendVisible = false
                             this.createSymbols = false
                             this.data.add(XYChart.Series("", data))
@@ -161,38 +167,35 @@ abstract class AbstractActivityDetailView(protected val activity: Activity) : Vi
                     }
                 }
             }
+
             right {
                 val toggleGroup = ToggleGroup()
                 vbox {
-                    if(bestTimeFor500m != null) {
+                    if (bestTimeFor500m != null) {
                         radiobutton("Best speed for 500 m : ${bestTimeFor500m.getFormattedSpeed()}", toggleGroup) {
                             action {
-                                tracks.forEach { track -> track.setVisible(false) }
-                                bestTimeFor500mTrack.setVisible(true)
+                                showTrack(listOf(bestTimeFor500mTrack))
                             }
                         }
                     }
-                    if(bestTimeFor1000m != null) {
+                    if (bestTimeFor1000m != null) {
                         radiobutton("Best speed for 1000 m : ${bestTimeFor1000m.getFormattedSpeed()}", toggleGroup) {
                             action {
-                                tracks.forEach { track -> track.setVisible(false) }
-                                bestTimeFor1000mTrack.setVisible(true)
+                                showTrack(listOf(bestTimeFor1000mTrack))
                             }
                         }
                     }
                     if (bestTimeFor5000m != null) {
                         radiobutton("Best speed for 5000 m : ${bestTimeFor5000m.getFormattedSpeed()}", toggleGroup) {
                             action {
-                                tracks.forEach { track -> track.setVisible(false) }
-                                bestTimeFor5000mTrack.setVisible(true)
+                                showTrack(listOf(bestTimeFor5000mTrack))
                             }
                         }
                     }
                     if (bestTimeFor10000m != null) {
                         radiobutton("Best speed for 10000 m : ${bestTimeFor10000m.getFormattedSpeed()}", toggleGroup) {
                             action {
-                                tracks.forEach { track -> track.setVisible(false) }
-                                bestTimeFor10000mTrack.setVisible(true)
+                                showTrack(listOf(bestTimeFor10000mTrack))
                             }
                         }
                     }
@@ -204,6 +207,26 @@ abstract class AbstractActivityDetailView(protected val activity: Activity) : Vi
                     }
                 }
             }
+        }
+    }
+
+    protected fun showTrack(tracksToDisplay: List<CoordinateLine>) {
+        tracks.forEach { track -> track.setVisible(false) }
+        tracksToDisplay.forEach { track -> track.setVisible(true) }
+    }
+
+    private fun calculateInstantSpeed(index: Int): Double? {
+        // Speed
+        val coordinate1 = activity.stream?.latitudeLongitude?.data?.getOrNull(index - 1)
+        val coordinate2 = activity.stream?.latitudeLongitude?.data?.getOrNull(index)
+        return if (coordinate1 != null && coordinate2 != null) {
+            val start = GeoCoordinate(coordinate1[0], coordinate1[1])
+            val distanceBetweenCoordinates = start.haversineInM(coordinate2[0], coordinate2[1])
+            val timeBetweenCoordinates =
+                activity.stream?.time?.data?.get(index)!! - activity.stream?.time?.data?.get(index - 1)!!
+            distanceBetweenCoordinates.toDouble() / timeBetweenCoordinates
+        } else {
+            null
         }
     }
 

@@ -1,6 +1,5 @@
 package me.nicolas.stravastats.ihm.detailview
 
-import com.sothawo.mapjfx.CoordinateLine
 import javafx.scene.control.ToggleGroup
 import javafx.scene.layout.VBox
 import me.nicolas.stravastats.business.Activity
@@ -11,15 +10,18 @@ import tornadofx.radiobutton
 class RideActivityDetailView(activity: Activity) : AbstractActivityDetailView(activity) {
 
     private var bestElevationFor500m = activity.calculateBestElevationForDistance(500.0)
-    private val bestElevationFor500mTrack: CoordinateLine = buildTrack(bestElevationFor500m)
+    private val bestElevationFor500mTrack = buildTrack(bestElevationFor500m)
 
     private var bestElevationFor1000m = activity.calculateBestElevationForDistance(1000.0)
-    private val bestElevationFor1000mTrack: CoordinateLine = buildTrack(bestElevationFor1000m)
+    private val bestElevationFor1000mTrack = buildTrack(bestElevationFor1000m)
+
+    private var bestElevationFor5000m = activity.calculateBestElevationForDistance(5000.0)
+    private val bestElevationFor5000mTrack = buildTrack(bestElevationFor5000m)
+
+    private var bestElevationFor10000m = activity.calculateBestElevationForDistance(10000.0)
+    private val bestElevationFor10000mTrack = buildTrack(bestElevationFor10000m)
 
     init {
-        tracks.add(bestElevationFor500mTrack)
-        tracks.add(bestElevationFor1000mTrack)
-
         initMapView()
     }
 
@@ -29,8 +31,7 @@ class RideActivityDetailView(activity: Activity) : AbstractActivityDetailView(ac
                 "Best gradient for 500 m : ${bestElevationFor500m?.getFormattedGradient()}", toggleGroup
             ) {
                 action {
-                    tracks.forEach { track -> track.setVisible(false) }
-                    bestElevationFor500mTrack.setVisible(true)
+                    showTrack(listOf(bestElevationFor500mTrack))
                 }
             }
         }
@@ -39,8 +40,25 @@ class RideActivityDetailView(activity: Activity) : AbstractActivityDetailView(ac
                 "Best gradient for 1000 m : ${bestElevationFor1000m?.getFormattedGradient()}", toggleGroup
             ) {
                 action {
-                    tracks.forEach { track -> track.setVisible(false) }
-                    bestElevationFor1000mTrack.setVisible(true)
+                    showTrack(listOf(bestElevationFor1000mTrack))
+                }
+            }
+        }
+        if (bestElevationFor5000m != null) {
+            radiobutton(
+                "Best gradient for 5000 m : ${bestElevationFor5000m?.getFormattedGradient()}", toggleGroup
+            ) {
+                action {
+                    showTrack(listOf(bestElevationFor5000mTrack))
+                }
+            }
+        }
+        if (bestElevationFor10000m != null) {
+            radiobutton(
+                "Best gradient for 10000 m : ${bestElevationFor10000m?.getFormattedGradient()}", toggleGroup
+            ) {
+                action {
+                    showTrack(listOf(bestElevationFor10000mTrack))
                 }
             }
         }

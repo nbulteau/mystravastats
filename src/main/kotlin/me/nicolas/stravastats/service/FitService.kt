@@ -275,8 +275,8 @@ internal class FitService(private val cachePath: Path) {
     }
 
 
-    private fun generateDataAltitude(LatitudeLongitudeList: List<List<Double>>): MutableList<Double> {
-        return srtmService.getElevation(LatitudeLongitudeList).toMutableList()
+    private fun generateDataAltitude(latitudeLongitudeList: List<List<Double>>): MutableList<Double> {
+        return srtmService.getElevation(latitudeLongitudeList).toMutableList()
     }
 
     private fun extractLatLng(lat: Int?, lng: Int?): List<Double> {

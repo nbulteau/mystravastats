@@ -158,22 +158,22 @@ internal class StatisticsService {
         return statistics
     }
 
-    fun computeInlineSkateStatistics(InlineSkateActivities: List<Activity>): List<Statistic> {
+    fun computeInlineSkateStatistics(inlineSkateActivities: List<Activity>): List<Statistic> {
 
-        val statistics = computeCommonStats(InlineSkateActivities).toMutableList()
+        val statistics = computeCommonStats(inlineSkateActivities).toMutableList()
 
         statistics.addAll(
             listOf(
-                BestEffortDistanceStatistic("Best 200 m", InlineSkateActivities, 200.0),
-                BestEffortDistanceStatistic("Best 400 m", InlineSkateActivities, 400.0),
-                BestEffortDistanceStatistic("Best 1000 m", InlineSkateActivities, 1000.0),
-                BestEffortDistanceStatistic("Best 10000 m", InlineSkateActivities, 10000.0),
-                BestEffortDistanceStatistic("Best half Marathon", InlineSkateActivities, 21097.0),
-                BestEffortDistanceStatistic("Best Marathon", InlineSkateActivities, 42195.0),
-                BestEffortTimeStatistic("Best 1 h", InlineSkateActivities, 60 * 60),
-                BestEffortTimeStatistic("Best 2 h", InlineSkateActivities, 2 * 60 * 60),
-                BestEffortTimeStatistic("Best 3 h", InlineSkateActivities, 3 * 60 * 60),
-                BestEffortTimeStatistic("Best 4 h", InlineSkateActivities, 4 * 60 * 60),
+                BestEffortDistanceStatistic("Best 200 m", inlineSkateActivities, 200.0),
+                BestEffortDistanceStatistic("Best 400 m", inlineSkateActivities, 400.0),
+                BestEffortDistanceStatistic("Best 1000 m", inlineSkateActivities, 1000.0),
+                BestEffortDistanceStatistic("Best 10000 m", inlineSkateActivities, 10000.0),
+                BestEffortDistanceStatistic("Best half Marathon", inlineSkateActivities, 21097.0),
+                BestEffortDistanceStatistic("Best Marathon", inlineSkateActivities, 42195.0),
+                BestEffortTimeStatistic("Best 1 h", inlineSkateActivities, 60 * 60),
+                BestEffortTimeStatistic("Best 2 h", inlineSkateActivities, 2 * 60 * 60),
+                BestEffortTimeStatistic("Best 3 h", inlineSkateActivities, 3 * 60 * 60),
+                BestEffortTimeStatistic("Best 4 h", inlineSkateActivities, 4 * 60 * 60),
             )
         )
 
