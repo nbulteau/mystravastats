@@ -13,7 +13,7 @@ internal class ActivityEffortTest {
         val colAgnelActivity = loadColAgnelActivity()
 
         // When
-        val colAgnelActivityEffort = ActivityEffort(colAgnelActivity, colAgnelActivity.distance, colAgnelActivity.elapsedTime, colAgnelActivity.totalElevationGain)
+        val colAgnelActivityEffort = ActivityEffort(colAgnelActivity, colAgnelActivity.distance, colAgnelActivity.elapsedTime, colAgnelActivity.totalElevationGain, 0, 10)
 
         // Then
         assertEquals("15,48 km/h", colAgnelActivityEffort.getFormattedSpeed())

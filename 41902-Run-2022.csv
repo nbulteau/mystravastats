@@ -1,0 +1,12 @@
+Date;Description;Distance (km);Time;Time (seconds);Speed (min/km);Best 200m (min/km);Best 400m (min/km);Best 1000m (min/km);Best 10000m (min/km);Best half Marathon (min/km);Best Marathon (min/km);Best 30 min (min/km);Best 1 h (min/km);Best 2 h (min/km);Best 3 h (min/km);Best 4 h (min/km);Best 5 h (min/km);Best vVO2max = 6 min (min/km)
+mer. 10 août 2022 - 12:10;Course à pied le midi;6,80;45m 00s;2700;6'37;5'10;5'27;5'54;;;;6'20;;;;;;6'03
+jeu. 28 juillet 2022 - 12:19;Course à pied le midi;7,78;53m 25s;3205;6'52;5'15;5'35;6'05;;;;6'39;;;;;;6'20
+jeu. 21 juillet 2022 - 12:12;Reprise course à pied;7,03;47m 52s;2872;6'48;5'15;5'32;5'46;;;;6'19;;;;;;5'55
+jeu. 19 mai 2022 - 12:11;Course à pied le midi;8,53;58m 03s;3483;6'48;5'10;5'25;5'40;;;;6'25;;;;;;5'48
+ven. 29 avril 2022 - 12:01;Course à pied le midi;8,01;54m 41s;3281;6'49;4'45;4'55;5'26;;;;6'17;;;;;;5'45
+jeu. 14 avril 2022 - 12:10;Course à pied le midi avec Colin;8,03;52m 39s;3159;6'33;5'15;5'22;5'45;;;;6'04;;;;;;5'57
+jeu. 07 avril 2022 - 20:22;Run INSA by Night;4,66;01h 36m 04s;5764;20'37;3'15;4'20;4'59;;;;23'08;25'18;;;;;24'45
+sam. 02 avril 2022 - 16:23;Course à pied l'après-midi;9,78;01h 08m 34s;4114;7'00;5'50;5'52;6'10;;;;6'42;6'56;;;;;6'15
+jeu. 24 mars 2022 - 12:10;Course à pied le midi;7,37;49m 24s;2964;6'42;5'20;5'32;5'42;;;;6'14;;;;;;5'50
+jeu. 17 mars 2022 - 12:15;Course à pied le midi avec Vincent et Colin;7,35;49m 48s;2988;6'46;5'15;5'35;5'47;;;;6'26;;;;;;5'56
+;;=SOMME($C2:$C11);;=SOMME($E2:$E11);
