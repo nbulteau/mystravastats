@@ -92,10 +92,7 @@ class RideActivityDetailView(activity: Activity, private val segmentEfforts: Lis
                     val speed = segmentEffort.getFormattedSpeed(activity.type)
                     val distance = "%.02f".format(segmentEffort.distance / 1000)
                     val elapsedTime = segmentEffort.elapsedTime.formatSeconds()
-                    text = "$pr" +
-                            "$speed\n" +
-                            "$distance km\n" +
-                            "$elapsedTime"
+                    text = "speed: $speed\ndistance: $distance km\nelapsedTime: $elapsedTime\n$pr"
                 }
                 action {
                     showTrack(listOf(segmentLine))
