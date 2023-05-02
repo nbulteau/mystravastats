@@ -3,11 +3,16 @@ package me.nicolas.stravastats.ihm.detailview
 import javafx.scene.control.ToggleGroup
 import javafx.scene.layout.VBox
 import me.nicolas.stravastats.business.Activity
+import me.nicolas.stravastats.business.ActivityEffort
+import me.nicolas.stravastats.business.SegmentEffort
 import me.nicolas.stravastats.service.statistics.calculateBestElevationForDistance
+import me.nicolas.stravastats.utils.formatSeconds
 import tornadofx.action
 import tornadofx.radiobutton
+import tornadofx.tooltip
 
-class RideActivityDetailView(activity: Activity) : AbstractActivityDetailView(activity) {
+class RideActivityDetailView(activity: Activity, private val segmentEfforts: List<SegmentEffort>) :
+    AbstractActivityDetailView(activity) {
 
     private var bestElevationFor500m = activity.calculateBestElevationForDistance(500.0)
     private val bestElevationFor500mTrack = buildTrack(bestElevationFor500m)
@@ -26,6 +31,7 @@ class RideActivityDetailView(activity: Activity) : AbstractActivityDetailView(ac
     }
 
     override fun VBox.addRadioButtons(toggleGroup: ToggleGroup) {
+
         if (bestElevationFor500m != null) {
             radiobutton(
                 "Best gradient for 500 m : ${bestElevationFor500m?.getFormattedGradient()}", toggleGroup
@@ -59,6 +65,37 @@ class RideActivityDetailView(activity: Activity) : AbstractActivityDetailView(ac
             ) {
                 action {
                     showTrack(listOf(bestElevationFor10000mTrack))
+                }
+            }
+        }
+
+        segmentEfforts.forEach { segmentEffort ->
+            val segmentLine = buildTrack(
+                ActivityEffort(
+                    activity,
+                    segmentEffort.distance,
+                    segmentEffort.elapsedTime,
+                    0.0,
+                    segmentEffort.startIndex,
+                    segmentEffort.endIndex
+                )
+            )
+            radiobutton(
+                "${segmentEffort.name} : ${segmentEffort.getFormattedSpeed(activity.type)}", toggleGroup
+            ) {
+                tooltip {
+                    val pr = if (segmentEffort.prRank != null) {
+                        "${segmentEffort.prRank} best time\n"
+                    } else {
+                        ""
+                    }
+                    val speed = segmentEffort.getFormattedSpeed(activity.type)
+                    val distance = "%.02f".format(segmentEffort.distance / 1000)
+                    val elapsedTime = segmentEffort.elapsedTime.formatSeconds()
+                    text = "speed: $speed\ndistance: $distance km\nelapsedTime: $elapsedTime\n$pr"
+                }
+                action {
+                    showTrack(listOf(segmentLine))
                 }
             }
         }

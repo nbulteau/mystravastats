@@ -2,11 +2,11 @@ package me.nicolas.stravastats.service.csv
 
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Hike
-import me.nicolas.stravastats.utils.formatDate
-import me.nicolas.stravastats.utils.formatSeconds
 import me.nicolas.stravastats.service.statistics.calculateBestDistanceForTime
 import me.nicolas.stravastats.service.statistics.calculateBestElevationForDistance
 import me.nicolas.stravastats.service.statistics.calculateBestTimeForDistance
+import me.nicolas.stravastats.utils.formatDate
+import me.nicolas.stravastats.utils.formatSeconds
 
 internal class HikeCSVExporter(clientId: String, activities: List<Activity>, year: String) :
     CSVExporter(clientId, activities, year, Hike) {
