@@ -2,7 +2,6 @@ package me.nicolas.stravastats.service.statistics
 
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.AthleteRef
-import me.nicolas.stravastats.business.Map
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -68,60 +67,27 @@ internal class EddingtonStatisticTest {
 
 
     private fun buildActivity(startDateLocal: String, distance: Double) = Activity(
-        achievementCount = 0,
         athlete = AthleteRef(0, 0),
-        athleteCount = 0,
         averageSpeed = 0.0,
         averageCadence = 0.0,
         averageHeartrate = 0.0,
         maxHeartrate = 0.0,
         averageWatts = 0.0,
-        commentCount = 0,
         commute = false,
-        deviceWatts = false,
-        displayHideHeartrateOption = false,
         distance = distance,
         elapsedTime = 0,
         elevHigh = 0.0,
-        elevLow = 0.0,
-        endLatlng = null,
-        externalId = "",
-        flagged = false,
-        fromAcceptedTag = false,
-        gearId = null,
-        hasHeartrate = false,
-        hasKudoed = false,
-        heartrateOptOut = false,
         id = 0,
         kilojoules = 0.0,
-        kudosCount = 0,
-        locationCity = null,
-        locationCountry = null,
-        locationState = null,
-        manual = false,
-        map = Map("", 0, ""),
         maxSpeed = 0.0,
         movingTime = 0,
         name = "",
-        photoCount = 0,
-        prCount = 0,
-        private = false,
-        resourceState = 0,
         startDate = "",
         startDateLocal = startDateLocal,
-        startLatitude = 0.0,
         startLatlng = null,
-        startLongitude = 0.0,
-        timezone = "",
         totalElevationGain = 0.0,
-        totalPhotoCount = 0,
-        trainer = false,
         type = "",
-        uploadId = 0,
-        uploadIdStr = "",
-        utcOffset = 0.0,
-        visibility = "",
-        workoutType = 0
+        uploadId = 0
     )
 }
 

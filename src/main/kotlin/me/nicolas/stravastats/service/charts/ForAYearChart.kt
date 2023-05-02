@@ -1,12 +1,12 @@
 package me.nicolas.stravastats.service.charts
 
+import me.nicolas.stravastats.business.*
+import me.nicolas.stravastats.service.ActivityHelper
 import space.kscience.plotly.*
 import space.kscience.plotly.models.AxisType
 import space.kscience.plotly.models.BarMode
 import space.kscience.plotly.models.TraceOrder
 import space.kscience.plotly.models.XAnchor
-import me.nicolas.stravastats.business.*
-import me.nicolas.stravastats.service.ActivityHelper
 
 @OptIn(UnstablePlotlyAPI::class)
 internal class ForAYearChart(activities: List<Activity>, val year: Int) : Chart() {

@@ -28,6 +28,8 @@ import kotlin.collections.component2
 
 class MainController(private val clientId: String, private val activities: ObservableList<Activity>) : Controller() {
 
+    private val stravaService = StravaService.getInstance()
+
     private val statsService = StatisticsService()
 
     private val chartsService = ChartsService()
@@ -150,6 +152,7 @@ class MainController(private val clientId: String, private val activities: Obser
                     )
                 )
             }
+
             Run -> {
                 badgesSets.add(
                     buildBadgesToDisplay(
@@ -282,7 +285,7 @@ class MainController(private val clientId: String, private val activities: Obser
                         EventHandler {
                             if (activity != null && activity.stream?.latitudeLongitude?.data != null) {
                                 if (activity.type == Ride) {
-                                    RideActivityDetailView(activity).openModal()
+                                    RideActivityDetailView(activity, emptyList()).openModal()
                                 } else {
                                     ActivityDetailView(activity).openModal()
                                 }
@@ -310,7 +313,7 @@ class MainController(private val clientId: String, private val activities: Obser
                             onAction = EventHandler {
                                 if (statistic.activity != null && statistic.activity?.stream?.latitudeLongitude?.data != null) {
                                     if (statistic.activity?.type == Ride) {
-                                        RideActivityDetailView(statistic.activity!!).openModal()
+                                        RideActivityDetailView(statistic.activity!!, emptyList()).openModal()
                                     } else {
                                         ActivityDetailView(statistic.activity!!).openModal()
                                     }
@@ -323,6 +326,7 @@ class MainController(private val clientId: String, private val activities: Obser
 
                     StatisticDisplay(statistic.name, statistic.value, hyperlink)
                 }
+
                 else -> StatisticDisplay(statistic.name, statistic.toString(), null)
             }
         }
@@ -336,12 +340,22 @@ class MainController(private val clientId: String, private val activities: Obser
                 Hyperlink(activity.name).apply {
                     onAction = EventHandler {
                         if (activity.stream?.latitudeLongitude?.data != null) {
+                            var segmentEfforts = emptyList<SegmentEffort>()
+                            if (stravaService != null) {
+                                val year = activity.startDate.substring(0..3).toInt()
+                                val activity = stravaService.getActivity(year, activity.id)
+                                if (activity.isPresent) {
+                                    segmentEfforts = activity.get().segmentEfforts
+                                }
+                            }
+
                             if (activity.type == Ride) {
-                                RideActivityDetailView(activity).openModal()
+                                RideActivityDetailView(activity, segmentEfforts).openModal()
                             } else {
                                 ActivityDetailView(activity).openModal()
                             }
-                        }                    }
+                        }
+                    }
                 }
             } else {
                 // No maps to display

@@ -11,6 +11,7 @@ import javafx.scene.chart.AreaChart
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.control.Label
+import javafx.scene.control.ScrollPane
 import javafx.scene.control.ToggleGroup
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
@@ -170,40 +171,57 @@ abstract class AbstractActivityDetailView(protected val activity: Activity) : Vi
 
             right {
                 val toggleGroup = ToggleGroup()
-                vbox {
-                    if (bestTimeFor500m != null) {
-                        radiobutton("Best speed for 500 m : ${bestTimeFor500m.getFormattedSpeed()}", toggleGroup) {
-                            action {
-                                showTrack(listOf(bestTimeFor500mTrack))
+                scrollpane {
+                    setPrefSize(305.0, 300.0)
+                    isFitToWidth = true
+                    isFitToHeight = true
+                    hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
+                    vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
+
+                    vbox {
+                        if (bestTimeFor500m != null) {
+                            radiobutton("Best speed for 500 m : ${bestTimeFor500m.getFormattedSpeed()}", toggleGroup) {
+                                action {
+                                    showTrack(listOf(bestTimeFor500mTrack))
+                                }
                             }
                         }
-                    }
-                    if (bestTimeFor1000m != null) {
-                        radiobutton("Best speed for 1000 m : ${bestTimeFor1000m.getFormattedSpeed()}", toggleGroup) {
-                            action {
-                                showTrack(listOf(bestTimeFor1000mTrack))
+                        if (bestTimeFor1000m != null) {
+                            radiobutton(
+                                "Best speed for 1000 m : ${bestTimeFor1000m.getFormattedSpeed()}",
+                                toggleGroup
+                            ) {
+                                action {
+                                    showTrack(listOf(bestTimeFor1000mTrack))
+                                }
                             }
                         }
-                    }
-                    if (bestTimeFor5000m != null) {
-                        radiobutton("Best speed for 5000 m : ${bestTimeFor5000m.getFormattedSpeed()}", toggleGroup) {
-                            action {
-                                showTrack(listOf(bestTimeFor5000mTrack))
+                        if (bestTimeFor5000m != null) {
+                            radiobutton(
+                                "Best speed for 5000 m : ${bestTimeFor5000m.getFormattedSpeed()}",
+                                toggleGroup
+                            ) {
+                                action {
+                                    showTrack(listOf(bestTimeFor5000mTrack))
+                                }
                             }
                         }
-                    }
-                    if (bestTimeFor10000m != null) {
-                        radiobutton("Best speed for 10000 m : ${bestTimeFor10000m.getFormattedSpeed()}", toggleGroup) {
-                            action {
-                                showTrack(listOf(bestTimeFor10000mTrack))
+                        if (bestTimeFor10000m != null) {
+                            radiobutton(
+                                "Best speed for 10000 m : ${bestTimeFor10000m.getFormattedSpeed()}",
+                                toggleGroup
+                            ) {
+                                action {
+                                    showTrack(listOf(bestTimeFor10000mTrack))
+                                }
                             }
                         }
-                    }
-                    this.addRadioButtons(toggleGroup)
-                    children.style {
-                        fontWeight = FontWeight.BOLD
-                        font = Font.font("Verdana", 10.0)
-                        padding = box(5.px)
+                        this.addRadioButtons(toggleGroup)
+                        children.style {
+                            fontWeight = FontWeight.BOLD
+                            font = Font.font("Verdana", 10.0)
+                            padding = box(5.px)
+                        }
                     }
                 }
             }

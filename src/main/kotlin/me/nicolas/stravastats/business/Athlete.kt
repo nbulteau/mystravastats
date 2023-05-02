@@ -21,7 +21,7 @@ data class Athlete(
     @JsonProperty("friend")
     val friend: Any?,
     @JsonProperty("id")
-    val id: Int,
+    val id: Long,
     @JsonProperty("lastname")
     val lastname: String?,
     @JsonProperty("premium")

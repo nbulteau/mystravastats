@@ -14,10 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.nicolas.stravastats.MyStravaStatsApp
 import me.nicolas.stravastats.MyStravaStatsProperties
-import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.Athlete
-import me.nicolas.stravastats.business.Stream
-import me.nicolas.stravastats.business.Token
+import me.nicolas.stravastats.business.*
 import okhttp3.Headers
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -27,14 +24,16 @@ import org.eclipse.jetty.http.HttpStatus
 import java.net.*
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.util.*
 import kotlin.system.exitProcess
 
 
 interface IStravaApi {
-    fun getLoggedInAthlete(): Athlete
+    fun getLoggedInAthlete(): Optional<Athlete>
     fun getActivities(year: Int): List<Activity>
     fun getActivities(after: LocalDateTime): List<Activity>
-    fun getActivityStream(activity: Activity): Stream?
+    fun getActivityStream(activity: Activity): Optional<Stream>
+    fun getActivity(activityId: Long): Optional<DetailledActivity>
 }
 
 internal class StravaApi(clientId: String, clientSecret: String) : IStravaApi {
@@ -54,7 +53,7 @@ internal class StravaApi(clientId: String, clientSecret: String) : IStravaApi {
         setAccessToken(clientId, clientSecret)
     }
 
-    override fun getLoggedInAthlete(): Athlete {
+    override fun getLoggedInAthlete(): Optional<Athlete> {
         try {
             return doGetLoggedInAthlete()
         } catch (connectException: ConnectException) {
@@ -73,7 +72,7 @@ internal class StravaApi(clientId: String, clientSecret: String) : IStravaApi {
         }
     }
 
-    override fun getActivityStream(activity: Activity): Stream? {
+    override fun getActivityStream(activity: Activity): Optional<Stream> {
         try {
             return doGetActivityStream(activity)
         } catch (connectException: ConnectException) {
@@ -84,6 +83,14 @@ internal class StravaApi(clientId: String, clientSecret: String) : IStravaApi {
     override fun getActivities(after: LocalDateTime): List<Activity> {
         try {
             return doGetActivities(after = after)
+        } catch (connectException: ConnectException) {
+            throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
+        }
+    }
+
+    override fun getActivity(activityId: Long): Optional<DetailledActivity> {
+        try {
+            return doGetActivity(activityId)
         } catch (connectException: ConnectException) {
             throw RuntimeException("Unable to connect to Strava API : ${connectException.message}")
         }
@@ -109,9 +116,9 @@ internal class StravaApi(clientId: String, clientSecret: String) : IStravaApi {
         return null
     }
 
-    private fun doGetLoggedInAthlete(): Athlete {
+    private fun doGetLoggedInAthlete(): Optional<Athlete> {
 
-        val url = "${properties.strava.url}/api/v3/athlete"
+        val url = "https://www.strava.com/api/v3/athlete"
 
         val request = Request.Builder()
             .url(url)
@@ -121,7 +128,12 @@ internal class StravaApi(clientId: String, clientSecret: String) : IStravaApi {
         client.newCall(request).execute().use { response ->
             if (response.isSuccessful) {
                 try {
-                    return objectMapper.readValue(response.body?.string() ?: "", Athlete::class.java)
+                    val json = response.body?.string()
+                    return if (json != null) {
+                        Optional.of(objectMapper.readValue(json, Athlete::class.java))
+                    } else {
+                        Optional.empty()
+                    }
                 } catch (jsonMappingException: JsonMappingException) {
                     throw RuntimeException("Something was wrong with Strava API", jsonMappingException)
                 }
@@ -131,13 +143,12 @@ internal class StravaApi(clientId: String, clientSecret: String) : IStravaApi {
         }
     }
 
-
     private fun doGetActivities(before: LocalDateTime? = null, after: LocalDateTime): List<Activity> {
 
         val activities = mutableListOf<Activity>()
         var page = 1
-        var url = "${properties.strava.url}/api/v3/athlete/activities?per_page=${properties.strava.pagesize}"
-        if(before != null) {
+        var url = "https://www.strava.com/api/v3/athlete/activities?per_page=${properties.strava.pagesize}"
+        if (before != null) {
             url += "&before=${before.atZone(ZoneId.of("Europe/Paris")).toEpochSecond()}"
         }
         url += "&after=${after.atZone(ZoneId.of("Europe/Paris")).toEpochSecond()}"
@@ -164,13 +175,13 @@ internal class StravaApi(clientId: String, clientSecret: String) : IStravaApi {
         return activities
     }
 
-    private fun doGetActivityStream(activity: Activity): Stream? {
+    private fun doGetActivityStream(activity: Activity): Optional<Stream> {
 
         // uploadId = 0 => this is a manual activity without streams
         if (activity.uploadId == 0L) {
-            return null
+            return Optional.empty()
         }
-        val url = "${properties.strava.url}/api/v3/activities/${activity.id}/streams" +
+        val url = "https://www.strava.com/api/v3/activities/${activity.id}/streams" +
                 "?keys=time,distance,latlng,altitude,moving&key_by_type=true"
 
         val request: Request = Request.Builder()
@@ -179,9 +190,9 @@ internal class StravaApi(clientId: String, clientSecret: String) : IStravaApi {
             .build()
 
         client.newCall(request).execute().use { response ->
-            return when {
+            when {
                 response.code >= HttpStatus.BAD_REQUEST_400 -> {
-                    println("\nUnable to load streams for activity : $activity")
+                    println("\nUnable to load streams for activity : ${activity.id}")
                     when (response.code) {
                         HttpStatus.TOO_MANY_REQUESTS_429 -> {
                             println(
@@ -192,22 +203,82 @@ internal class StravaApi(clientId: String, clientSecret: String) : IStravaApi {
                             )
                             throw RuntimeException("Something was wrong with Strava API : 429 Too Many Requests")
                         }
+
                         else -> {
-                            println("Something was wrong with Strava API for url $url : ${response.code} - ${response.body}")
-                            null
+                            println("Something was wrong with Strava API for url ${response.request.url} : ${response.code} - ${response.body}")
+                            return Optional.empty()
                         }
                     }
                 }
+
                 response.code == HttpStatus.OK_200 -> {
                     return try {
-                        response.body?.let { objectMapper.readValue<Stream>(it.string()) }
+                        val json = response.body?.string()
+                        return if (json != null) {
+                            Optional.of(objectMapper.readValue(json, Stream::class.java))
+                        } else {
+                            Optional.empty()
+                        }
                     } catch (jsonProcessingException: JsonProcessingException) {
                         println("\nUnable to load streams for activity : $activity")
-                        null
+                        Optional.empty()
                     }
                 }
+
                 else -> {
                     println("\nUnable to load streams for activity : $activity")
+                    throw RuntimeException("Something was wrong with Strava API for url $url : ${response.code} - ${response.code}")
+                }
+            }
+        }
+    }
+
+    private fun doGetActivity(activityId: Long): Optional<DetailledActivity> {
+        val url = "https://www.strava.com/api/v3/activities/$activityId?include_all_efforts=true"
+
+        val request: Request = Request.Builder()
+            .url(url)
+            .headers(buildRequestHeaders())
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            when {
+                response.code >= HttpStatus.BAD_REQUEST_400 -> {
+                    println("\nUnable to load activity : $activityId")
+                    when (response.code) {
+                        HttpStatus.TOO_MANY_REQUESTS_429 -> {
+                            println(
+                                "\nStrava API usage is limited on a per-application basis using both a 15-minute " +
+                                        "and daily request limit." +
+                                        "The default rate limit allows 100 requests every 15 minutes, " +
+                                        "with up to 1,000 requests per day."
+                            )
+                            throw RuntimeException("Something was wrong with Strava API : 429 Too Many Requests")
+                        }
+
+                        else -> {
+                            println("Something was wrong with Strava API for url ${response.request.url} : ${response.code} - ${response.body}")
+                            return Optional.empty()
+                        }
+                    }
+                }
+
+                response.code == HttpStatus.OK_200 -> {
+                    return try {
+                        val json = response.body?.string()
+                        return if (json != null) {
+                            Optional.of(objectMapper.readValue(json, DetailledActivity::class.java))
+                        } else {
+                            Optional.empty()
+                        }
+                    } catch (jsonProcessingException: JsonProcessingException) {
+                        println("\nUnable to load activity : $activityId - ${jsonProcessingException.message}")
+                        Optional.empty()
+                    }
+                }
+
+                else -> {
+                    println("\nUnable to load activity : $activityId")
                     throw RuntimeException("Something was wrong with Strava API for url $url : ${response.code} - ${response.code}")
                 }
             }
