@@ -430,7 +430,7 @@ class MainView(
                     val coordinates = activity.stream?.latitudeLongitude?.data?.map { Coordinate(it[0], it[1]) }
                         ?.windowed(1, 10)
                         ?.flatten()
-                    if (coordinates != null && coordinates.isNotEmpty()) {
+                    if (!coordinates.isNullOrEmpty()) {
                         CoordinateLine(coordinates)
                             .setColor(Color.MAGENTA)
                             .setVisible(true)

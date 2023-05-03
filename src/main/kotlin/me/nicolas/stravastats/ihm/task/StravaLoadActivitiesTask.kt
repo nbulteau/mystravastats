@@ -2,6 +2,8 @@ package me.nicolas.stravastats.ihm.task
 
 import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.business.Athlete
+import me.nicolas.stravastats.service.Context
+import me.nicolas.stravastats.service.IStravaService
 import me.nicolas.stravastats.service.StravaService
 import java.time.LocalDate
 import kotlin.system.measureTimeMillis
@@ -9,7 +11,7 @@ import kotlin.system.measureTimeMillis
 internal class StravaLoadActivitiesTask(clientId: String, clientSecret: String, private val allYears: Boolean = true) :
     StravaCacheLoadActivitiesTask(clientId) {
 
-    private val stravaService = StravaService(clientId, clientSecret)
+    private val stravaService: IStravaService = StravaService.getInstance(Context(clientId, clientSecret))
 
     override fun call(): Pair<Athlete?, List<Activity>> {
         updateMessage("Waiting for your agreement to allow MyStravaStats to access to your Strava data ...")

@@ -28,6 +28,8 @@ import kotlin.collections.component2
 
 class MainController(private val clientId: String, private val activities: ObservableList<Activity>) : Controller() {
 
+    private val stravaService = StravaService.getInstance()
+
     private val statsService = StatisticsService()
 
     private val chartsService = ChartsService()
@@ -150,6 +152,7 @@ class MainController(private val clientId: String, private val activities: Obser
                     )
                 )
             }
+
             Run -> {
                 badgesSets.add(
                     buildBadgesToDisplay(
@@ -281,10 +284,12 @@ class MainController(private val clientId: String, private val activities: Obser
                     onAction = if (triple.second != null) {
                         EventHandler {
                             if (activity != null && activity.stream?.latitudeLongitude?.data != null) {
+                                val segmentEfforts = getSegmentEfforts(activity)
+
                                 if (activity.type == Ride) {
-                                    RideActivityDetailView(activity).openModal()
+                                    RideActivityDetailView(activity, segmentEfforts).openModal()
                                 } else {
-                                    ActivityDetailView(activity).openModal()
+                                    ActivityDetailView(activity, segmentEfforts).openModal()
                                 }
                             }
                         }
@@ -309,10 +314,12 @@ class MainController(private val clientId: String, private val activities: Obser
                         Hyperlink(statistic.activity.toString()).apply {
                             onAction = EventHandler {
                                 if (statistic.activity != null && statistic.activity?.stream?.latitudeLongitude?.data != null) {
+                                    val segmentEfforts = getSegmentEfforts(statistic.activity!!)
+
                                     if (statistic.activity?.type == Ride) {
-                                        RideActivityDetailView(statistic.activity!!).openModal()
+                                        RideActivityDetailView(statistic.activity!!, segmentEfforts).openModal()
                                     } else {
-                                        ActivityDetailView(statistic.activity!!).openModal()
+                                        ActivityDetailView(statistic.activity!!, segmentEfforts).openModal()
                                     }
                                 }
                             }
@@ -323,6 +330,7 @@ class MainController(private val clientId: String, private val activities: Obser
 
                     StatisticDisplay(statistic.name, statistic.value, hyperlink)
                 }
+
                 else -> StatisticDisplay(statistic.name, statistic.toString(), null)
             }
         }
@@ -336,12 +344,15 @@ class MainController(private val clientId: String, private val activities: Obser
                 Hyperlink(activity.name).apply {
                     onAction = EventHandler {
                         if (activity.stream?.latitudeLongitude?.data != null) {
+                            val segmentEfforts = getSegmentEfforts(activity)
+
                             if (activity.type == Ride) {
-                                RideActivityDetailView(activity).openModal()
+                                RideActivityDetailView(activity, segmentEfforts).openModal()
                             } else {
-                                ActivityDetailView(activity).openModal()
+                                ActivityDetailView(activity, segmentEfforts).openModal()
                             }
-                        }                    }
+                        }
+                    }
                 }
             } else {
                 // No maps to display
@@ -362,5 +373,17 @@ class MainController(private val clientId: String, private val activities: Obser
             )
         }
         return FXCollections.observableArrayList(activitiesToDisplay)
+    }
+
+    private fun getSegmentEfforts(activity: Activity): List<SegmentEffort> {
+        if (stravaService != null) {
+            val year = activity.startDate.substring(0..3).toInt()
+            val optionalDetailledActivity = stravaService.getActivity(year, activity.id)
+            if (optionalDetailledActivity.isPresent) {
+                return optionalDetailledActivity.get().segmentEfforts
+            }
+        }
+
+        return emptyList()
     }
 }
