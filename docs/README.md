@@ -218,16 +218,15 @@ docker run -it --env="DISPLAY=host.docker.internal:0" -v /tmp/.X11-unix:/tmp/.X1
 | Total elevation | Total elevation accumulated on all running.|
 | Max distance | Max distance calculated by Strava for running.|
 | Max elevation | Max elevation calculated by Strava for running.|
-| Max moving time | Max moving time for running. Moving time, is a measure of how long you were active. Strava attempt
-to calculate this based on the GPS locations, distance, and speed of your activity.|
+| Max moving time | Max moving time for running. Moving time, is a measure of how long you were active. Strava attempt to calculate this based on the GPS locations, distance, and speed of your activity.|
 | Most active month | The most active month of the year for running.|
-| Eddington number | The Eddington number in the context of running is defined as the maximum number E such that the
-runner has run E km on E days.|
+| Eddington number | The Eddington number in the context of running is defined as the maximum number E such that the runner has run E km on E days.|
 | Best Cooper (12 min) | best effort for the given time (12 minutes) on running activities|
 | Best vVO2max (6 min) | best effort for the given time (6 minutes) on running activities|
 | Best 200 m | Sliding window best effort for a given distance.|
 | Best 400 m | Sliding window best effort for a given distance.|
 | Best 1000 m | Sliding window best effort for a given distance.|
+| Best 5000 m | Sliding window best effort for a given distance.|
 | Best 10000 m | Sliding window best effort for a given distance.|
 | Best half Marathon | Sliding window best effort for a given distance.|
 | Best Marathon | Sliding window best effort for a given distance.|
@@ -276,12 +275,8 @@ runner has run E km on E days.|
 | Total elevation | Total elevation accumulated on all hikes.|
 | Max distance | Max distance calculated by Strava for hikes.|
 | Max elevation | Max elevation calculated by Strava for hikes.|
-| Max moving time | Max moving time for hikes. Moving time, is a measure of how long you were active. Strava attempt to
-calculate this based on the GPS locations, distance, and speed of your activity.|
+| Max moving time | Max moving time for hikes. Moving time, is a measure of how long you were active. Strava attempt to calculate this based on the GPS locations, distance, and speed of your activity.|
 | Most active month | The most active month of the year for hikes.|
-| Eddington number | The Eddington number in the context of cycling is defined as the maximum number E such that the
-cyclist has cycled E km on E days.|
+| Eddington number | The Eddington number in the context of cycling is defined as the maximum number E such that the cyclist has cycled E km on E days.|
 | Max distance in a day | Max walked distance in a day for hikes.|
 | Max elevation in a day | Max elevation in a day for hikes.|
-
-
