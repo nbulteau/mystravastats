@@ -289,7 +289,7 @@ class MainController(private val clientId: String, private val activities: Obser
                                 if (activity.type == Ride) {
                                     RideActivityDetailView(activity, segmentEfforts).openModal()
                                 } else {
-                                    ActivityDetailView(activity).openModal()
+                                    ActivityDetailView(activity, segmentEfforts).openModal()
                                 }
                             }
                         }
@@ -319,7 +319,7 @@ class MainController(private val clientId: String, private val activities: Obser
                                     if (statistic.activity?.type == Ride) {
                                         RideActivityDetailView(statistic.activity!!, segmentEfforts).openModal()
                                     } else {
-                                        ActivityDetailView(statistic.activity!!).openModal()
+                                        ActivityDetailView(statistic.activity!!, segmentEfforts).openModal()
                                     }
                                 }
                             }
@@ -349,7 +349,7 @@ class MainController(private val clientId: String, private val activities: Obser
                             if (activity.type == Ride) {
                                 RideActivityDetailView(activity, segmentEfforts).openModal()
                             } else {
-                                ActivityDetailView(activity).openModal()
+                                ActivityDetailView(activity, segmentEfforts).openModal()
                             }
                         }
                     }

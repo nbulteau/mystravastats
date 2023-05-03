@@ -12,7 +12,7 @@ buildscript {
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.8.20"
+    id("org.jetbrains.kotlin.jvm") version "1.8.21"
     id("org.openjfx.javafxplugin") version "0.0.13"
     id("com.github.ben-manes.versions") version "0.46.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
@@ -32,12 +32,12 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.0")
 
     implementation("org.slf4j:slf4j-nop:2.0.7")
-    implementation("io.javalin:javalin:5.4.2")
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("io.javalin:javalin:5.5.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
 
     implementation("com.sothawo:mapjfx:3.1.0")
     implementation("no.tornado:tornadofx:1.7.20")
@@ -57,7 +57,7 @@ dependencies {
 
     implementation(files("libs/fit.jar"))
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
 }
 
 javafx {
