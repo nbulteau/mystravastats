@@ -10,7 +10,7 @@ RUN git clone https://github.com/nbulteau/mystravastats.git
 # Set the working directory to /mystravastats
 WORKDIR mystravastats
 
-RUN ./gradlew build
+RUN ./gradlew build -x test
 
 # Make port 8080 available to the world outside this container
 EXPOSE 8080

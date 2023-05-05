@@ -10,9 +10,9 @@ data class ActivityEffort(
     val activity: Activity,
     val distance: Double,
     val seconds: Int,
-    val altitude: Double,
-    val ixStart: Int,
-    val ixEnd: Int
+    val deltaAltitude: Double,
+    val idxStart: Int,
+    val idxEnd: Int
 ) {
     fun getFormattedSpeed(): String {
         return if (activity.type == Run) {
@@ -32,5 +32,5 @@ data class ActivityEffort(
 
     fun getFormattedGradient() = "${this.getGradient()} %"
 
-    fun getGradient() = "%.02f".format(100 * altitude / distance)
+    fun getGradient() = "%.02f".format(100 * deltaAltitude / distance)
 }

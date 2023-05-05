@@ -12,7 +12,7 @@ internal open class BestElevationDistanceStatistic(
 
     private val bestActivityEffort = activities
         .mapNotNull { activity -> activity.calculateBestElevationForDistance(distance) }
-        .maxByOrNull { activityEffort -> activityEffort.altitude }
+        .maxByOrNull { activityEffort -> activityEffort.deltaAltitude }
 
     init {
         require(distance > 100) { "Distance must be > 100 meters" }

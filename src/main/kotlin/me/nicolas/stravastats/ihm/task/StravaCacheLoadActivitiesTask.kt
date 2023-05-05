@@ -20,7 +20,7 @@ internal open class StravaCacheLoadActivitiesTask(private val clientId: String) 
         val athlete = getAthleteFromCache()
 
         val activities = mutableListOf<Activity>()
-        for (currentYear in LocalDate.now().year  downTo 2010) {
+        for (currentYear in LocalDate.now().year downTo 2010) {
             updateMessage("Loading $currentYear activities ...")
             activities.addAll(loadActivitiesFromCache(currentYear))
         }
@@ -50,7 +50,7 @@ internal open class StravaCacheLoadActivitiesTask(private val clientId: String) 
         val yearActivitiesJsonFile = File(yearActivitiesDirectory, "activities-$clientId-$year.json")
 
         if (yearActivitiesJsonFile.exists()) {
-            print("\nLoad activities of clientId=$clientId for year $year ... ")
+            print("\nLoad activities of clientId=$clientId from cache for year $year ... ")
             activities = objectMapper.readValue(yearActivitiesJsonFile, Array<Activity>::class.java)
                 .toList()
                 .filterActivities()

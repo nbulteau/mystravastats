@@ -2,7 +2,7 @@ package me.nicolas.stravastats.service.charts
 
 import me.nicolas.stravastats.business.*
 import me.nicolas.stravastats.service.ActivityHelper
-import space.kscience.dataforge.values.Value
+import space.kscience.dataforge.meta.Value
 import space.kscience.plotly.*
 import space.kscience.plotly.models.*
 import java.time.LocalDate

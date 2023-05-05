@@ -48,4 +48,24 @@ data class SegmentEffort(
             "%.02f km/h".format(distance / elapsedTime * 3600 / 1000)
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as SegmentEffort
+
+        if (endIndex != other.endIndex) return false
+        if (name != other.name) return false
+        return startIndex == other.startIndex
+    }
+
+    override fun hashCode(): Int {
+        var result = endIndex
+        result = 31 * result + name.hashCode()
+        result = 31 * result + startIndex
+        return result
+    }
+
+
 }
