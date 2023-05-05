@@ -13,7 +13,7 @@ buildscript {
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.8.21"
-    id("org.openjfx.javafxplugin") version "0.0.13"
+    id("org.openjfx.javafxplugin") version "0.0.14"
     id("com.github.ben-manes.versions") version "0.46.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 
@@ -29,7 +29,7 @@ repositories {
 dependencies {
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    //implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0")
@@ -43,15 +43,15 @@ dependencies {
     implementation("no.tornado:tornadofx:1.7.20")
 
     // Some trouble with javafx dependencies
-    //implementation("org.openjfx:javafx-base:18.0.1")
-    //implementation("org.openjfx:javafx-controls:18.0.1")
-    implementation("org.openjfx:javafx-fxml:18.0.1")
-    //implementation("org.openjfx:javafx-graphics:18.0.1")
-    //implementation("org.openjfx:javafx-media:18.0.1")
-    //implementation("org.openjfx:javafx-web:18.0.1")
+    //implementation("org.openjfx:javafx-base:20.0.1")
+    //implementation("org.openjfx:javafx-controls:20.0.1")
+    //implementation("org.openjfx:javafx-fxml:20.0.1")
+    //implementation("org.openjfx:javafx-graphics:20.0.1")
+    //implementation("org.openjfx:javafx-media:20.0.1")
+    //implementation("org.openjfx:javafx-web:20.0.1")
 
-    // Some problem with 0.5.0 version
-    implementation("space.kscience:plotlykt-server:0.5.0") {
+    // Some problem with 0.5.3 version
+    implementation("space.kscience:plotlykt-server:0.5.3") {
         exclude("ch.qos.logback", "logback-classic")
     }
 

@@ -2,6 +2,7 @@ package me.nicolas.stravastats.ihm
 
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
+import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.scene.chart.XYChart
 import javafx.scene.control.Hyperlink
@@ -48,7 +49,7 @@ class MainController(private val clientId: String, private val activities: Obser
         val activitiesForYear: List<Activity> = if (year != null) {
             activities.groupBy { activity ->
                 activity.startDateLocal.subSequence(0, 4).toString()
-            }[year.toString()] ?: emptyList()
+            }["$year"] ?: emptyList()
         } else {
             activities
         }
@@ -282,17 +283,7 @@ class MainController(private val clientId: String, private val activities: Obser
             val hyperlink = Hyperlink("", imageView)
                 .apply {
                     onAction = if (triple.second != null) {
-                        EventHandler {
-                            if (activity != null && activity.stream?.latitudeLongitude?.data != null) {
-                                val segmentEfforts = getSegmentEfforts(activity)
-
-                                if (activity.type == Ride) {
-                                    RideActivityDetailView(activity, segmentEfforts).openModal()
-                                } else {
-                                    ActivityDetailView(activity, segmentEfforts).openModal()
-                                }
-                            }
-                        }
+                        buildDisplayActivityDetailEventHandler(activity)
                     } else {
                         EventHandler {
                         }
@@ -312,17 +303,7 @@ class MainController(private val clientId: String, private val activities: Obser
                 is ActivityStatistic -> {
                     val hyperlink = if (statistic.activity != null) {
                         Hyperlink(statistic.activity.toString()).apply {
-                            onAction = EventHandler {
-                                if (statistic.activity != null && statistic.activity?.stream?.latitudeLongitude?.data != null) {
-                                    val segmentEfforts = getSegmentEfforts(statistic.activity!!)
-
-                                    if (statistic.activity?.type == Ride) {
-                                        RideActivityDetailView(statistic.activity!!, segmentEfforts).openModal()
-                                    } else {
-                                        ActivityDetailView(statistic.activity!!, segmentEfforts).openModal()
-                                    }
-                                }
-                            }
+                            onAction = buildDisplayActivityDetailEventHandler(statistic.activity)
                         }
                     } else {
                         null
@@ -342,17 +323,7 @@ class MainController(private val clientId: String, private val activities: Obser
         val activitiesToDisplay = activities.map { activity ->
             val hyperlink = if (activity.stream?.latitudeLongitude != null) {
                 Hyperlink(activity.name).apply {
-                    onAction = EventHandler {
-                        if (activity.stream?.latitudeLongitude?.data != null) {
-                            val segmentEfforts = getSegmentEfforts(activity)
-
-                            if (activity.type == Ride) {
-                                RideActivityDetailView(activity, segmentEfforts).openModal()
-                            } else {
-                                ActivityDetailView(activity, segmentEfforts).openModal()
-                            }
-                        }
-                    }
+                    onAction = buildDisplayActivityDetailEventHandler(activity)
                 }
             } else {
                 // No maps to display
@@ -375,12 +346,41 @@ class MainController(private val clientId: String, private val activities: Obser
         return FXCollections.observableArrayList(activitiesToDisplay)
     }
 
+    private fun buildDisplayActivityDetailEventHandler(activity: Activity?): EventHandler<ActionEvent> =
+        EventHandler {
+            if ((activity != null)
+                && (activity.stream?.latitudeLongitude?.data != null)
+                && (activity.stream?.distance?.data != null)
+                && (activity.stream?.altitude?.data != null)
+            ) {
+                val segmentEfforts = getSegmentEfforts(activity)
+
+                if (activity.type == Ride) {
+                    RideActivityDetailView(
+                        activity,
+                        activity.stream?.latitudeLongitude?.data!!,
+                        activity.stream?.distance?.data!!,
+                        activity.stream?.altitude?.data!!,
+                        segmentEfforts
+                    ).openModal()
+                } else {
+                    ActivityDetailView(
+                        activity,
+                        activity.stream?.latitudeLongitude?.data!!,
+                        activity.stream?.distance?.data!!,
+                        activity.stream?.altitude?.data!!,
+                        segmentEfforts
+                    ).openModal()
+                }
+            }
+        }
+
     private fun getSegmentEfforts(activity: Activity): List<SegmentEffort> {
         if (stravaService != null) {
             val year = activity.startDate.substring(0..3).toInt()
-            val optionalDetailledActivity = stravaService.getActivity(year, activity.id)
-            if (optionalDetailledActivity.isPresent) {
-                return optionalDetailledActivity.get().segmentEfforts
+            val optionalDetailedActivity = stravaService.getActivity(year, activity.id)
+            if (optionalDetailedActivity.isPresent) {
+                return optionalDetailedActivity.get().segmentEfforts.distinct()
             }
         }
 

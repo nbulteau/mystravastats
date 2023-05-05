@@ -62,7 +62,7 @@ internal class StravaService private constructor(context: Context) : IStravaServ
 
     override fun getActivities(year: Int): List<Activity> {
 
-        print("Load activities of clientId=$clientId for year $year ... ")
+        print("Load activities of clientId=$clientId from Strava for year $year ... ")
         val activities = stravaApi.getActivities(year).filterActivities()
         println("done")
 

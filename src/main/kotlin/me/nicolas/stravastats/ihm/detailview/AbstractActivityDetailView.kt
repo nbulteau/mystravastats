@@ -23,7 +23,6 @@ import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import javafx.util.Duration
 import me.nicolas.stravastats.business.Activity
-import me.nicolas.stravastats.business.ActivityEffort
 import me.nicolas.stravastats.business.GeoCoordinate
 import me.nicolas.stravastats.business.SegmentEffort
 import me.nicolas.stravastats.service.statistics.calculateBestTimeForDistance
@@ -38,7 +37,17 @@ import kotlin.math.round
 import kotlin.math.roundToInt
 
 
-abstract class AbstractActivityDetailView(protected val activity: Activity, private val segmentEfforts: List<SegmentEffort>) : View(activity.toString()) {
+abstract class AbstractActivityDetailView(
+    protected val activity: Activity,
+    protected val latitudeLongitudesList: List<List<Double>>,
+    protected val distancesList: List<Double>,
+    protected val altitudesList: List<Double>,
+    private val segmentEfforts: List<SegmentEffort>
+) : View(activity.toString()) {
+
+    companion object {
+        val statsList = listOf(500.0, 1000.0, 5000.0, 10000.0)
+    }
 
     private val markersCreatedOnClick = mutableMapOf<String, Marker>()
 
@@ -48,19 +57,9 @@ abstract class AbstractActivityDetailView(protected val activity: Activity, priv
 
     private val activityTrack: CoordinateLine?
 
-    private val tracks = mutableListOf<CoordinateLine>()
+    protected val statsTracks = buildSpeedStatsTracks().toMutableList()
 
-    private val bestTimeFor500m = activity.calculateBestTimeForDistance(500.0)
-    private val bestTimeFor500mTrack: CoordinateLine = buildTrack(bestTimeFor500m)
-
-    private val bestTimeFor1000m = activity.calculateBestTimeForDistance(1000.0)
-    private val bestTimeFor1000mTrack: CoordinateLine = buildTrack(bestTimeFor1000m)
-
-    private val bestTimeFor5000m = activity.calculateBestTimeForDistance(5000.0)
-    private val bestTimeFor5000mTrack: CoordinateLine = buildTrack(bestTimeFor5000m)
-
-    private val bestTimeFor10000m = activity.calculateBestTimeForDistance(10000.0)
-    private val bestTimeFor10000mTrack: CoordinateLine = buildTrack(bestTimeFor10000m)
+    private val segmentsTracks = buildSegmentsTracks()
 
     private val mapView = MapView()
 
@@ -74,7 +73,7 @@ abstract class AbstractActivityDetailView(protected val activity: Activity, priv
         FX.primaryStage.isResizable = true
 
         activityTrack = if (activity.stream?.latitudeLongitude != null) {
-            CoordinateLine(activity.stream?.latitudeLongitude?.data?.map { coord ->
+            CoordinateLine(latitudeLongitudesList.map { coord ->
                 Coordinate(coord[0], coord[1])
             }).setColor(Color.MAGENTA).setVisible(true)
         } else {
@@ -82,23 +81,90 @@ abstract class AbstractActivityDetailView(protected val activity: Activity, priv
         }
 
         detailsWindow = AnchorPane()
+        buildAltitudeAreaChart()
     }
 
-    protected fun buildTrack(activityEffort: ActivityEffort?): CoordinateLine {
-        val coordinateLine = if (activityEffort != null) {
-            CoordinateLine(activity.stream?.latitudeLongitude?.data?.mapIndexedNotNull { index, coord ->
-                if (index >= activityEffort.ixStart && index <= activityEffort.ixEnd) {
+    private fun buildAltitudeAreaChart() {
+        if (latitudeLongitudesList.isNotEmpty()) {
+            val minAltitude = max(round(altitudesList.minOf { it } - 10), 0.0)
+            val maxAltitude = round(altitudesList.maxOf { it } + 20)
+            val maxDistance = distancesList.maxOf { it } / 1000
+
+            val xAxis = NumberAxis(0.0, maxDistance, 1.0)
+            val yAxis = NumberAxis(minAltitude, maxAltitude, 10.0)
+            areaChart = areachart("Altitude", xAxis, yAxis) {
+                val data = distancesList //.windowed(1, 10).flatten()
+                    .zip(altitudesList) { distance, altitude ->
+                        XYChart.Data<Number, Number>(distance / 1000, altitude)
+                    }.toObservable()
+
+
+                if (maxDistance > 30.0) {
+                    xAxis.tickUnit = 10.0
+                }
+                if (maxAltitude - minAltitude > 500.0) {
+                    yAxis.tickUnit = 100.0
+                    yAxis.isMinorTickVisible = true
+                }
+                if (maxAltitude - minAltitude > 1000.0) {
+                    yAxis.tickUnit = 200.0
+                    yAxis.isMinorTickVisible = false
+                }
+
+                this.isAlternativeRowFillVisible = false
+                this.isLegendVisible = false
+                this.createSymbols = false
+                this.data.add(XYChart.Series("", data))
+            }
+        }
+    }
+
+    private fun buildSpeedStatsTracks(): List<StatsTrack> {
+        return statsList.mapNotNull { distanceStat ->
+            val activityEffort = activity.calculateBestTimeForDistance(distanceStat)
+            if (activityEffort != null) {
+                val coordinateLine =
+                    CoordinateLine(latitudeLongitudesList.mapIndexedNotNull { index, coord ->
+                        if (index >= activityEffort.idxStart && index <= activityEffort.idxEnd) {
+                            Coordinate(coord[0], coord[1])
+                        } else {
+                            null
+                        }
+                    }).setColor(Color.BLUE).setWidth(5)
+
+                val xyChartSeries = XYChart.Series(distancesList
+                    .zip(altitudesList) { distance, altitude ->
+                        XYChart.Data<Number, Number>(distance / 1000, altitude)
+                    }
+                    .subList(activityEffort.idxStart, activityEffort.idxEnd)
+                    .toObservable())
+
+                StatsTrack(coordinateLine, xyChartSeries, activityEffort, StatType.SPEED)
+            } else {
+                null
+            }
+        }
+    }
+
+    private fun buildSegmentsTracks(): List<SegmentTrack> {
+        return segmentEfforts.map { segmentEffort ->
+            val coordinateLine = CoordinateLine(latitudeLongitudesList.mapIndexedNotNull { index, coord ->
+                if (index >= segmentEffort.startIndex && index <= segmentEffort.endIndex) {
                     Coordinate(coord[0], coord[1])
                 } else {
                     null
                 }
-            }).setColor(Color.BLUE).setWidth(5)
-        } else {
-            CoordinateLine()
-        }
-        tracks.add(coordinateLine)
+            }).setColor(Color.ORANGE).setWidth(5)
 
-        return coordinateLine
+            val xyChartSeries = XYChart.Series(distancesList //.windowed(1, 10).flatten()
+                .zip(altitudesList) { distance, altitude ->
+                    XYChart.Data<Number, Number>(distance / 1000, altitude)
+                }
+                .subList(segmentEffort.startIndex, segmentEffort.endIndex)
+                .toObservable())
+
+            SegmentTrack(coordinateLine, xyChartSeries, segmentEffort, activity.type)
+        }
     }
 
     private fun buildBorderPane() {
@@ -130,43 +196,10 @@ abstract class AbstractActivityDetailView(protected val activity: Activity, priv
             }
 
             bottom {
-                val stream = activity.stream
-                if (stream?.altitude != null && stream.altitude.data.isNotEmpty()) {
-                    val minAltitude = max(round(stream.altitude.data.minOf { it } - 10), 0.0)
-                    val maxAltitude = round(stream.altitude.data.maxOf { it } + 20)
-                    val maxDistance = stream.distance.data.maxOf { it } / 1000
-
-                    vbox(alignment = Pos.CENTER) {
-                        val xAxis = NumberAxis(0.0, maxDistance, 1.0)
-                        val yAxis = NumberAxis(minAltitude, maxAltitude, 10.0)
-                        areaChart = areachart("Altitude", xAxis, yAxis) {
-                            val data = stream.distance.data //.windowed(1, 10).flatten()
-                                .zip(stream.altitude.data) { distance, altitude ->
-                                    XYChart.Data<Number, Number>(distance / 1000, altitude)
-                                }.toObservable()
-
-
-                            if (maxDistance > 30.0) {
-                                xAxis.tickUnit = 10.0
-                            }
-                            if (maxAltitude - minAltitude > 500.0) {
-                                yAxis.tickUnit = 100.0
-                                yAxis.isMinorTickVisible = true
-                            }
-                            if (maxAltitude - minAltitude > 1000.0) {
-                                yAxis.tickUnit = 200.0
-                                yAxis.isMinorTickVisible = false
-                            }
-
-                            this.isAlternativeRowFillVisible = false
-                            this.isLegendVisible = false
-                            this.createSymbols = false
-                            this.data.add(XYChart.Series("", data))
-
-                            children.add(detailsWindow)
-                        }
-                        maxHeight = 200.0
-                    }
+                vbox(alignment = Pos.CENTER) {
+                    add(areaChart)
+                    add(detailsWindow)
+                    maxHeight = 200.0
                 }
             }
 
@@ -180,96 +213,35 @@ abstract class AbstractActivityDetailView(protected val activity: Activity, priv
                     vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
 
                     vbox {
-                        if (bestTimeFor500m != null) {
-                            radiobutton("Best speed for 500 m : ${bestTimeFor500m.getFormattedSpeed()}", toggleGroup) {
+                        statsTracks.forEach { statsTracks ->
+                            radiobutton(statsTracks.toString(), toggleGroup) {
                                 tooltip {
-                                    val speed = bestTimeFor500m.getFormattedSpeed()
-                                    val distance = "500 m"
-                                    val elapsedTime = bestTimeFor500m.seconds.formatSeconds()
+                                    val speed = statsTracks.formattedSpeed
+                                    val distance = statsTracks.distance
+                                    val elapsedTime = statsTracks.elapsedTime
                                     text = "Speed: $speed\nDistance: $distance km\nElapsed time: $elapsedTime"
                                 }
                                 action {
-                                    showTrack(listOf(bestTimeFor500mTrack))
+                                    showTrack(statsTracks)
                                 }
                             }
                         }
-                        if (bestTimeFor1000m != null) {
-                            radiobutton(
-                                "Best speed for 1000 m : ${bestTimeFor1000m.getFormattedSpeed()}",
-                                toggleGroup
-                            ) {
-                                tooltip {
-                                    val speed = bestTimeFor1000m.getFormattedSpeed()
-                                    val distance = "1000 m"
-                                    val elapsedTime = bestTimeFor1000m.seconds.formatSeconds()
-                                    text = "Speed: $speed\nDistance: $distance km\nElapsed time: $elapsedTime"
-                                }
-                                action {
-                                    showTrack(listOf(bestTimeFor1000mTrack))
-                                }
-                            }
-                        }
-                        if (bestTimeFor5000m != null) {
-                            radiobutton(
-                                "Best speed for 5000 m : ${bestTimeFor5000m.getFormattedSpeed()}",
-                                toggleGroup
-                            ) {
-                                tooltip {
-                                    val speed = bestTimeFor5000m.getFormattedSpeed()
-                                    val distance = "5000 m"
-                                    val elapsedTime = bestTimeFor5000m.seconds.formatSeconds()
-                                    text = "Speed: $speed\nDistance: $distance km\nElapsed time: $elapsedTime"
-                                }
-                                action {
-                                    showTrack(listOf(bestTimeFor5000mTrack))
-                                }
-                            }
-                        }
-                        if (bestTimeFor10000m != null) {
-                            radiobutton(
-                                "Best speed for 10 000 m : ${bestTimeFor10000m.getFormattedSpeed()}",
-                                toggleGroup
-                            ) {
-                                tooltip {
-                                    val speed = bestTimeFor10000m.getFormattedSpeed()
-                                    val distance = "10 000 m"
-                                    val elapsedTime = bestTimeFor10000m.seconds.formatSeconds()
-                                    text = "Speed: $speed\nDistance: $distance km\nElapsed time: $elapsedTime"
-                                }
-                                action {
-                                    showTrack(listOf(bestTimeFor10000mTrack))
-                                }
-                            }
-                        }
-                        this.addRadioButtons(toggleGroup)
 
-                        segmentEfforts.forEach { segmentEffort ->
-                            val segmentLine = buildTrack(
-                                ActivityEffort(
-                                    activity,
-                                    segmentEffort.distance,
-                                    segmentEffort.elapsedTime,
-                                    0.0,
-                                    segmentEffort.startIndex,
-                                    segmentEffort.endIndex
-                                )
-                            )
-                            radiobutton(
-                                "${segmentEffort.name} : ${segmentEffort.getFormattedSpeed(activity.type)}", toggleGroup
-                            ) {
+                        segmentsTracks.forEach { segmentTrack ->
+                            radiobutton(segmentTrack.toString(), toggleGroup) {
                                 tooltip {
-                                    val pr = if (segmentEffort.prRank != null) {
-                                        "PR : ${segmentEffort.prRank} best time\n"
+                                    val pr = if (segmentTrack.segmentEffort.prRank != null) {
+                                        "PR : ${segmentTrack.segmentEffort.prRank} best time\n"
                                     } else {
                                         ""
                                     }
-                                    val speed = segmentEffort.getFormattedSpeed(activity.type)
-                                    val distance = "%.02f".format(segmentEffort.distance / 1000)
-                                    val elapsedTime = segmentEffort.elapsedTime.formatSeconds()
+                                    val speed = segmentTrack.formattedSpeed
+                                    val distance = segmentTrack.distance
+                                    val elapsedTime = segmentTrack.elapsedTime
                                     text = "Speed: $speed\nDistance: $distance km\nElapsed time: $elapsedTime\n$pr"
                                 }
                                 action {
-                                    showTrack(listOf(segmentLine))
+                                    showTrack(segmentTrack)
                                 }
                             }
                         }
@@ -285,15 +257,20 @@ abstract class AbstractActivityDetailView(protected val activity: Activity, priv
         }
     }
 
-    protected fun showTrack(tracksToDisplay: List<CoordinateLine>) {
-        tracks.forEach { track -> track.setVisible(false) }
-        tracksToDisplay.forEach { track -> track.setVisible(true) }
+    private fun showTrack(displayTrack: DisplayTrack) {
+        statsTracks.forEach { statsTrack -> statsTrack.track.setVisible(false) }
+        segmentsTracks.forEach { segmentTrack -> segmentTrack.track.setVisible(false) }
+        displayTrack.track.setVisible(true)
+
+        val mainTrackAreaChart = areaChart.data.first()
+        areaChart.data =
+            listOf<XYChart.Series<Number, Number>>(mainTrackAreaChart, displayTrack.altitudeAreaChart).toObservable()
     }
 
     private fun calculateInstantSpeed(index: Int): Double? {
         // Speed
-        val coordinate1 = activity.stream?.latitudeLongitude?.data?.getOrNull(index - 1)
-        val coordinate2 = activity.stream?.latitudeLongitude?.data?.getOrNull(index)
+        val coordinate1 = latitudeLongitudesList.getOrNull(index - 1)
+        val coordinate2 = latitudeLongitudesList.getOrNull(index)
         return if (coordinate1 != null && coordinate2 != null) {
             val start = GeoCoordinate(coordinate1[0], coordinate1[1])
             val distanceBetweenCoordinates = start.haversineInM(coordinate2[0], coordinate2[1])
@@ -304,8 +281,6 @@ abstract class AbstractActivityDetailView(protected val activity: Activity, priv
             null
         }
     }
-
-    protected abstract fun VBox.addRadioButtons(toggleGroup: ToggleGroup)
 
     protected fun initMapView() {
 
@@ -416,10 +391,8 @@ abstract class AbstractActivityDetailView(protected val activity: Activity, priv
         val xValue: Number = areaChart.xAxis.getValueForDisplay(displayPosition)
         val index = findStreamDataIndex(xValue)
         if (index != null) {
-            val latitudeLongitude = activity.stream?.latitudeLongitude?.data?.get(index)
-            if (latitudeLongitude != null) {
-                return Coordinate(latitudeLongitude[0], latitudeLongitude[1])
-            }
+            val latitudeLongitude = latitudeLongitudesList[index]
+            return Coordinate(latitudeLongitude[0], latitudeLongitude[1])
         }
         return null
     }
@@ -456,8 +429,11 @@ abstract class AbstractActivityDetailView(protected val activity: Activity, priv
         if (activityTrack != null) {
             // add tracks
             mapView.addCoordinateLine(activityTrack)
-            for (track in tracks) {
-                mapView.addCoordinateLine(track)
+            for (segmentTrack in segmentsTracks) {
+                mapView.addCoordinateLine(segmentTrack.track)
+            }
+            for (statsTrack in statsTracks) {
+                mapView.addCoordinateLine(statsTrack.track)
             }
 
             // get the extent for track
@@ -476,20 +452,20 @@ abstract class AbstractActivityDetailView(protected val activity: Activity, priv
     }
 
     private fun addMarkers() {
-        val start = activity.stream?.latitudeLongitude?.data?.first()
+        val start = latitudeLongitudesList.first()
         val startPNGURL = javaClass.getResource("/images/startmarker.png")
         val startMarker = Marker(startPNGURL, -16, -16)
-        startMarker.position = Coordinate(start?.get(0), start?.get(1))
+        startMarker.position = Coordinate(start[0], start[1])
         startMarker.visible = true
 
         mapView.addMarker(startMarker)
         markersCreatedOnClick[startMarker.id] = startMarker
 
-        val end = activity.stream?.latitudeLongitude?.data?.last()
+        val end = latitudeLongitudesList.last()
 
         val finishPNGURL = javaClass.getResource("/images/finishmarker.png")
         val endMarker = Marker(finishPNGURL, 0, -32)
-        endMarker.position = Coordinate(end?.get(0), end?.get(1))
+        endMarker.position = Coordinate(end[0], end[1])
         endMarker.visible = true
 
         mapView.addMarker(endMarker)
@@ -544,8 +520,8 @@ abstract class AbstractActivityDetailView(protected val activity: Activity, priv
                 vbox.add(HBox(10.0, distanceLabel, distanceValueLabel))
 
                 // Speed
-                val coordinate1 = activity.stream?.latitudeLongitude?.data?.getOrNull(index - 1)
-                val coordinate2 = activity.stream?.latitudeLongitude?.data?.getOrNull(index)
+                val coordinate1 = latitudeLongitudesList.getOrNull(index - 1)
+                val coordinate2 = latitudeLongitudesList.getOrNull(index)
                 val speedLabel = Label("Speed:")
                 val speedValueLabel: Label = if (coordinate1 != null && coordinate2 != null) {
                     val start = GeoCoordinate(coordinate1[0], coordinate1[1])
