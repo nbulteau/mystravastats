@@ -11,7 +11,8 @@ import space.kscience.plotly.models.*
 import java.nio.file.Files
 import kotlin.math.abs
 
-@OptIn(UnstablePlotlyAPI::class)
+@Suppress("DEPRECATION")
+@UnstablePlotlyAPI
 abstract class Chart {
 
     companion object {

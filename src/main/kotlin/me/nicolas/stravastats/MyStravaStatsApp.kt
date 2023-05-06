@@ -34,8 +34,6 @@ internal class MyStravaStatsApp : App() {
 
     }
 
-
-
     override lateinit var primaryView: KClass<out UIComponent>
 
     override fun start(stage: Stage) {

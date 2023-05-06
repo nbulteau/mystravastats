@@ -7,7 +7,8 @@ import space.kscience.plotly.*
 import space.kscience.plotly.models.*
 import java.time.LocalDate
 
-@OptIn(UnstablePlotlyAPI::class)
+@Suppress("DEPRECATION")
+@UnstablePlotlyAPI
 internal class ByYearsChart(val activities: List<Activity>) : Chart() {
 
     private val activitiesByYear = ActivityHelper.groupActivitiesByYear(activities)

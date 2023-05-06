@@ -8,7 +8,8 @@ import space.kscience.plotly.models.BarMode
 import space.kscience.plotly.models.TraceOrder
 import space.kscience.plotly.models.XAnchor
 
-@OptIn(UnstablePlotlyAPI::class)
+@Suppress("DEPRECATION")
+@UnstablePlotlyAPI
 internal class ForAYearChart(activities: List<Activity>, val year: Int) : Chart() {
 
     private val activitiesForYear = activities.filter { activity -> activity.startDateLocal.subSequence(0, 4).toString().toInt() == year }
@@ -221,6 +222,5 @@ internal class ForAYearChart(activities: List<Activity>, val year: Int) : Chart(
             }
         }
     }
-
 }
 

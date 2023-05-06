@@ -56,14 +56,8 @@ internal class FitService(private val cachePath: Path) {
         val maxHeartrate: Double = sessionMesg?.maxHeartRate?.toDouble() ?: 0.0
         //The average wattage of this effort
         val averageWatts: Double = sessionMesg?.avgPower?.toDouble() ?: 0.0 // TODO : Calculate ?
-        // The number of comments for this activity
-        val commentCount = 0
         // Whether this activity is a commute
         val commute = false
-        // Whether the watts are from a power meter, false if estimated
-        val deviceWatts = false
-        // ??
-        val displayHideHeartrateOption = true
         // The activity's distance, in meters
         val distance: Double = sessionMesg?.totalDistance?.toDouble() ?: 0.0
         // The activity's elapsed time, in seconds
@@ -82,33 +76,16 @@ internal class FitService(private val cachePath: Path) {
         } else {
             extractedElevLow
         }
-        // An instance of LatLng (= List<Double>).
-        val extractedEndLatLng = extractLatLng(sessionMesg.startPositionLat, sessionMesg.startPositionLong)
-        val endLatlng: List<Double>? = extractedEndLatLng.ifEmpty {
-            stream.latitudeLongitude?.data?.last()
-        }
-        // The identifier provided at upload time
-        val externalId = "garmin_push_${fitFile.name.replace(".FIT", "")}"
         // The unique identifier of the activity
         val id: Long = 0
         // The total work done in kilojoules during this activity. Rides only
         val kilojoules = 0.0
-        //
-        val locationCity: Any? = null
-        //
-        val locationCountry: String? = null
-        //
-        val locationState: Any? = null
-        // Whether this activity was created manually
-        val manual = false
         // The activity's max speed, in meters per second
         val maxSpeed: Double = sessionMesg?.maxSpeed?.toDouble() ?: 0.0
         // The activity's moving time, in seconds
         val movingTime: Int = sessionMesg?.timestamp?.timestamp?.minus(sessionMesg.startTime?.timestamp!!)?.toInt()!!
         //
         val name = "${extractType(sessionMesg.sport!!)} - ${fitFile.name.replace(".FIT", "")}"
-        //
-        val resourceState = 2
         // The time at which the activity was started.
         val startDate: String = extractDate(sessionMesg.startTime?.timestamp!!)
         // The time at which the activity was started in the local timezone.
@@ -119,17 +96,11 @@ internal class FitService(private val cachePath: Path) {
             stream.latitudeLongitude?.data?.first()
         }
         //
-        val timezone = ""
-        //
         val deltas = stream.altitude?.data?.zipWithNext { a, b -> b - a }
         val sum = deltas?.filter { it > 0 }?.sumOf { it }
         val totalElevationGain: Double = sessionMesg.totalAscent?.toDouble() ?: sum!!
         //
         val type: String = extractType(sessionMesg.sport!!)
-        //
-        val utcOffset = 0.0
-        //
-        val workoutType = 0
 
         val activity = Activity(
             // The number of achievements gained during this activity

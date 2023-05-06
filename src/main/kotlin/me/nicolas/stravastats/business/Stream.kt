@@ -3,13 +3,9 @@ package me.nicolas.stravastats.business
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Stream(
-    @JsonProperty("distance")
     val distance: Distance,
-    @JsonProperty("time")
     val time: Time,
-    @JsonProperty("moving")
     val moving: Moving?,
-    @JsonProperty("altitude")
     val altitude: Altitude?,
     @JsonProperty("latlng")
     val latitudeLongitude: LatitudeLongitude?,

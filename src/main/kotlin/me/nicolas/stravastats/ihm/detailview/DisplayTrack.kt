@@ -10,9 +10,16 @@ sealed class DisplayTrack(
     open val track: CoordinateLine,
     open val altitudeAreaChart: XYChart.Series<Number, Number>,
 ) {
-    abstract val distance: String
-    abstract val elapsedTime: String
+    abstract val distance: Double
+    abstract val elapsedTime: Int
     abstract val formattedSpeed: String
+    abstract val formattedGradient: String
+
+    open fun buildTooltipText(): String {
+        val formattedDistance = "%.02f".format(this.distance / 1000)
+        val formattedElapsedTime = elapsedTime.formatSeconds()
+        return "Speed: $formattedSpeed\nDistance: $formattedDistance km\nElapsed time: $formattedElapsedTime\nAverage gradient: $formattedGradient"
+    }
 }
 
 enum class StatType { GRADIENT, SPEED }
@@ -22,16 +29,16 @@ data class StatsTrack(
     val activityEffort: ActivityEffort,
     val statType: StatType
 ) : DisplayTrack(track, altitudeAreaChart) {
-    override val distance: String
-        get() = "%.02f".format(activityEffort.distance / 1000)
+    override val distance: Double
+        get() = activityEffort.distance
 
-    override val elapsedTime: String
-        get() = activityEffort.seconds.formatSeconds()
+    override val elapsedTime: Int
+        get() = activityEffort.seconds
 
     override val formattedSpeed: String
         get() = activityEffort.getFormattedSpeed()
 
-    val formattedGradient: String
+    override val formattedGradient: String
         get() = activityEffort.getFormattedGradient()
 
     override fun toString(): String {
@@ -46,18 +53,25 @@ data class SegmentTrack(
     override val track: CoordinateLine,
     override val altitudeAreaChart: XYChart.Series<Number, Number>,
     val segmentEffort: SegmentEffort,
-    val activityType: String,
+    override val formattedSpeed: String,
+    override val formattedGradient: String
 ) : DisplayTrack(track, altitudeAreaChart) {
-    override val distance: String
-        get() = "%.02f".format(segmentEffort.distance / 1000)
+    override val distance: Double
+        get() = segmentEffort.distance
 
-    override val elapsedTime: String
-        get() = segmentEffort.elapsedTime.formatSeconds()
-
-    override val formattedSpeed: String
-        get() = segmentEffort.getFormattedSpeed(activityType)
+    override val elapsedTime: Int
+        get() = segmentEffort.elapsedTime
 
     override fun toString(): String {
-        return "${segmentEffort.name} : ${segmentEffort.getFormattedSpeed(activityType)}"
+        return "${segmentEffort.name} : $formattedSpeed"
+    }
+
+    override fun buildTooltipText(): String {
+        val pr = if (this.segmentEffort.prRank != null) {
+            "PR : ${this.segmentEffort.prRank} best time\n"
+        } else {
+            ""
+        }
+        return "${super.buildTooltipText()}\n$pr"
     }
 }

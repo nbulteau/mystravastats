@@ -24,7 +24,7 @@ data class DetailledActivity(
     val commute: Boolean,
     val description: String,
     @JsonProperty("device_name")
-    val deviceName: String,
+    val deviceName: String?,
     @JsonProperty("device_watts")
     val deviceWatts: Boolean,
     val distance: Int,

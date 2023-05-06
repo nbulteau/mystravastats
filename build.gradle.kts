@@ -11,8 +11,7 @@ buildscript {
 }
 
 plugins {
-    // Apply the Kotlin JVM plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.8.21"
+    kotlin("jvm") version "1.8.21"
     id("org.openjfx.javafxplugin") version "0.0.14"
     id("com.github.ben-manes.versions") version "0.46.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
@@ -27,20 +26,12 @@ repositories {
 }
 
 dependencies {
-    // Align versions of all Kotlin components
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    //implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.0")
 
     implementation("org.slf4j:slf4j-nop:2.0.7")
     implementation("io.javalin:javalin:5.5.0")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
-
-    implementation("com.sothawo:mapjfx:3.1.0")
-    implementation("no.tornado:tornadofx:1.7.20")
 
     // Some trouble with javafx dependencies
     //implementation("org.openjfx:javafx-base:20.0.1")
@@ -50,14 +41,17 @@ dependencies {
     //implementation("org.openjfx:javafx-media:20.0.1")
     //implementation("org.openjfx:javafx-web:20.0.1")
 
-    // Some problem with 0.5.3 version
+    implementation("com.sothawo:mapjfx:3.1.0")
+    implementation("no.tornado:tornadofx:1.7.20")
+
+    // Some problem with 0.5.0 version
     implementation("space.kscience:plotlykt-server:0.5.3") {
         exclude("ch.qos.logback", "logback-classic")
     }
 
     implementation(files("libs/fit.jar"))
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
+    testImplementation(kotlin("test"))
 }
 
 javafx {
@@ -82,8 +76,12 @@ application {
     )
 }
 
-tasks.withType<Test> {
+tasks.test {
     useJUnitPlatform()
+}
+
+kotlin {
+    jvmToolchain(18)
 }
 
 tasks.withType(Jar::class) {

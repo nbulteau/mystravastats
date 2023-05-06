@@ -156,14 +156,23 @@ abstract class AbstractActivityDetailView(
                 }
             }).setColor(Color.ORANGE).setWidth(5)
 
-            val xyChartSeries = XYChart.Series(distancesList //.windowed(1, 10).flatten()
+            val xyChartSeries = XYChart.Series(distancesList
                 .zip(altitudesList) { distance, altitude ->
                     XYChart.Data<Number, Number>(distance / 1000, altitude)
                 }
                 .subList(segmentEffort.startIndex, segmentEffort.endIndex)
                 .toObservable())
 
-            SegmentTrack(coordinateLine, xyChartSeries, segmentEffort, activity.type)
+            val deltaAltitude = altitudesList[segmentEffort.endIndex] - altitudesList[segmentEffort.startIndex]
+            val formattedGradient = "%.02f %%".format(100 * deltaAltitude / segmentEffort.distance)
+
+            SegmentTrack(
+                coordinateLine,
+                xyChartSeries,
+                segmentEffort,
+                segmentEffort.getFormattedSpeed(activity.type),
+                formattedGradient
+            )
         }
     }
 
@@ -213,35 +222,15 @@ abstract class AbstractActivityDetailView(
                     vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
 
                     vbox {
-                        statsTracks.forEach { statsTracks ->
+                        (statsTracks + segmentsTracks).forEach { statsTracks ->
                             radiobutton(statsTracks.toString(), toggleGroup) {
                                 tooltip {
-                                    val speed = statsTracks.formattedSpeed
-                                    val distance = statsTracks.distance
-                                    val elapsedTime = statsTracks.elapsedTime
-                                    text = "Speed: $speed\nDistance: $distance km\nElapsed time: $elapsedTime"
+                                    text = statsTracks.buildTooltipText()
+                                    showDelay = Duration(500.0)
+                                    showDuration = Duration(10_000.0)
                                 }
                                 action {
                                     showTrack(statsTracks)
-                                }
-                            }
-                        }
-
-                        segmentsTracks.forEach { segmentTrack ->
-                            radiobutton(segmentTrack.toString(), toggleGroup) {
-                                tooltip {
-                                    val pr = if (segmentTrack.segmentEffort.prRank != null) {
-                                        "PR : ${segmentTrack.segmentEffort.prRank} best time\n"
-                                    } else {
-                                        ""
-                                    }
-                                    val speed = segmentTrack.formattedSpeed
-                                    val distance = segmentTrack.distance
-                                    val elapsedTime = segmentTrack.elapsedTime
-                                    text = "Speed: $speed\nDistance: $distance km\nElapsed time: $elapsedTime\n$pr"
-                                }
-                                action {
-                                    showTrack(segmentTrack)
                                 }
                             }
                         }
