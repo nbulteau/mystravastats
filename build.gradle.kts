@@ -1,7 +1,5 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
-
 
 buildscript {
     repositories {
@@ -33,28 +31,22 @@ dependencies {
     implementation("io.javalin:javalin:5.5.0")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
 
-    // Some trouble with javafx dependencies
-    //implementation("org.openjfx:javafx-base:20.0.1")
-    //implementation("org.openjfx:javafx-controls:20.0.1")
-    //implementation("org.openjfx:javafx-fxml:20.0.1")
-    //implementation("org.openjfx:javafx-graphics:20.0.1")
-    //implementation("org.openjfx:javafx-media:20.0.1")
-    //implementation("org.openjfx:javafx-web:20.0.1")
-
     implementation("com.sothawo:mapjfx:3.1.0")
     implementation("no.tornado:tornadofx:1.7.20")
 
-    // Some problem with 0.5.0 version
-    implementation("space.kscience:plotlykt-server:0.5.3") {
-        exclude("ch.qos.logback", "logback-classic")
-    }
+    implementation("space.kscience:plotlykt-server:0.5.3")
 
     implementation(files("libs/fit.jar"))
 
     testImplementation(kotlin("test"))
 }
 
+kotlin {
+    jvmToolchain(18)
+}
+
 javafx {
+    version = "18"
     modules = listOf("javafx.controls", "javafx.media", "javafx.fxml", "javafx.web", "javafx.graphics")
 }
 
@@ -72,7 +64,7 @@ application {
         "--add-opens=java.base/sun.net=ALL-UNNAMED",
         "--add-opens=java.base/sun.net.www.protocol.https=ALL-UNNAMED",
         "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
-        "--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED"
+        "--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED",
     )
 }
 
@@ -80,25 +72,22 @@ tasks.test {
     useJUnitPlatform()
 }
 
-kotlin {
-    jvmToolchain(18)
-}
-
-tasks.withType(Jar::class) {
+tasks.jar {
     manifest {
         attributes["Manifest-Version"] = "1.0"
         attributes["Main-Class"] = "me.nicolas.stravastats.MyStravaStatsApp"
     }
 }
 
-fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase(Locale.getDefault()).contains(it) }
-    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-    val isStable = stableKeyword || regex.matches(version)
-    return isStable.not()
+tasks.compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn"
+        jvmTarget = "18"
+        moduleName = "mystravastats"
+    }
 }
 
-tasks.withType<DependencyUpdatesTask> {
+tasks.dependencyUpdates {
     // reject all non stable versions
     rejectVersionIf {
         isNonStable(candidate.version)
@@ -126,15 +115,9 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
     checkForGradleUpdate = true
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn"
-        jvmTarget = "18"
-        moduleName = "mystravastats"
-    }
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase(Locale.getDefault()).contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(version)
+    return isStable.not()
 }
-
-tasks.withType<JavaCompile> {
-    targetCompatibility = "18"
-}
-

@@ -29,7 +29,7 @@ import kotlin.system.exitProcess
 
 
 interface IStravaApi {
-    fun getLoggedInAthlete(): Optional<Athlete>
+    fun retrieveLoggedInAthlete(): Optional<Athlete>
     fun getActivities(year: Int): List<Activity>
     fun getActivities(after: LocalDateTime): List<Activity>
     fun getActivityStream(activity: Activity): Optional<Stream>
@@ -53,7 +53,7 @@ internal class StravaApi(clientId: String, clientSecret: String) : IStravaApi {
         setAccessToken(clientId, clientSecret)
     }
 
-    override fun getLoggedInAthlete(): Optional<Athlete> {
+    override fun retrieveLoggedInAthlete(): Optional<Athlete> {
         try {
             return doGetLoggedInAthlete()
         } catch (connectException: ConnectException) {

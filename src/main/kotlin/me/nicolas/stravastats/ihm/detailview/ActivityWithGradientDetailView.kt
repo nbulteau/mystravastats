@@ -9,7 +9,7 @@ import me.nicolas.stravastats.business.SegmentEffort
 import me.nicolas.stravastats.service.statistics.calculateBestElevationForDistance
 import tornadofx.toObservable
 
-class RideActivityDetailView(
+class ActivityWithGradientDetailView(
     activity: Activity,
     latitudeLongitudesList: List<List<Double>>,
     distancesList: List<Double>,

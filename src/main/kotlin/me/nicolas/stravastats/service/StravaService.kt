@@ -20,7 +20,7 @@ import kotlin.io.path.name
 
 interface IStravaService {
     fun getLoggedInAthlete(): Athlete
-    fun getActivities(year: Int): List<Activity>
+    fun retrieveActivities(year: Int): List<Activity>
     fun getActivity(year: Int, activityId: Long): Optional<DetailledActivity>
 }
 
@@ -47,7 +47,7 @@ internal class StravaService private constructor(context: Context) : IStravaServ
     override fun getLoggedInAthlete(): Athlete {
 
         print("\nLoad athlete description of clientId=$clientId... ")
-        val athlete = stravaApi.getLoggedInAthlete()
+        val athlete = stravaApi.retrieveLoggedInAthlete()
         println("done")
 
         if (athlete.isPresent) {
@@ -60,7 +60,7 @@ internal class StravaService private constructor(context: Context) : IStravaServ
         return athlete.get()
     }
 
-    override fun getActivities(year: Int): List<Activity> {
+    override fun retrieveActivities(year: Int): List<Activity> {
 
         print("Load activities of clientId=$clientId from Strava for year $year ... ")
         val activities = stravaApi.getActivities(year).filterActivities()
@@ -74,7 +74,7 @@ internal class StravaService private constructor(context: Context) : IStravaServ
             activities
         )
 
-        this.getActivitiesStreams(activities, yearActivitiesDirectory)
+        this.retrieveActivitiesStreams(activities, yearActivitiesDirectory)
 
         return activities
     }
@@ -108,7 +108,7 @@ internal class StravaService private constructor(context: Context) : IStravaServ
         return detailledActivity
     }
 
-    private fun getActivitiesStreams(activities: List<Activity>, activitiesDirectory: File) {
+    private fun retrieveActivitiesStreams(activities: List<Activity>, activitiesDirectory: File) {
 
         println("Load ${activities.size} activities streams ... ")
 

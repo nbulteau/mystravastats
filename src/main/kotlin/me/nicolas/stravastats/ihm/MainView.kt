@@ -67,7 +67,7 @@ class MainView(
     private val detailsWindow: AnchorPane
     private val detailsPopup: DetailsPopup
 
-    private lateinit var activeYearsSet: MutableSet<String>
+    private val activeYearsSet = (LocalDate.now().year downTo 2010).map { "$it" }.toMutableSet()
 
     private var coordinateLines: Collection<CoordinateLine> = ArrayList()
 
@@ -231,27 +231,21 @@ class MainView(
     }
 
     private fun updateMainView() {
-        val statisticsToDisplay = mainController.getStatisticsToDisplay(selectedActivity.value, getSelectedYear())
-        val activitiesToDisplay = mainController.getActivitiesToDisplay(selectedActivity.value, getSelectedYear())
-        val generalBadgesSetToDisplay =
-            mainController.getGeneralBadgesSetToDisplay(selectedActivity.value, getSelectedYear())
+        val selectedYearValue = getSelectedYear()
+        val statisticsToDisplay = mainController.getStatisticsToDisplay(selectedActivity.value, selectedYearValue)
+        val activitiesToDisplay = mainController.getActivitiesToDisplay(selectedActivity.value, selectedYearValue)
+        val generalBadgesSetToDisplay = mainController.getGeneralBadgesSetToDisplay(selectedActivity.value, selectedYearValue)
 
         // update main view
-        activeYearsSet = (LocalDate.now().year downTo 2010).map { "$it" }.toMutableSet()
         selectedActivityLabel.text = selectedActivity.value
 
         activitiesTab.content = tableview(activitiesToDisplay) {
             readonlyColumn("Activity", ActivityDisplay::name)
-            readonlyColumn("Distance", ActivityDisplay::distance).cellFactory =
-                formatDistance()
-            readonlyColumn("Elapsed time", ActivityDisplay::elapsedTime).cellFactory =
-                formatSeconds()
-            readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory =
-                formatElevation()
-            readonlyColumn("Total descent", ActivityDisplay::totalDescent).cellFactory =
-                formatElevation()
-            readonlyColumn("Average speed", ActivityDisplay::averageSpeed).cellFactory =
-                formatSpeed(selectedActivity.value)
+            readonlyColumn("Distance", ActivityDisplay::distance).cellFactory = formatDistance()
+            readonlyColumn("Elapsed time", ActivityDisplay::elapsedTime).cellFactory = formatSeconds()
+            readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory = formatElevation()
+            readonlyColumn("Total descent", ActivityDisplay::totalDescent).cellFactory = formatElevation()
+            readonlyColumn("Average speed", ActivityDisplay::averageSpeed).cellFactory = formatSpeed(selectedActivity.value)
             readonlyColumn("Best speed for 1000 m", ActivityDisplay::bestTimeForDistanceFor1000m)
             if (selectedActivity.value != AlpineSki) {
                 readonlyColumn("Max gradient for 250 m", ActivityDisplay::bestElevationForDistanceFor250m)
@@ -270,7 +264,6 @@ class MainView(
         }
 
         chartsTab.content = drawer {
-            val selectedYearValue = getSelectedYear()
             if (selectedYearValue != null) {
                 item("Distance by months", expanded = true) {
                     barchart("Distance by months for $selectedYearValue (km)", CategoryAxis(), NumberAxis()) {
@@ -305,10 +298,7 @@ class MainView(
                 if (selectedActivity.value !in listOf(AlpineSki, Commute)) {
                     item("Eddington number") {
                         eddingtonNumberChart(
-                            mainController.getActiveDaysByActivityTypeByYear(
-                                selectedActivity.value,
-                                selectedYearValue
-                            )
+                            mainController.getActiveDaysByActivityTypeByYear(selectedActivity.value, selectedYearValue)
                         )
                     }
                 }
@@ -451,8 +441,9 @@ class MainView(
         if (coordinateLines.isNotEmpty()) {
             val firstTrack = coordinateLines.first()
             val coordinateOfFirstTrack = firstTrack.coordinateStream.toList()
-            if(coordinateOfFirstTrack.isNotEmpty()) {
-                mapView.center = Coordinate(coordinateOfFirstTrack.first().latitude, coordinateOfFirstTrack.first().longitude)
+            if (coordinateOfFirstTrack.isNotEmpty()) {
+                mapView.center =
+                    Coordinate(coordinateOfFirstTrack.first().latitude, coordinateOfFirstTrack.first().longitude)
             } else {
                 // Rennes
                 mapView.center = Coordinate(48.1606, -1.5395)

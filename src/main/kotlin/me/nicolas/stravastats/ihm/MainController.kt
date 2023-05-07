@@ -13,7 +13,7 @@ import me.nicolas.stravastats.business.badges.DistanceBadge
 import me.nicolas.stravastats.business.badges.ElevationBadge
 import me.nicolas.stravastats.business.badges.MovingTimeBadge
 import me.nicolas.stravastats.ihm.detailview.ActivityDetailView
-import me.nicolas.stravastats.ihm.detailview.RideActivityDetailView
+import me.nicolas.stravastats.ihm.detailview.ActivityWithGradientDetailView
 import me.nicolas.stravastats.service.*
 import me.nicolas.stravastats.service.statistics.ActivityStatistic
 import me.nicolas.stravastats.service.statistics.Statistic
@@ -70,7 +70,6 @@ class MainController(private val clientId: String, private val activities: Obser
         return filteredActivities
     }
 
-
     fun getActiveDaysByActivityTypeByYear(activityType: String, year: Int?): Map<String, Int> {
 
         val filteredActivities = getFilteredActivities(activityType, year)
@@ -96,8 +95,7 @@ class MainController(private val clientId: String, private val activities: Obser
 
     fun getActivitiesByYear(activityType: String): Map<String, List<Activity>> {
 
-        val filteredActivities = this.activities
-            .filterActivitiesByType(activityType)
+        val filteredActivities = this.activities.filterActivitiesByType(activityType)
 
         return ActivityHelper.groupActivitiesByYear(filteredActivities)
     }
@@ -355,8 +353,8 @@ class MainController(private val clientId: String, private val activities: Obser
             ) {
                 val segmentEfforts = getSegmentEfforts(activity)
 
-                if (activity.type == Ride) {
-                    RideActivityDetailView(
+                if (activity.type == Ride || activity.type == Hike) {
+                    ActivityWithGradientDetailView(
                         activity,
                         activity.stream?.latitudeLongitude?.data!!,
                         activity.stream?.distance?.data!!,

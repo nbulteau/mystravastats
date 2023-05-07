@@ -18,18 +18,19 @@ internal class StravaLoadActivitiesTask(clientId: String, clientSecret: String, 
         val athlete = stravaService.getLoggedInAthlete()
 
         val activities = mutableListOf<Activity>()
+        val currentYear = LocalDate.now().year
         val elapsed = measureTimeMillis {
             if (allYears) {
-                for (currentYear in LocalDate.now().year downTo 2010) {
-                    updateMessage("Loading $currentYear activities ...")
-                    activities.addAll(stravaService.getActivities(currentYear))
+                for (yearToLoad in currentYear downTo 2010) {
+                    updateMessage("Loading $yearToLoad activities ...")
+                    activities.addAll(stravaService.retrieveActivities(yearToLoad))
                 }
             } else {
-                updateMessage("Loading ${LocalDate.now().year} activities ...")
-                activities.addAll(stravaService.getActivities(LocalDate.now().year))
-                for (currentYear in LocalDate.now().year - 1 downTo 2010) {
-                    updateMessage("Loading $currentYear activities ...")
-                    activities.addAll(loadActivitiesFromCache(currentYear))
+                updateMessage("Loading $currentYear activities ...")
+                activities.addAll(stravaService.retrieveActivities(currentYear))
+                for (yearToLoad in currentYear - 1 downTo 2010) {
+                    updateMessage("Loading $yearToLoad activities ...")
+                    activities.addAll(loadActivitiesFromCache(yearToLoad))
                 }
             }
         }
