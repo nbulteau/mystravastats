@@ -117,7 +117,7 @@ abstract class Chart {
                 }
 
                 // not yet implemented with plotlykt 0.5.0
-                /*
+
                 annotation {
                     xref = "x"
                     yref = "y"
@@ -130,7 +130,7 @@ abstract class Chart {
                     }
                     showarrow = true
                 }
-                */
+
             }
         }
     }
