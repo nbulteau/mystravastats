@@ -1,11 +1,9 @@
 package me.nicolas.stravastats.service
 
 
-import com.garmin.fit.FitDecoder
-import com.garmin.fit.RecordMesg
-import com.garmin.fit.SessionMesg
-import com.garmin.fit.Sport
+import com.garmin.fit.*
 import me.nicolas.stravastats.business.*
+import me.nicolas.stravastats.business.Activity
 import me.nicolas.stravastats.utils.inDateTimeFormatter
 import java.io.File
 import java.nio.file.Path
@@ -20,31 +18,39 @@ internal class FitService(private val cachePath: Path) {
 
     private val srtmService = SRTMService(Path.of("srtm30m"))
 
+    /**
+     * Load all FIT activities from cache ([cachePath])
+     * @param year Year to load
+     * @return An activity list
+     */
     fun loadActivitiesFromCache(year: Int): List<Activity> {
         val yearActivitiesDirectory = File(cachePath.toFile(), "$year")
-        val fitFiles =
-            yearActivitiesDirectory.listFiles { file -> file.extension.lowercase(Locale.getDefault()) == "fit" }
-
-        val activities: List<Activity> = try {
-            fitFiles?.map { file ->
-                this.convertToActivity(file)
-            }?.toList() ?: emptyList()
-        } catch (exception: Exception) {
-            println(exception)
-            emptyList()
+        val fitFiles = yearActivitiesDirectory.listFiles { file ->
+            file.extension.lowercase(Locale.getDefault()) == "fit"
         }
+        val activities: List<Activity> = fitFiles?.mapNotNull { fitFile ->
+            try {
+                val fitMessages = fitDecoder.decode(fitFile.inputStream())
+                this.convertToActivity(fitMessages)
+            } catch (exception: Exception) {
+                println(exception)
+                null
+            }
+        }?.toList() ?: emptyList()
 
         return activities
     }
 
-    private fun convertToActivity(fitFile: File): Activity {
-        val fitMessages = fitDecoder.decode(fitFile.inputStream())
-        val sessionMesg = fitMessages.sessionMesgs[0]
-        val recordMesgs = fitMessages.recordMesgs
+    /**
+     * Convert a FIT activity to a Strava activity
+     * @param fitMessages The fit file to convert
+     */
+    private fun convertToActivity(fitMessages: FitMessages): Activity {
+        val sessionMesg = fitMessages.sessionMesgs.first()
 
-        val stream: Stream = buildStream(recordMesgs)
+        val stream: Stream = buildStream(fitMessages.recordMesgs)
 
-        //
+        // Athlete
         val athlete = AthleteRef(0, 1)
         // The activity's average speed, in meters per second
         val averageSpeed: Double = sessionMesg?.avgSpeed?.toDouble() ?: 0.0
@@ -69,13 +75,6 @@ internal class FitService(private val cachePath: Path) {
         } else {
             extractedElevHigh
         }
-        // The activity's lowest elevation, in meters
-        val extractedElevLow: Double = extractElevLow(sessionMesg)
-        val elevLow: Double = if (extractedElevLow == 0.0) {
-            stream.altitude?.data?.maxOf { it }!!
-        } else {
-            extractedElevLow
-        }
         // The unique identifier of the activity
         val id: Long = 0
         // The total work done in kilojoules during this activity. Rides only
@@ -84,26 +83,25 @@ internal class FitService(private val cachePath: Path) {
         val maxSpeed: Double = sessionMesg?.maxSpeed?.toDouble() ?: 0.0
         // The activity's moving time, in seconds
         val movingTime: Int = sessionMesg?.timestamp?.timestamp?.minus(sessionMesg.startTime?.timestamp!!)?.toInt()!!
-        //
-        val name = "${extractType(sessionMesg.sport!!)} - ${fitFile.name.replace(".FIT", "")}"
         // The time at which the activity was started.
         val startDate: String = extractDate(sessionMesg.startTime?.timestamp!!)
         // The time at which the activity was started in the local timezone.
         val startDateLocal: String = extractDateLocal(sessionMesg.startTime?.timestamp!!)
-        //
+        // Activity name
+        val name = "${extractActivityType(sessionMesg.sport!!)} - $startDateLocal"
+        // Latitude /longitude of the start point
         val extractedStartLatLng = extractLatLng(sessionMesg.startPositionLat, sessionMesg.startPositionLong)
         val startLatlng: List<Double>? = extractedStartLatLng.ifEmpty {
             stream.latitudeLongitude?.data?.first()
         }
-        //
+        // Total elevation gain
         val deltas = stream.altitude?.data?.zipWithNext { a, b -> b - a }
         val sum = deltas?.filter { it > 0 }?.sumOf { it }
         val totalElevationGain: Double = sessionMesg.totalAscent?.toDouble() ?: sum!!
-        //
-        val type: String = extractType(sessionMesg.sport!!)
+        // Activity type (i.e. Ride, Run ...)
+        val type: String = extractActivityType(sessionMesg.sport!!)
 
         val activity = Activity(
-            // The number of achievements gained during this activity
             athlete = athlete,
             averageSpeed = averageSpeed,
             averageCadence = averageCadence,
@@ -132,6 +130,9 @@ internal class FitService(private val cachePath: Path) {
         return activity
     }
 
+    /**
+     * Build Strava Stream structure using the GPS records
+     */
     private fun buildStream(recordMesgs: List<RecordMesg>): Stream {
         // distance
         val dataDistance = recordMesgs.map { recordMesg -> recordMesg.distance.toDouble() }.toMutableList()
@@ -144,8 +145,9 @@ internal class FitService(private val cachePath: Path) {
 
         //  time
         val startTime = recordMesgs.first().timestamp.timestamp
-        val dataTime =
-            recordMesgs.map { recordMesg -> (recordMesg.timestamp.timestamp - startTime).toInt() }.toMutableList()
+        val dataTime = recordMesgs.map { recordMesg ->
+            (recordMesg.timestamp.timestamp - startTime).toInt()
+        }.toMutableList()
         val streamTime = Time(
             data = dataTime,
             originalSize = dataTime.size,
@@ -181,7 +183,7 @@ internal class FitService(private val cachePath: Path) {
         )
 
         // altitude
-        val dataAltitude: MutableList<Double> = if (recordMesgs.first().altitude != null) {
+        val dataAltitude: List<Double> = if (recordMesgs.first().altitude != null) {
             recordMesgs.map { recordMesg ->
                 recordMesg.altitude.toDouble()
             }.toMutableList()
@@ -198,7 +200,7 @@ internal class FitService(private val cachePath: Path) {
         return Stream(streamDistance, streamTime, null, streamAltitude, streamLatitudeLongitude)
     }
 
-    private fun smooth(data: MutableList<Double>, size: Int = 5): MutableList<Double> {
+    private fun smooth(data: MutableList<Double>, size: Int = 5): List<Double> {
         val smooth = DoubleArray(data.size)
         for (i in 0 until size) {
             smooth[i] = data[i]
@@ -226,7 +228,7 @@ internal class FitService(private val cachePath: Path) {
         }
     }
 
-    private fun extractType(sport: Sport): String {
+    private fun extractActivityType(sport: Sport): String {
         return when (sport) {
             Sport.CYCLING -> "Ride"
             Sport.RUNNING -> "Run"
@@ -262,16 +264,6 @@ internal class FitService(private val cachePath: Path) {
             sessionMesg.maxAltitude.toDouble()
         } else if (sessionMesg.enhancedMaxAltitude != null) {
             sessionMesg.enhancedMaxAltitude.toDouble()
-        } else {
-            0.0
-        }
-    }
-
-    private fun extractElevLow(sessionMesg: SessionMesg): Double {
-        return if (sessionMesg.minAltitude != null) {
-            sessionMesg.minAltitude.toDouble()
-        } else if (sessionMesg.enhancedMinAltitude != null) {
-            sessionMesg.enhancedMinAltitude.toDouble()
         } else {
             0.0
         }

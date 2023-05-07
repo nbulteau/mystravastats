@@ -125,8 +125,8 @@ docker run -it --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -t myst
 
 #### run using docker with display on macOS
 
-Open XQuartz, the X Window Server implementation for Mac. Go to “Preferences” -> Security 
-=> Check Allow connections from network clients”. 
+Open XQuartz, the X Window Server implementation for Mac. Go to “Preferences” -> Security
+=> Check "Allow connections from network clients".
 Restart your computer (Strange).
 
 ```
