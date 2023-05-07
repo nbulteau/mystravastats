@@ -1,6 +1,6 @@
 package me.nicolas.stravastats.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import me.nicolas.stravastats.business.Activity
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -56,6 +56,6 @@ internal class ActivityHelperTest {
     private fun loadActivities(): List<Activity> {
         val url = Thread.currentThread().contextClassLoader.getResource("activities.json")
         val jsonFile = File(url.path)
-        return ObjectMapper().readValue(jsonFile, Array<Activity>::class.java).toList()
+        return jacksonObjectMapper().readValue(jsonFile, Array<Activity>::class.java).toList()
     }
 }

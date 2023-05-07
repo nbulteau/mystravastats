@@ -67,7 +67,7 @@ internal class EddingtonStatisticTest {
 
 
     private fun buildActivity(startDateLocal: String, distance: Double) = Activity(
-        athlete = AthleteRef(0, 0),
+        athlete = AthleteRef(0),
         averageSpeed = 0.0,
         averageCadence = 0.0,
         averageHeartrate = 0.0,

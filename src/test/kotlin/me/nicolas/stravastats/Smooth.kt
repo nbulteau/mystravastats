@@ -1,7 +1,6 @@
 package me.nicolas.stravastats
 
 internal object Smooth {
-    @JvmStatic
     fun main(args: Array<String>) {
         val signal = intArrayOf(1, 4, 4, 4, 5, 5, 5, 8, 8, 8, 7, 7)
         val l = signal.size
