@@ -59,8 +59,43 @@ data class Activity(
     @JsonProperty("upload_id")
     val uploadId: Long
 ) {
-
     var stream: Stream? = null
+
+
+
+    override fun toString() = "${name.trim()} (${startDateLocal.formatDate()})"
+
+    fun getFormattedSpeed(): String {
+        return if (type == "Run") {
+            "${getSpeed()}/km"
+        } else {
+            "${getSpeed()} km/h"
+        }
+    }
+
+    fun getSpeed(): String {
+        return if (type == "Run") {
+            (elapsedTime * 1000 / distance).formatSeconds()
+        } else {
+            "%.02f".format(distance / elapsedTime * 3600 / 1000)
+        }
+    }
+
+    fun calculateTotalAscentGain(): Double {
+        if (stream?.altitude?.data != null) {
+            val deltas = stream?.altitude?.data?.zipWithNext { a, b -> b - a }
+            return abs(deltas?.filter { it < 0 }?.sumOf { it }!!)
+        }
+        return 0.0
+    }
+
+    fun calculateTotalDescentGain(): Double {
+        if (stream?.altitude?.data != null) {
+            val deltas = stream?.altitude?.data?.zipWithNext { a, b -> b - a }
+            return deltas?.filter { it > 0 }?.sumOf { it }!!
+        }
+        return 0.0
+    }
 
     /**
      * Remove non-moving sections of the activity.
@@ -103,45 +138,9 @@ data class Activity(
 
         stream = streamWithoutNonMovingData
     }
-
-    override fun toString() = "${name.trim()} (${startDateLocal.formatDate()})"
-
-    fun getFormattedSpeed(): String {
-        return if (type == "Run") {
-            "${getSpeed()}/km"
-        } else {
-            "${getSpeed()} km/h"
-        }
-    }
-
-    fun getSpeed(): String {
-        return if (type == "Run") {
-            (elapsedTime * 1000 / distance).formatSeconds()
-        } else {
-            "%.02f".format(distance / elapsedTime * 3600 / 1000)
-        }
-    }
-
-    fun calculateTotalAscentGain(): Double {
-        if (stream?.altitude?.data != null) {
-            val deltas = stream?.altitude?.data?.zipWithNext { a, b -> b - a }
-            return abs(deltas?.filter { it < 0 }?.sumOf { it }!!)
-        }
-        return 0.0
-    }
-
-    fun calculateTotalDescentGain(): Double {
-        if (stream?.altitude?.data != null) {
-            val deltas = stream?.altitude?.data?.zipWithNext { a, b -> b - a }
-            return deltas?.filter { it > 0 }?.sumOf { it }!!
-        }
-        return 0.0
-    }
 }
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class AthleteRef(
-    @JsonProperty("id")
     val id: Int,
-    @JsonProperty("resource_state")
-    val resourceState: Int
 )

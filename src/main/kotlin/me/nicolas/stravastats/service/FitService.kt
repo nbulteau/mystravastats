@@ -51,7 +51,7 @@ internal class FitService(private val cachePath: Path) {
         val stream: Stream = buildStream(fitMessages.recordMesgs)
 
         // Athlete
-        val athlete = AthleteRef(0, 1)
+        val athlete = AthleteRef(0)
         // The activity's average speed, in meters per second
         val averageSpeed: Double = sessionMesg?.avgSpeed?.toDouble() ?: 0.0
         // The effort's average cadence
@@ -183,7 +183,7 @@ internal class FitService(private val cachePath: Path) {
         )
 
         // altitude
-        val dataAltitude: List<Double> = if (recordMesgs.first().altitude != null) {
+        val dataAltitude: MutableList<Double> = if (recordMesgs.first().altitude != null) {
             recordMesgs.map { recordMesg ->
                 recordMesg.altitude.toDouble()
             }.toMutableList()
@@ -200,7 +200,7 @@ internal class FitService(private val cachePath: Path) {
         return Stream(streamDistance, streamTime, null, streamAltitude, streamLatitudeLongitude)
     }
 
-    private fun smooth(data: MutableList<Double>, size: Int = 5): List<Double> {
+    private fun smooth(data: MutableList<Double>, size: Int = 5): MutableList<Double> {
         val smooth = DoubleArray(data.size)
         for (i in 0 until size) {
             smooth[i] = data[i]

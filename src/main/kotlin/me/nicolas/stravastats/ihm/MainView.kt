@@ -425,20 +425,22 @@ class MainView(
         runBlocking {
             launch {
                 val filteredActivities = mainController.getFilteredActivities(activityType, selectedYearValue)
+
                 // Take 1 out 10 points for this map
                 coordinateLines = filteredActivities.mapNotNull { activity ->
                     val coordinates = activity.stream?.latitudeLongitude?.data?.map { Coordinate(it[0], it[1]) }
                         ?.windowed(1, 10)
                         ?.flatten()
+
                     if (!coordinates.isNullOrEmpty()) {
                         CoordinateLine(coordinates)
                             .setColor(Color.MAGENTA)
                             .setVisible(true)
                     } else {
-                        CoordinateLine()
+                        null
                     }
-
                 }
+
                 coordinateLines.forEach { coordinateLine ->
                     mapView.addCoordinateLine(coordinateLine)
                 }

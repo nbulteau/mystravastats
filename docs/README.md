@@ -131,7 +131,7 @@ Restart your computer (Strange).
 
 ```
 xhost + 127.0.0.1
-docker run -it --env="DISPLAY=host.docker.internal:0" -v /tmp/.X11-unix:/tmp/.X11-unix:rw mystravastats
+docker run -it --rm --env="DISPLAY=host.docker.internal:0" -v /tmp/.X11-unix:/tmp/.X11-unix:rw mystravastats
 ```
 
 ## Provided Charts

@@ -9,4 +9,3 @@ import java.net.URL
 fun removeJavaFxInfoMessage() {
     URL.setURLStreamHandlerFactory(Handler.HandlerFactory())
 }
-
