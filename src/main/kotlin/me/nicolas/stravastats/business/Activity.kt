@@ -16,7 +16,6 @@ const val AlpineSki = "AlpineSki"
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Activity(
-    @JsonProperty("athlete")
     val athlete: AthleteRef,
     @JsonProperty("average_speed")
     val averageSpeed: Double,
@@ -28,23 +27,18 @@ data class Activity(
     val maxHeartrate: Double,
     @JsonProperty("average_watts")
     val averageWatts: Double,
-    @JsonProperty("commute")
     val commute: Boolean,
-    @JsonProperty("distance")
     var distance: Double,
     @JsonProperty("elapsed_time")
     var elapsedTime: Int,
     @JsonProperty("elev_high")
     val elevHigh: Double,
-    @JsonProperty("id")
     val id: Long,
-    @JsonProperty("kilojoules")
     val kilojoules: Double,
     @JsonProperty("max_speed")
     val maxSpeed: Double,
     @JsonProperty("moving_time")
     val movingTime: Int,
-    @JsonProperty("name")
     val name: String,
     @JsonProperty("start_date")
     val startDate: String,
@@ -54,14 +48,11 @@ data class Activity(
     val startLatlng: List<Double>?,
     @JsonProperty("total_elevation_gain")
     val totalElevationGain: Double,
-    @JsonProperty("type")
     val type: String,
     @JsonProperty("upload_id")
     val uploadId: Long
 ) {
     var stream: Stream? = null
-
-
 
     override fun toString() = "${name.trim()} (${startDateLocal.formatDate()})"
 
