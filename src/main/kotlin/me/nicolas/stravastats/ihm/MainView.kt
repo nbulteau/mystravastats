@@ -117,7 +117,7 @@ class MainView(
                                 imageview("images/buttons/ride.png")
                                 tooltip("Ride")
                                 action {
-                                    selectedActivity = SimpleStringProperty("Ride")
+                                    selectedActivity = SimpleStringProperty(Ride)
                                     updateMainView()
                                 }
                             }
@@ -125,7 +125,7 @@ class MainView(
                                 imageview("images/buttons/commute.png")
                                 tooltip("Commute")
                                 action {
-                                    selectedActivity = SimpleStringProperty("Commute")
+                                    selectedActivity = SimpleStringProperty(Commute)
                                     updateMainView()
                                 }
                             }
@@ -133,7 +133,7 @@ class MainView(
                                 imageview("images/buttons/run.png")
                                 tooltip("Run")
                                 action {
-                                    selectedActivity = SimpleStringProperty("Run")
+                                    selectedActivity = SimpleStringProperty(Run)
                                     updateMainView()
                                 }
                             }
@@ -141,7 +141,7 @@ class MainView(
                                 imageview("images/buttons/inlineskate.png")
                                 tooltip("Inline Skate")
                                 action {
-                                    selectedActivity = SimpleStringProperty("InlineSkate")
+                                    selectedActivity = SimpleStringProperty(InlineSkate)
                                     updateMainView()
                                 }
                             }
@@ -149,7 +149,7 @@ class MainView(
                                 imageview("images/buttons/hike.png")
                                 tooltip("Hike")
                                 action {
-                                    selectedActivity = SimpleStringProperty("Hike")
+                                    selectedActivity = SimpleStringProperty(Hike)
                                     updateMainView()
                                 }
                             }
@@ -265,31 +265,51 @@ class MainView(
 
         chartsTab.content = drawer {
             if (selectedYearValue != null) {
-                item("Distance by months", expanded = true) {
+                item("Distance by m...", expanded = true) {
                     barchart("Distance by months for $selectedYearValue (km)", CategoryAxis(), NumberAxis()) {
                         series(
-                            Ride,
+                            selectedActivity.value,
                             mainController.buildDistanceByMonthsSeries(selectedActivity.value, selectedYearValue)
                         )
                         verticalGridLinesVisible = false
                         isLegendVisible = false
                     }
                 }
-                item("Distance by days") {
-                    barchart("Distance by days for $selectedYearValue (km)", CategoryAxis(), NumberAxis()) {
+                item("Elevation by m...") {
+                    barchart("Elevation gain by months for $selectedYearValue (m)", CategoryAxis(), NumberAxis()) {
                         series(
-                            Ride,
-                            mainController.buildDistanceByDaysSeries(selectedActivity.value, selectedYearValue)
+                            selectedActivity.value,
+                            mainController.buildElevationGainByMonthsSeries(selectedActivity.value, selectedYearValue)
                         )
                         verticalGridLinesVisible = false
                         isLegendVisible = false
                     }
                 }
-                item("Distance by weeks") {
+                item("Distance by w...") {
                     barchart("Distance by weeks for $selectedYearValue (km)", CategoryAxis(), NumberAxis()) {
                         series(
-                            Ride,
+                            selectedActivity.value,
                             mainController.buildDistanceByWeeksSeries(selectedActivity.value, selectedYearValue)
+                        )
+                        verticalGridLinesVisible = false
+                        isLegendVisible = false
+                    }
+                }
+                item("Elevation by w...") {
+                    barchart("Elevation gain by weeks for $selectedYearValue (m)", CategoryAxis(), NumberAxis()) {
+                        series(
+                            selectedActivity.value,
+                            mainController.buildElevationGainByWeeksSeries(selectedActivity.value, selectedYearValue)
+                        )
+                        verticalGridLinesVisible = false
+                        isLegendVisible = false
+                    }
+                }
+                item("Distance by d...") {
+                    barchart("Distance by days for $selectedYearValue (km)", CategoryAxis(), NumberAxis()) {
+                        series(
+                            selectedActivity.value,
+                            mainController.buildDistanceByDaysSeries(selectedActivity.value, selectedYearValue)
                         )
                         verticalGridLinesVisible = false
                         isLegendVisible = false

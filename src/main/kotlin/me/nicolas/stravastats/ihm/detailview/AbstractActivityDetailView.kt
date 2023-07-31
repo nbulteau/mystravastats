@@ -275,9 +275,6 @@ abstract class AbstractActivityDetailView(
 
         buildBorderPane()
 
-        // init MapView-Cache
-        // initOfflineCache()
-
         // set the custom css file for the MapView
         mapView.setCustomMapviewCssURL(javaClass.getResource("/mapview.css"))
 

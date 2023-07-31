@@ -212,31 +212,57 @@ class MainController(private val clientId: String, private val activities: Obser
 
         val filteredActivities = getFilteredActivities(activityType, year)
 
-        return buildSeries(ActivityHelper.groupActivitiesByMonth(filteredActivities))
+        return buildDistanceSeries(ActivityHelper.groupActivitiesByMonth(filteredActivities))
+    }
+
+    fun buildElevationGainByMonthsSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>> {
+
+        val filteredActivities = getFilteredActivities(activityType, year)
+
+        return buildElevationGainSeries(ActivityHelper.groupActivitiesByMonth(filteredActivities))
     }
 
     fun buildDistanceByWeeksSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>> {
 
         val filteredActivities = getFilteredActivities(activityType, year)
 
-        return buildSeries(ActivityHelper.groupActivitiesByWeek(filteredActivities))
+        return buildDistanceSeries(ActivityHelper.groupActivitiesByWeek(filteredActivities))
+    }
+
+    fun buildElevationGainByWeeksSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>> {
+
+        val filteredActivities = getFilteredActivities(activityType, year)
+
+        return buildElevationGainSeries(ActivityHelper.groupActivitiesByWeek(filteredActivities))
     }
 
     fun buildDistanceByDaysSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>> {
 
         val filteredActivities = getFilteredActivities(activityType, year)
 
-        return buildSeries(ActivityHelper.groupActivitiesByDay(filteredActivities, year))
+        return buildDistanceSeries(ActivityHelper.groupActivitiesByDay(filteredActivities, year))
     }
 
-    private fun buildSeries(activities: Map<String, List<Activity>>): ObservableList<XYChart.Data<String, Number>> {
-        val distanceByMonth: Map<String, Double> = activities.mapValues { (_, activities) ->
+    private fun buildDistanceSeries(activities: Map<String, List<Activity>>): ObservableList<XYChart.Data<String, Number>> {
+        val distance: Map<String, Double> = activities.mapValues { (_, activities) ->
             activities.sumOf { activity ->
                 activity.distance / 1000
             }
         }
 
-        return FXCollections.observableList(distanceByMonth.map { entry ->
+        return FXCollections.observableList(distance.map { entry ->
+            XYChart.Data(entry.key, entry.value)
+        })
+    }
+
+    private fun buildElevationGainSeries(activities: Map<String, List<Activity>>): ObservableList<XYChart.Data<String, Number>> {
+        val totalElevationGain: Map<String, Double> = activities.mapValues { (_, activities) ->
+            activities.sumOf { activity ->
+                activity.totalElevationGain
+            }
+        }
+
+        return FXCollections.observableList(totalElevationGain.map { entry ->
             XYChart.Data(entry.key, entry.value)
         })
     }
