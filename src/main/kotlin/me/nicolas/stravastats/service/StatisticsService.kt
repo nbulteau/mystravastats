@@ -209,6 +209,7 @@ internal class StatisticsService {
             MaxElevationStatistic(activities),
             MaxElevationInADayStatistic(activities),
 
+            HighestPointStatistic(activities),
             MaxMovingTimeStatistic(activities),
             MostActiveMonthStatistic(activities),
             EddingtonStatistic(activities),

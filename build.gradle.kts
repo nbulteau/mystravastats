@@ -9,9 +9,9 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.8.21"
+    kotlin("jvm") version "1.9.0"
     id("org.openjfx.javafxplugin") version "0.0.14"
-    id("com.github.ben-manes.versions") version "0.46.0"
+    id("com.github.ben-manes.versions") version "0.47.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 
     // Apply the application plugin to add support for building a CLI application.
@@ -24,11 +24,11 @@ repositories {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2")
 
     implementation("org.slf4j:slf4j-nop:2.0.7")
-    implementation("io.javalin:javalin:5.5.0")
+    implementation("io.javalin:javalin:5.6.2")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
 
     implementation("com.sothawo:mapjfx:3.1.0")
