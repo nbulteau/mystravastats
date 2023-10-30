@@ -9,6 +9,9 @@ import java.time.format.TextStyle
 import java.time.temporal.WeekFields
 import java.util.*
 
+/**
+ * Helper class to group activities by year, month, week or day and to calculate cumulative values
+ */
 class ActivityHelper {
     companion object {
 
@@ -16,10 +19,15 @@ class ActivityHelper {
             activity.type == Ride || activity.type == Run || activity.type == Hike || activity.type == InlineSkate || activity.type == AlpineSki
         }
 
+        /**
+         * Group activities by year
+         * @param activities list of activities
+         * @return a map with the year as key and the list of activities as value
+         * @see Activity
+         */
         fun groupActivitiesByYear(activities: List<Activity>): Map<String, List<Activity>> {
-            val activitiesByYear = activities
-                .groupBy { activity -> activity.startDateLocal.subSequence(0, 4).toString() }
-                .toMutableMap()
+            val activitiesByYear =
+                activities.groupBy { activity -> activity.startDateLocal.subSequence(0, 4).toString() }.toMutableMap()
 
             // Add years without activities
             if (activitiesByYear.isNotEmpty()) {
@@ -34,10 +42,15 @@ class ActivityHelper {
             return activitiesByYear.toSortedMap()
         }
 
+        /**
+         * Group activities by month
+         * @param activities list of activities
+         * @return a map with the month as key and the list of activities as value
+         * @see Activity
+         */
         fun groupActivitiesByMonth(activities: List<Activity>): Map<String, List<Activity>> {
-            val activitiesByMonth = activities
-                .groupBy { activity -> activity.startDateLocal.subSequence(5, 7).toString() }
-                .toMutableMap()
+            val activitiesByMonth =
+                activities.groupBy { activity -> activity.startDateLocal.subSequence(5, 7).toString() }.toMutableMap()
 
             // Add months without activities
             for (month in (1..12)) {
@@ -51,14 +64,19 @@ class ActivityHelper {
             }.toMap()
         }
 
+        /**
+         * Group activities by week
+         * @param activities list of activities
+         * @return a map with the week as key and the list of activities as value
+         * @see Activity
+         */
         fun groupActivitiesByWeek(activities: List<Activity>): Map<String, List<Activity>> {
-            val activitiesByWeek = activities
-                .groupBy { activity ->
+
+            val activitiesByWeek = activities.groupBy { activity ->
                     val week = LocalDateTime.parse(activity.startDateLocal, inDateTimeFormatter)
                         .get(WeekFields.of(Locale.getDefault()).weekOfYear())
                     "$week".padStart(2, '0')
-                }
-                .toMutableMap()
+                }.toMutableMap()
 
             // Add weeks without activities
             for (week in (1..52)) {
@@ -70,10 +88,15 @@ class ActivityHelper {
             return activitiesByWeek.toSortedMap()
         }
 
+        /**
+         * Group activities by day
+         * @param activities list of activities
+         * @return a map with the day as key and the list of activities as value
+         * @see Activity
+         */
         fun groupActivitiesByDay(activities: List<Activity>, year: Int): Map<String, List<Activity>> {
-            val activitiesByDay = activities
-                .groupBy { activity -> activity.startDateLocal.subSequence(5, 10).toString() }
-                .toMutableMap()
+            val activitiesByDay =
+                activities.groupBy { activity -> activity.startDateLocal.subSequence(5, 10).toString() }.toMutableMap()
 
             // Add days without activities
             var currentDate = LocalDate.ofYearDay(year, 1)
@@ -89,11 +112,23 @@ class ActivityHelper {
             return activitiesByDay.toSortedMap()
         }
 
+        /**
+         * Calculate the cumulative value for each activity
+         * @param activities list of activities
+         * @return a map with the activity id as key and the cumulative value as value
+         * @see Activity
+         */
         fun cumulativeValue(activities: Map<String, Double>): Map<String, Double> {
             var sum = 0.0
             return activities.mapValues { (_, value) -> sum += value; sum }
         }
 
+        /**
+         * Calculate the cumulative distance for each activity
+         * @param activities list of activities
+         * @return a map with the activity id as key and the cumulative distance as value
+         * @see Activity
+         */
         fun cumulativeDistance(activities: Map<String, List<Activity>>): Map<String, Double> {
             var sum = 0.0
             return activities.mapValues { (_, activities) ->
@@ -101,6 +136,12 @@ class ActivityHelper {
             }
         }
 
+        /**
+         * Calculate the cumulative elevation for each activity
+         * @param activities list of activities
+         * @return a map with the activity id as key and the cumulative elevation as value
+         * @see Activity
+         */
         fun cumulativeElevation(activities: Map<String, List<Activity>>): Map<String, Double> {
             var sum = 0.0
             return activities.mapValues { (_, activities) ->
@@ -110,15 +151,12 @@ class ActivityHelper {
 
         fun sumDistanceByType(activities: Map<String, List<Activity>>, type: String?) =
             activities.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == type }
-                    .sumOf { activity -> activity.distance / 1000 }
+                activities.filter { activity -> activity.type == type }.sumOf { activity -> activity.distance / 1000 }
             }
 
         fun sumElevationByType(activities: Map<String, List<Activity>>, type: String) =
             activities.mapValues { (_, activities) ->
-                activities
-                    .filter { activity -> activity.type == type }
+                activities.filter { activity -> activity.type == type }
                     .sumOf { activity -> activity.totalElevationGain }
             }
 
@@ -127,10 +165,9 @@ class ActivityHelper {
                 averageSpeedByType(activities, type)
             }
 
+
         private fun averageSpeedByType(activities: List<Activity>, type: String) =
-            activities
-                .filter { activity -> activity.type == type }
-                .map { activity -> activity.averageSpeed * 3.6 }
+            activities.filter { activity -> activity.type == type }.map { activity -> activity.averageSpeed * 3.6 }
                 .average()
     }
 }

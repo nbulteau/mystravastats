@@ -26,7 +26,12 @@ import tornadofx.Controller
 import kotlin.collections.component1
 import kotlin.collections.component2
 
-
+/**
+ * Main controller class for the application
+ * @param clientId the Strava client ID
+ * @param activities list of activities
+ * @see Activity
+ */
 class MainController(private val clientId: String, private val activities: ObservableList<Activity>) : Controller() {
 
     private val stravaService = StravaService.getInstance()
@@ -43,7 +48,10 @@ class MainController(private val clientId: String, private val activities: Obser
 
     private val famousClimbClimbBadgesCache: GenericCache<String, List<List<BadgeDisplay>>> = SoftCache()
 
-
+    /**
+     * Generate an HTML file with the activities
+     * @param year the year to filter the activities
+     */
     fun generateCSV(year: Int?) {
 
         val activitiesForYear: List<Activity> = if (year != null) {
@@ -215,6 +223,12 @@ class MainController(private val clientId: String, private val activities: Obser
         return buildDistanceSeries(ActivityHelper.groupActivitiesByMonth(filteredActivities))
     }
 
+    /**
+     * Build a series of elevation gain by months
+     * @param activityType the activity type
+     * @param year the year
+     * @return a series of elevation gain by months
+     */
     fun buildElevationGainByMonthsSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>> {
 
         val filteredActivities = getFilteredActivities(activityType, year)
@@ -222,6 +236,12 @@ class MainController(private val clientId: String, private val activities: Obser
         return buildElevationGainSeries(ActivityHelper.groupActivitiesByMonth(filteredActivities))
     }
 
+    /**
+     * Build a series of distance by weeks
+     * @param activityType the activity type
+     * @param year the year
+     * @return a series of distance by weeks
+     */
     fun buildDistanceByWeeksSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>> {
 
         val filteredActivities = getFilteredActivities(activityType, year)
@@ -229,6 +249,12 @@ class MainController(private val clientId: String, private val activities: Obser
         return buildDistanceSeries(ActivityHelper.groupActivitiesByWeek(filteredActivities))
     }
 
+    /**
+     * Build a series of elevation gain by weeks
+     * @param activityType the activity type
+     * @param year the year
+     * @return a series of elevation gain by weeks
+     */
     fun buildElevationGainByWeeksSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>> {
 
         val filteredActivities = getFilteredActivities(activityType, year)
@@ -236,6 +262,12 @@ class MainController(private val clientId: String, private val activities: Obser
         return buildElevationGainSeries(ActivityHelper.groupActivitiesByWeek(filteredActivities))
     }
 
+    /**
+     * Build a series of distance by days
+     * @param activityType the activity type
+     * @param year the year
+     * @return a series of distance by days
+     */
     fun buildDistanceByDaysSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>> {
 
         val filteredActivities = getFilteredActivities(activityType, year)
