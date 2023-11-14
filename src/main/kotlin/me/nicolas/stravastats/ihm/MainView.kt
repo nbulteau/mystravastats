@@ -41,7 +41,7 @@ class MainView(
 ) : View("MyStravaStats") {
 
     companion object {
-        const val overYears = "Over years"
+        const val OVER_YEARS = "Over years"
     }
 
     override val root = borderpane {
@@ -96,7 +96,7 @@ class MainView(
                             combobox(
                                 property = selectedYear,
                                 values = (LocalDate.now().year downTo 2010).map { "$it" }.toMutableList()
-                                    .apply { this.add(0, overYears) }
+                                    .apply { this.add(0, OVER_YEARS) }
                             ) {
                                 selectionModel.selectedItemProperty().onChange {
                                     updateMainView()
@@ -118,6 +118,14 @@ class MainView(
                                 tooltip("Ride")
                                 action {
                                     selectedActivity = SimpleStringProperty(Ride)
+                                    updateMainView()
+                                }
+                            }
+                            button {
+                                imageview("images/buttons/virtualride.png")
+                                tooltip("Virtual ride")
+                                action {
+                                    selectedActivity = SimpleStringProperty(VirtualRide)
                                     updateMainView()
                                 }
                             }
@@ -213,7 +221,7 @@ class MainView(
         updateMainView()
     }
 
-    private fun getSelectedYear() = if (selectedYear.value == overYears) {
+    private fun getSelectedYear() = if (selectedYear.value == OVER_YEARS) {
         null
     } else {
         selectedYear.value.toInt()
@@ -250,6 +258,10 @@ class MainView(
             if (selectedActivity.value != AlpineSki) {
                 readonlyColumn("Max gradient for 250 m", ActivityDisplay::bestElevationForDistanceFor250m)
                 readonlyColumn("Max gradient for 500 m", ActivityDisplay::bestElevationForDistanceFor500m)
+            }
+            if (selectedActivity.value == VirtualRide) {
+                readonlyColumn("Average watts", ActivityDisplay::averageWatts)
+                readonlyColumn("Max watts", ActivityDisplay::maxWatts)
             }
             readonlyColumn("Date", ActivityDisplay::date)
 

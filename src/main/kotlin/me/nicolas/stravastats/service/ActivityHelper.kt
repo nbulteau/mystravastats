@@ -16,7 +16,7 @@ class ActivityHelper {
     companion object {
 
         fun List<Activity>.filterActivities() = this.filter { activity ->
-            activity.type == Ride || activity.type == Run || activity.type == Hike || activity.type == InlineSkate || activity.type == AlpineSki
+            activity.type == VirtualRide || activity.type == Ride || activity.type == Run || activity.type == Hike || activity.type == InlineSkate || activity.type == AlpineSki
         }
 
         /**

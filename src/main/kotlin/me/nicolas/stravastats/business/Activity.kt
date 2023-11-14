@@ -9,6 +9,7 @@ import kotlin.math.abs
 
 const val Run = "Run"
 const val Ride = "Ride"
+const val VirtualRide = "VirtualRide"
 const val InlineSkate = "InlineSkate"
 const val Hike = "Hike"
 const val Commute = "Commute"
@@ -29,6 +30,8 @@ data class Activity(
     val averageWatts: Double,
     val commute: Boolean,
     var distance: Double,
+    @JsonProperty("device_watts")
+    val deviceWatts: Boolean = false,
     @JsonProperty("elapsed_time")
     var elapsedTime: Int,
     @JsonProperty("elev_high")
@@ -37,6 +40,8 @@ data class Activity(
     val kilojoules: Double,
     @JsonProperty("max_speed")
     val maxSpeed: Double,
+    @JsonProperty("max_watts")
+    val maxWatts: Int,
     @JsonProperty("moving_time")
     val movingTime: Int,
     val name: String,
@@ -50,7 +55,9 @@ data class Activity(
     val totalElevationGain: Double,
     val type: String,
     @JsonProperty("upload_id")
-    val uploadId: Long
+    val uploadId: Long,
+    @JsonProperty("weighted_average_watts")
+    val weightedAverageWatts: Int,
 ) {
     var stream: Stream? = null
 
@@ -106,7 +113,8 @@ data class Activity(
             Time(mutableListOf(), 0, "high", "distance"),
             Moving(mutableListOf(), 0, "high", "distance"),
             Altitude(mutableListOf(), 0, "high", "distance"),
-            LatitudeLongitude(mutableListOf(), 0, "high", "distance")
+            LatitudeLongitude(mutableListOf(), 0, "high", "distance"),
+            PowerStream(mutableListOf(), 0, "high", "distance")
         )
         streamWithoutNonMovingData.append(0.0, 0, 0.0)
 

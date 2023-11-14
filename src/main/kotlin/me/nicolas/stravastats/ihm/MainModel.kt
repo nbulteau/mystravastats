@@ -15,7 +15,9 @@ data class ActivityDisplay(
     val bestTimeForDistanceFor1000m: String,
     val bestElevationForDistanceFor250m: String,
     val bestElevationForDistanceFor500m: String,
-    val date: String
+    val date: String,
+    val averageWatts: Double? = null,
+    val maxWatts: Int? = null,
 )
 
 data class BadgeDisplay(val label: String, val activity: Hyperlink?, val badge: Badge)

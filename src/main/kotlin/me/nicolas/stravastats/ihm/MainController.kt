@@ -121,6 +121,7 @@ class MainController(private val clientId: String, private val activities: Obser
 
         val statistics = when (activityType) {
             Ride -> statsService.computeRideStatistics(filteredActivities)
+            VirtualRide -> statsService.computeVirtualRideStatistics(filteredActivities)
             Commute -> statsService.computeCommuteStatistics(filteredActivities)
             Run -> statsService.computeRunStatistics(filteredActivities)
             InlineSkate -> statsService.computeInlineSkateStatistics(filteredActivities)
@@ -229,7 +230,10 @@ class MainController(private val clientId: String, private val activities: Obser
      * @param year the year
      * @return a series of elevation gain by months
      */
-    fun buildElevationGainByMonthsSeries(activityType: String, year: Int): ObservableList<XYChart.Data<String, Number>> {
+    fun buildElevationGainByMonthsSeries(
+        activityType: String,
+        year: Int
+    ): ObservableList<XYChart.Data<String, Number>> {
 
         val filteredActivities = getFilteredActivities(activityType, year)
 
@@ -396,7 +400,9 @@ class MainController(private val clientId: String, private val activities: Obser
                 activity.calculateBestTimeForDistance(1000.0)?.getFormattedSpeed() ?: "",
                 activity.calculateBestElevationForDistance(250.0)?.getFormattedGradient() ?: "",
                 activity.calculateBestElevationForDistance(500.0)?.getFormattedGradient() ?: "",
-                activity.startDateLocal.formatDate()
+                activity.startDateLocal.formatDate(),
+                activity.averageWatts,
+                activity.maxWatts
             )
         }
         return FXCollections.observableArrayList(activitiesToDisplay)
