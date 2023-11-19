@@ -46,10 +46,10 @@ The Strava API application settings page provides *mandatory parameters* for My 
 
 ### Launch mystravastats
 
-JDK 18 is needed to run mystravastats.
+JDK 21 is needed to run mystravastats.
 
 ```
-sdk install java 18.0.1-tem
+sdk install java 21.0.1-tem
 
 git clone https://github.com/nbulteau/mystravastats.git
 cd mystravastats
