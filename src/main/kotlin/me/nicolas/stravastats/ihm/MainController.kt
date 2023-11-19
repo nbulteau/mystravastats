@@ -432,7 +432,8 @@ class MainController(private val clientId: String, private val activities: Obser
                         activity,
                         activity.stream?.latitudeLongitude?.data!!,
                         activity.stream?.distance?.data!!,
-                        activity.stream?.altitude?.data!!,
+                        activity.stream?.altitude?.data ?: emptyList(),
+                        activity.stream?.watts?.data ?: emptyList(),
                         segmentEfforts
                     ).openModal()
                 } else {
@@ -440,7 +441,8 @@ class MainController(private val clientId: String, private val activities: Obser
                         activity,
                         activity.stream?.latitudeLongitude?.data!!,
                         activity.stream?.distance?.data!!,
-                        activity.stream?.altitude?.data!!,
+                        activity.stream?.altitude?.data ?: emptyList(),
+                        activity.stream?.watts?.data ?: emptyList(),
                         segmentEfforts
                     ).openModal()
                 }

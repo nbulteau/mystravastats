@@ -42,6 +42,7 @@ abstract class AbstractActivityDetailView(
     protected val latitudeLongitudesList: List<List<Double>>,
     protected val distancesList: List<Double>,
     protected val altitudesList: List<Double>,
+    private val powersList: List<Int>,
     private val segmentEfforts: List<SegmentEffort>
 ) : View(activity.toString()) {
 
@@ -81,7 +82,12 @@ abstract class AbstractActivityDetailView(
         }
 
         detailsWindow = AnchorPane()
-        buildAltitudeAreaChart()
+
+        if (powersList.isNotEmpty()) {
+            buildPowerAreaChart()
+        } else {
+            buildAltitudeAreaChart()
+        }
     }
 
     private fun buildAltitudeAreaChart() {
@@ -92,24 +98,57 @@ abstract class AbstractActivityDetailView(
 
             val xAxis = NumberAxis(0.0, maxDistance, 1.0)
             val yAxis = NumberAxis(minAltitude, maxAltitude, 10.0)
+            if (maxDistance > 30.0) {
+                xAxis.tickUnit = 10.0
+            }
+            if (maxAltitude - minAltitude > 500.0) {
+                yAxis.tickUnit = 100.0
+                yAxis.isMinorTickVisible = true
+            }
+            if (maxAltitude - minAltitude > 1000.0) {
+                yAxis.tickUnit = 200.0
+                yAxis.isMinorTickVisible = false
+            }
+
             areaChart = areachart("Altitude", xAxis, yAxis) {
                 val data = distancesList //.windowed(1, 10).flatten()
                     .zip(altitudesList) { distance, altitude ->
                         XYChart.Data<Number, Number>(distance / 1000, altitude)
                     }.toObservable()
 
+                this.isAlternativeRowFillVisible = false
+                this.isLegendVisible = false
+                this.createSymbols = false
+                this.data.add(XYChart.Series("", data))
+            }
+        }
+    }
 
-                if (maxDistance > 30.0) {
-                    xAxis.tickUnit = 10.0
-                }
-                if (maxAltitude - minAltitude > 500.0) {
-                    yAxis.tickUnit = 100.0
-                    yAxis.isMinorTickVisible = true
-                }
-                if (maxAltitude - minAltitude > 1000.0) {
-                    yAxis.tickUnit = 200.0
-                    yAxis.isMinorTickVisible = false
-                }
+    private fun buildPowerAreaChart() {
+        if (powersList.isNotEmpty()) {
+            val minPower = max(powersList.minOf { it } - 10, 0).toDouble()
+            val maxPower = powersList.maxOf { it }.toDouble() + 20.0
+            val maxDistance = distancesList.maxOf { it } / 1000
+
+            val xAxis = NumberAxis(0.0, maxDistance, 1.0)
+            val yAxis = NumberAxis(minPower, maxPower, 10.0)
+            if (maxDistance > 30.0) {
+                xAxis.tickUnit = 10.0
+            }
+            if (maxPower - minPower > 400.0) {
+                yAxis.tickUnit = 100.0
+                yAxis.isMinorTickVisible = true
+            }
+            if (maxPower - minPower > 1000.0) {
+                yAxis.tickUnit = 200.0
+                yAxis.isMinorTickVisible = false
+            }
+
+            areaChart = areachart("Power", xAxis, yAxis) {
+                val data = distancesList //.windowed(1, 10).flatten()
+                    .zip(powersList) { distance, power ->
+                        XYChart.Data<Number, Number>(distance / 1000, power)
+                    }.toObservable()
 
                 this.isAlternativeRowFillVisible = false
                 this.isLegendVisible = false
@@ -188,6 +227,10 @@ abstract class AbstractActivityDetailView(
                     label("Moving time : ${activity.elapsedTime.formatSeconds()}")
                     label("|")
                     label("Average speed : ${activity.averageSpeed.formatSpeed(activity.type)}")
+                    if (activity.averageWatts != 0.0) {
+                        label("|")
+                        label("Power : ${activity.averageWatts.toInt()} Watts")
+                    }
                     children.style {
                         fontWeight = FontWeight.BOLD
                         font = Font.font("Verdana", 10.0)
@@ -541,11 +584,22 @@ abstract class AbstractActivityDetailView(
                 vbox.add(HBox(10.0, gradientLabel, gradientValueLabel))
 
                 // Altitude
-                val altitude = activity.stream?.altitude?.data?.get(index)
-                val altitudeLabel = Label("Altitude:")
-                val altitudeValueLabel = Label("%d m".format(altitude?.toInt()))
-                altitudeValueLabel.font = Font.font("Arial", FontWeight.EXTRA_BOLD, 15.0)
-                vbox.add(HBox(10.0, altitudeLabel, altitudeValueLabel))
+                if (activity.stream?.altitude != null) {
+                    val altitude = activity.stream?.altitude?.data?.get(index)
+                    val altitudeLabel = Label("Altitude:")
+                    val altitudeValueLabel = Label("%d m".format(altitude?.toInt()))
+                    altitudeValueLabel.font = Font.font("Arial", FontWeight.EXTRA_BOLD, 15.0)
+                    vbox.add(HBox(10.0, altitudeLabel, altitudeValueLabel))
+                }
+
+                // Power
+                if (activity.stream?.watts != null) {
+                    val power = activity.stream?.watts?.data?.get(index)
+                    val powerLabel = Label("Power:")
+                    val powerValueLabel = Label("%d Watts".format(power))
+                    powerValueLabel.font = Font.font("Arial", FontWeight.EXTRA_BOLD, 15.0)
+                    vbox.add(HBox(10.0, powerLabel, powerValueLabel))
+                }
             }
 
             return vbox

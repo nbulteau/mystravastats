@@ -9,8 +9,16 @@ class ActivityDetailView(
     latitudeLongitudesList: List<List<Double>>,
     distancesList: List<Double>,
     altitudesList: List<Double>,
+    powersList: List<Int>,
     segmentEfforts: List<SegmentEffort>
-) : AbstractActivityDetailView(activity, latitudeLongitudesList, distancesList, altitudesList, segmentEfforts) {
+) : AbstractActivityDetailView(
+    activity,
+    latitudeLongitudesList,
+    distancesList,
+    altitudesList,
+    powersList,
+    segmentEfforts
+) {
 
     init {
         initMapView()
