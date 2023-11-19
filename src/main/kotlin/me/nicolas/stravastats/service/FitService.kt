@@ -123,7 +123,6 @@ internal class FitService(private val cachePath: Path) {
             totalElevationGain = totalElevationGain,
             type = type,
             uploadId = 0,
-            maxWatts = sessionMesg.maxPower?.toInt() ?: 0,
             weightedAverageWatts = sessionMesg.avgPower?.toInt() ?: 0,
         )
 

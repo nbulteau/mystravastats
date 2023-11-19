@@ -91,6 +91,8 @@ internal class StatisticsService {
             listOf(
                 MaxSpeedStatistic(rideActivities),
                 MaxMovingTimeStatistic(rideActivities),
+                MaxAveragePowerStatistic(rideActivities),
+                MaxWeightedAveragePowerStatistic(rideActivities),
                 BestEffortDistanceStatistic("Best 250 m", rideActivities, 250.0),
                 BestEffortDistanceStatistic("Best 500 m", rideActivities, 500.0),
                 BestEffortDistanceStatistic("Best 1000 m", rideActivities, 1000.0),
@@ -104,13 +106,8 @@ internal class StatisticsService {
                 BestEffortTimeStatistic("Best 2 h", rideActivities, 2 * 60 * 60),
                 BestEffortTimeStatistic("Best 3 h", rideActivities, 3 * 60 * 60),
                 BestEffortTimeStatistic("Best 4 h", rideActivities, 4 * 60 * 60),
-                BestEffortTimeStatistic("Best 5 h", rideActivities, 5 * 60 * 60),
-                BestElevationDistanceStatistic("Max gradient for 250 m", rideActivities, 250.0),
-                BestElevationDistanceStatistic("Max gradient for 500 m", rideActivities, 500.0),
-                BestElevationDistanceStatistic("Max gradient for 1000 m", rideActivities, 1000.0),
-                BestElevationDistanceStatistic("Max gradient for 5 km", rideActivities, 5000.0),
-                BestElevationDistanceStatistic("Max gradient for 10 km", rideActivities, 10000.0),
-                BestElevationDistanceStatistic("Max gradient for 20 km", rideActivities, 20000.0),
+                BestEffortPowerStatistic("Best average power for 20 min", rideActivities, 20 * 60),
+                BestEffortPowerStatistic("Best average power for 1 h", rideActivities, 60 * 60),
             )
         )
 

@@ -40,8 +40,6 @@ data class Activity(
     val kilojoules: Double,
     @JsonProperty("max_speed")
     val maxSpeed: Double,
-    @JsonProperty("max_watts")
-    val maxWatts: Int,
     @JsonProperty("moving_time")
     val movingTime: Int,
     val name: String,

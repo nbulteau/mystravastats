@@ -1,0 +1,302 @@
+{
+  "achievement_count": 0,
+  "athlete": {
+    "id": 23710236
+  },
+  "athlete_count": 2,
+  "average_cadence": 66.6,
+  "average_speed": 6.966,
+  "average_temp": 0,
+  "average_watts": 162.7,
+  "calories": 322.0,
+  "comment_count": 0,
+  "commute": false,
+  "description": "",
+  "device_name": "Zwift",
+  "device_watts": true,
+  "distance": 14190,
+  "elapsed_time": 2037,
+  "elev_high": 140.2,
+  "elev_low": 65.0,
+  "embed_token": "479d271e1089602e3d729f2b5ff63dc25a3cfa0c",
+  "end_latlng": [
+    -10.755198,
+    165.8483
+  ],
+  "external_id": "zwift-activity-1476367023695986736.fit",
+  "flagged": false,
+  "from_accepted_tag": false,
+  "gear": {
+    "distance": 2452546,
+    "id": "b4071701",
+    "converted_distance": 2452.5,
+    "name": "Rockrider 8.1",
+    "nickname": "Rockrider 8.1",
+    "primary": false,
+    "retired": false
+  },
+  "gear_id": "b4071701",
+  "has_heartrate": true,
+  "has_kudoed": false,
+  "hide_from_home": false,
+  "id": 10213161621,
+  "kilojoules": 331.5,
+  "kudos_count": 0,
+  "leaderboard_opt_out": false,
+  "map": {
+    "id": "a10213161621",
+    "polyline": "zou`Ao`gs^[?kAVe@Ba@EgAUa@Cc@HaAh@e@Jm@D_A@aACa@Bg@NwD~Bg@PU@UGSMkA{@k@k@CK?WPi@DUCWKS][k@e@cAo@k@Y]GO@]HWRc@n@q@v@IFMBMCKIaAw@MEK@STKDMCoAy@y@Wm@M}@GkAMoA]q@Wm@YmBkAMOMUSs@OYc@_@i@]o@[QCw@FS?QCa@O[WGOOs@Q]k@s@u@e@UU[e@Si@Cm@AwADMFKl@c@HIBM?MEMGKUSu@W{@Oo@C}@H]H]LgA|@]Jm@JMFQVSh@IJMFO@_@A_@KMIIOCO@a@Fo@?]KYu@o@GIEMCYHwAz@oG@aAEe@MWIGg@IYI}@g@q@e@a@_@o@aAWUMGa@AeBVwABa@FOFMH_@h@WX[PcBh@]VGNAR@R`@~AFf@?|@GzBDz@Jf@HPNNPHdCz@NNHPDP@R?d@Kb@a@fACR?Tt@dERZTTTj@BNANYl@E`@@NN\\d@p@DLC`@On@@PFP`@j@P`@Fd@NhCZfA\\pBDf@BjB?TUbC@j@XnA~BhHDHJBJAxCeAJ@HFP`@~@rCtAzD|BvEt@lALLRFR@j@ET?TJNNj@v@PNf@XTDVBvASV?RFNLLRf@hBRh@h@r@`@\\PLPFTBRAPI\\]r@_AZ[`@Qb@MdAMdAG`@Fj@ZTXNb@Bf@?tABTHRLNRJx@\\NLFRFd@Ez@K`@GN[Tm@T[PQXSz@Iz@@j@Pf@V`@RRTNd@PzAZd@LfAn@ZJLB^AxASxAKh@Bt@N`@TPRZz@Df@NTd@PzAXf@N`@ThAz@VLZDXClAWXC`DDL?VIn@Y^YNUV}@NUJGfAa@t@i@VMVGZ?b@N\\XFJBX@ZEt@Jd@LVPRRN`@NVDV?|@_@j@Ij@c@RI`@?b@LRNLX@\\BL^b@VRZN\\HN@PCLGlAcANG`@E^FZPpAhApBp@VRv@r@ZLL?LClAm@ZILAZDn@Vz@h@x@v@JPHTNdAFVPPXHl@@bBCh@InA[t@EbA@f@BjBj@f@CVKFGFY?[CYUo@_@g@KWGe@EyAKq@MU]W_C_AUQWa@IWGYGcADi@^iB@[A[KYQW_B}AOYCO?MF]Va@RUHGh@OFKDMB[AYKYOW_@a@oBaBo@q@_@k@cAuBa@g@UOc@MgBQeBWc@KWISMQOy@eAe@[U_@Ic@AWRaAAUEQc@aAOu@Cg@B]HSx@mAHSBS@]S{@@YR_AAMGKMGWG_@AMF[VQLWDq@D_@A_@E[KYMYYM[UeC[{@Yc@e@a@g@]a@O[AWDYNWXEJ?Td@hA@VIPQL]J[DQAUOMU[u@OOYIaAC_@G_Bk@q@a@w@w@KQS{@IMm@o@GKCMAMHe@HSJKPILARDRFvAx@`@NR@XAl@O^STSLQBSA[Kg@S_@UQY?sAVc@Ba@EoAW_@?_@H}@d@_@J{@F}@?}@Ac@Be@PoDxBi@RWBWGUMiAy@i@g@EKCM@MRo@B[CMOWc@a@u@k@_Ai@_@QQEQ?a@HMH}AlBIJMDMAKGcA{@MEM@STKDMCcAq@w@[{@Q_CS",
+    "resource_state": 3,
+    "summary_polyline": "z~t`Am~fs^_AAi@HcEbCe@Ta@Bi@UwBgBCc@V_ACWKSiAaAoBiA]Gm@JmBzBWJiBkAK@STY@oAy@i@S}@QiCUiCy@{CiBw@kB_As@}@e@oB?a@O[WWcA]k@_@e@kA{@i@aAIk@AgBLYl@c@LWE[QWs@YiBY}ALk@RgA|@yA^o@lAm@Ho@MWYCOJ_BE]eAeAIg@HwAz@oGCgBW_@aASoBmAiBwBo@IeBVyBJ]Pw@bA_Cz@]VGN?f@`@~AFf@GxDDz@Jf@j@j@dCz@NNNb@@x@m@jBCh@t@dEh@p@Tj@@^Yl@Cp@z@|ASpA@Pz@~AVnDx@xDHrCUxC@j@XnA~BhHDHV@xCeATHfDpJ|BvEt@lA`@TtACTJlAvA|@^VBvASj@F\\`@z@rCh@r@r@j@f@Jd@KlByBdA_@jCU`@Fj@ZTXNb@B|BLh@LN|Av@Nx@Ez@Sp@eB|@QXSz@Iz@@j@Pf@j@t@z@`@`Ch@bBz@l@@rD_@h@Bt@Nr@h@Zz@Df@NThDz@jBpAr@R`C_@`DDd@InAs@f@sAZ]fAa@lAw@r@Gb@N\\XJd@CbAFf@Xl@t@d@x@H|@_@j@I~@m@`@?v@\\LXDj@^b@r@b@l@J^K|AkA`@E^FlBzApBp@nAfAZLZChBw@h@Bn@VbAp@v@x@N\\V|A\\Vj@FrBExBe@t@EjBDjBj@f@C^SFg@Cg@aAoBOkCOo@e@c@kCgAa@k@Mc@K_Bd@eC?w@]q@_B}ASi@Fk@Va@RUr@WFKHi@Ms@o@y@_DsCcBaDa@g@y@]mEi@{@Ue@]y@eAe@[U_@K{@RaAAUi@sAS}ALq@x@mALg@@]S{@TyAIYe@O_@A{@l@iAJ_AGu@YYYM[UeC[{@_AeAiAm@s@Bq@h@E`@d@hA@V[^y@PQAUOi@kAOO{BU_Bk@q@a@w@w@_@mA_AiAE[He@T_@^Kf@LxBhAl@?l@Ot@g@Pe@McAS_@UQY?wBZqC]}Bz@{EHe@PoDxBi@RWBm@UsBaBGg@VkASe@yAmA_B{@c@Eo@R}AlBWPYIqAaAM@_@ZMCcAq@w@["
+  },
+  "manual": false,
+  "max_speed": 13.12,
+  "max_watts": 582,
+  "moving_time": 2037,
+  "name": "Zwift - Makuri Islands",
+  "pr_count": 0,
+  "private": true,
+  "resource_state": 3,
+  "segment_efforts": [
+    {
+      "achievements": [
+      ],
+      "activity": {
+        "id": 10213161621
+      },
+      "athlete": {
+        "id": 23710236
+      },
+      "average_cadence": 66.0,
+      "average_heartrate": 166.8,
+      "average_watts": 151.8,
+      "device_watts": true,
+      "distance": 3951.4,
+      "elapsed_time": 531,
+      "end_index": 1437,
+      "hidden": false,
+      "id": 3159252981272900286,
+      "kom_rank": null,
+      "max_heartrate": 171.0,
+      "moving_time": 531,
+      "name": "Farmland Flats CCW",
+      "pr_rank": null,
+      "resource_state": 2,
+      "segment": {
+        "activity_type": "VirtualRide",
+        "average_grade": 0.0,
+        "city": null,
+        "climb_category": 0,
+        "country": "Solomon Islands",
+        "distance": 3951.4,
+        "elevation_high": 130.6,
+        "elevation_low": 125.0,
+        "end_latlng": [
+          -10.769042,
+          165.841402
+        ],
+        "hazardous": false,
+        "id": 28488033,
+        "maximum_grade": 2.6,
+        "name": "Farmland Flats CCW",
+        "private": false,
+        "resource_state": 2,
+        "starred": false,
+        "start_latlng": [
+          -10.758276,
+          165.834085
+        ],
+        "state": null
+      },
+      "start_date": "2023-11-13T20:10:48Z",
+      "start_date_local": "2023-11-13T21:10:48Z",
+      "start_index": 906,
+      "visibility": "only_me"
+    }
+  ],
+  "segment_leaderboard_opt_out": false,
+  "splits_metric": [
+    {
+      "average_speed": 4.65,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 96.69302325581396,
+      "distance": 1000.8,
+      "elapsed_time": 215,
+      "elevation_difference": 16.8,
+      "moving_time": 215,
+      "pace_zone": 0,
+      "split": 1
+    },
+    {
+      "average_speed": 7.68,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 163.05343511450383,
+      "distance": 1006.5,
+      "elapsed_time": 131,
+      "elevation_difference": -3.8,
+      "moving_time": 131,
+      "pace_zone": 0,
+      "split": 2
+    },
+    {
+      "average_speed": 7.94,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 161.9047619047619,
+      "distance": 1000.2,
+      "elapsed_time": 126,
+      "elevation_difference": -2.8,
+      "moving_time": 126,
+      "pace_zone": 0,
+      "split": 3
+    },
+    {
+      "average_speed": 10.14,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 161.60204081632654,
+      "distance": 993.8,
+      "elapsed_time": 98,
+      "elevation_difference": -19.8,
+      "moving_time": 98,
+      "pace_zone": 0,
+      "split": 4
+    },
+    {
+      "average_speed": 10.38,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 163.05154639175257,
+      "distance": 1006.7,
+      "elapsed_time": 97,
+      "elevation_difference": -15.2,
+      "moving_time": 97,
+      "pace_zone": 0,
+      "split": 5
+    },
+    {
+      "average_speed": 9.38,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 163.16822429906543,
+      "distance": 1003.9,
+      "elapsed_time": 107,
+      "elevation_difference": -19.2,
+      "moving_time": 107,
+      "pace_zone": 0,
+      "split": 6
+    },
+    {
+      "average_speed": 10.05,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 169.55555555555554,
+      "distance": 994.7,
+      "elapsed_time": 99,
+      "elevation_difference": -5.8,
+      "moving_time": 99,
+      "pace_zone": 0,
+      "split": 7
+    },
+    {
+      "average_speed": 7.65,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 166.76153846153846,
+      "distance": 994.9,
+      "elapsed_time": 130,
+      "elevation_difference": -2.4,
+      "moving_time": 130,
+      "pace_zone": 0,
+      "split": 8
+    },
+    {
+      "average_speed": 7.86,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 167.375,
+      "distance": 1006.5,
+      "elapsed_time": 128,
+      "elevation_difference": -1.6,
+      "moving_time": 128,
+      "pace_zone": 0,
+      "split": 9
+    },
+    {
+      "average_speed": 7.3,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 168.50735294117646,
+      "distance": 993.3,
+      "elapsed_time": 136,
+      "elevation_difference": 1.2,
+      "moving_time": 136,
+      "pace_zone": 0,
+      "split": 10
+    },
+    {
+      "average_speed": 7.58,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 165.34848484848484,
+      "distance": 1001.2,
+      "elapsed_time": 132,
+      "elevation_difference": 0.0,
+      "moving_time": 132,
+      "pace_zone": 0,
+      "split": 11
+    },
+    {
+      "average_speed": 5.13,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 170.14871794871794,
+      "distance": 1000.2,
+      "elapsed_time": 195,
+      "elevation_difference": 21.6,
+      "moving_time": 195,
+      "pace_zone": 0,
+      "split": 12
+    },
+    {
+      "average_speed": 4.05,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 172.32388663967612,
+      "distance": 1000.4,
+      "elapsed_time": 247,
+      "elevation_difference": 36.2,
+      "moving_time": 247,
+      "pace_zone": 0,
+      "split": 13
+    },
+    {
+      "average_speed": 6.06,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 174.4060606060606,
+      "distance": 1000.2,
+      "elapsed_time": 165,
+      "elevation_difference": 11.2,
+      "moving_time": 165,
+      "pace_zone": 0,
+      "split": 14
+    },
+    {
+      "average_speed": 6.05,
+      "average_grade_adjusted_speed": null,
+      "average_heartrate": 172.82142857142858,
+      "distance": 187.7,
+      "elapsed_time": 31,
+      "elevation_difference": -0.2,
+      "moving_time": 31,
+      "pace_zone": 0,
+      "split": 15
+    }
+  ],
+  "sport_type": "VirtualRide",
+  "start_date": "2023-11-13T19:55:42Z",
+  "start_date_local": "2023-11-13T20:55:42Z",
+  "start_latlng": [
+    -10.76494,
+    165.847287
+  ],
+  "suffer_score": null,
+  "timezone": "(GMT+01:00) Europe/Paris",
+  "total_elevation_gain": 118,
+  "total_photo_count": 1,
+  "trainer": false,
+  "type": "VirtualRide",
+  "upload_id": 10937627372,
+  "utc_offset": 3600,
+  "weighted_average_watts": 172,
+  "workout_type": 0
+}

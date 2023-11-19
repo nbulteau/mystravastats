@@ -2,7 +2,7 @@ package me.nicolas.stravastats.business
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class PowerStream(
+data class PowerStream(
     @JsonProperty("data")
     val `data`: MutableList<Int>,
     @JsonProperty("original_size")
