@@ -103,7 +103,7 @@ internal class StravaApi(clientId: String, clientSecret: String) : IStravaApi {
         }
         if (httpsProxy != null) {
             try {
-                val proxyUrl = URL(httpsProxy)
+                val proxyUrl = URI(httpsProxy).toURL()
                 println("Set http proxy : $proxyUrl")
                 return Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyUrl.host, proxyUrl.port))
             } catch (malformedURLException: MalformedURLException) {
@@ -182,7 +182,7 @@ internal class StravaApi(clientId: String, clientSecret: String) : IStravaApi {
             return Optional.empty()
         }
         val url = "https://www.strava.com/api/v3/activities/${activity.id}/streams" +
-                "?keys=time,distance,latlng,altitude,moving&key_by_type=true"
+                "?keys=time,distance,latlng,altitude,moving,watts&key_by_type=true"
 
         val request: Request = Request.Builder()
             .url(url)

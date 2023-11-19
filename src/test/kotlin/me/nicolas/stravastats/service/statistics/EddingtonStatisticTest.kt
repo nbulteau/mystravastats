@@ -87,7 +87,9 @@ internal class EddingtonStatisticTest {
         startLatlng = null,
         totalElevationGain = 0.0,
         type = "",
-        uploadId = 0
+        uploadId = 0,
+        deviceWatts = false,
+        weightedAverageWatts = 0
     )
 }
 

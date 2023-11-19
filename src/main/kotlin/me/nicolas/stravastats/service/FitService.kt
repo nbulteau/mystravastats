@@ -123,6 +123,7 @@ internal class FitService(private val cachePath: Path) {
             totalElevationGain = totalElevationGain,
             type = type,
             uploadId = 0,
+            weightedAverageWatts = sessionMesg.avgPower?.toInt() ?: 0,
         )
 
         activity.stream = stream
@@ -197,7 +198,18 @@ internal class FitService(private val cachePath: Path) {
             seriesType = "distance"
         )
 
-        return Stream(streamDistance, streamTime, null, streamAltitude, streamLatitudeLongitude)
+        // power
+        val dataPower = recordMesgs.map { recordMesg ->
+            recordMesg.power
+        }
+        val streamPower = PowerStream(
+            data = dataPower.toMutableList(),
+            originalSize = dataPower.size,
+            resolution = "high",
+            seriesType = "distance"
+        )
+
+        return Stream(streamDistance, streamTime, null, streamAltitude, streamLatitudeLongitude, streamPower)
     }
 
     private fun smooth(data: List<Double>, size: Int = 5): List<Double> {

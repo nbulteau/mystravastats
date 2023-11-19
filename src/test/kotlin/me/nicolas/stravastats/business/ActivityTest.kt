@@ -1,6 +1,5 @@
 package me.nicolas.stravastats.business
 
-import me.nicolas.stravastats.business.badges.loadColAgnelActivity
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

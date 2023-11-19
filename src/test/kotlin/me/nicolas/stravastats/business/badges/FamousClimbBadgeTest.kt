@@ -1,6 +1,7 @@
 package me.nicolas.stravastats.business.badges
 
 import me.nicolas.stravastats.business.GeoCoordinate
+import me.nicolas.stravastats.business.loadColAgnelActivity
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

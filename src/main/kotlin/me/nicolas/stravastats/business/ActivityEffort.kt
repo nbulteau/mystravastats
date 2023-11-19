@@ -12,7 +12,8 @@ data class ActivityEffort(
     val seconds: Int,
     val deltaAltitude: Double,
     val idxStart: Int,
-    val idxEnd: Int
+    val idxEnd: Int,
+    val averagePower: Int? = null,
 ) {
     fun getFormattedSpeed(): String {
         return if (activity.type == Run) {
@@ -31,6 +32,8 @@ data class ActivityEffort(
     }
 
     fun getFormattedGradient() = "${this.getGradient()} %"
+
+    fun getFormattedPower() = if (this.averagePower != null) "${this.averagePower} Watts" else ""
 
     fun getGradient() = "%.02f".format(100 * deltaAltitude / distance)
 }

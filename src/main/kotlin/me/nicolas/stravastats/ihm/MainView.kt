@@ -41,7 +41,7 @@ class MainView(
 ) : View("MyStravaStats") {
 
     companion object {
-        const val overYears = "Over years"
+        const val OVER_YEARS = "Over years"
     }
 
     override val root = borderpane {
@@ -71,6 +71,9 @@ class MainView(
 
     private var coordinateLines: Collection<CoordinateLine> = ArrayList()
 
+    /**
+     * Initialize the main view
+     */
     init {
         FX.primaryStage.isResizable = true
 
@@ -96,7 +99,7 @@ class MainView(
                             combobox(
                                 property = selectedYear,
                                 values = (LocalDate.now().year downTo 2010).map { "$it" }.toMutableList()
-                                    .apply { this.add(0, overYears) }
+                                    .apply { this.add(0, OVER_YEARS) }
                             ) {
                                 selectionModel.selectedItemProperty().onChange {
                                     updateMainView()
@@ -118,6 +121,14 @@ class MainView(
                                 tooltip("Ride")
                                 action {
                                     selectedActivity = SimpleStringProperty(Ride)
+                                    updateMainView()
+                                }
+                            }
+                            button {
+                                imageview("images/buttons/virtualride.png")
+                                tooltip("Virtual ride")
+                                action {
+                                    selectedActivity = SimpleStringProperty(VirtualRide)
                                     updateMainView()
                                 }
                             }
@@ -213,7 +224,7 @@ class MainView(
         updateMainView()
     }
 
-    private fun getSelectedYear() = if (selectedYear.value == overYears) {
+    private fun getSelectedYear() = if (selectedYear.value == OVER_YEARS) {
         null
     } else {
         selectedYear.value.toInt()
@@ -243,14 +254,22 @@ class MainView(
             readonlyColumn("Activity", ActivityDisplay::name)
             readonlyColumn("Distance", ActivityDisplay::distance).cellFactory = formatDistance()
             readonlyColumn("Elapsed time", ActivityDisplay::elapsedTime).cellFactory = formatSeconds()
+            if (selectedActivity.value == VirtualRide) {
+                readonlyColumn("Average watts", ActivityDisplay::averageWatts)
+                readonlyColumn("Weighted average power", ActivityDisplay::weightedAverageWatts)
+                readonlyColumn("Best power for 20 min", ActivityDisplay::bestPowerFor20minutes)
+                readonlyColumn("Best power for 60 min", ActivityDisplay::bestPowerFor60minutes)
+                readonlyColumn("FTP", ActivityDisplay::ftp)
+            }
             readonlyColumn("Total elevation gain", ActivityDisplay::totalElevationGain).cellFactory = formatElevation()
             readonlyColumn("Total descent", ActivityDisplay::totalDescent).cellFactory = formatElevation()
             readonlyColumn("Average speed", ActivityDisplay::averageSpeed).cellFactory = formatSpeed(selectedActivity.value)
             readonlyColumn("Best speed for 1000 m", ActivityDisplay::bestTimeForDistanceFor1000m)
             if (selectedActivity.value != AlpineSki) {
-                readonlyColumn("Max gradient for 250 m", ActivityDisplay::bestElevationForDistanceFor250m)
                 readonlyColumn("Max gradient for 500 m", ActivityDisplay::bestElevationForDistanceFor500m)
+                readonlyColumn("Max gradient for 1000 m", ActivityDisplay::bestElevationForDistanceFor1000m)
             }
+
             readonlyColumn("Date", ActivityDisplay::date)
 
             resizeColumnsToFitContent()
