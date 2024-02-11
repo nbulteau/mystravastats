@@ -17,7 +17,7 @@ import kotlin.io.path.exists
 import kotlin.reflect.KClass
 
 
-internal class MyStravaStatsApp : App() {
+class MyStravaStatsApp : App() {
 
     companion object {
         // This is a miserably ugly solution

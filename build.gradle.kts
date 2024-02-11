@@ -6,10 +6,10 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.9.20"
-    id("org.graalvm.buildtools.native") version "0.9.28"
+    kotlin("jvm") version "1.9.22"
+    id("org.graalvm.buildtools.native") version "0.10.0"
     id("org.openjfx.javafxplugin") version "0.1.0"
-    id("com.github.ben-manes.versions") version "0.49.0"
+    id("com.github.ben-manes.versions") version "0.51.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 
     // Apply the application plugin to add support for building a CLI application.
@@ -22,8 +22,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.3")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.3")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.16.1")
 
     implementation("org.slf4j:slf4j-nop:2.0.9")
     implementation("io.javalin:javalin:5.6.3")
@@ -52,7 +52,6 @@ application {
     // Define the main class for the application.
     mainClass.set("me.nicolas.stravastats.MyStravaStatsAppKt")
     applicationDefaultJvmArgs = listOf(
-        "-Xmx2048m",
         "-Dprism.maxvram=2G",
         "--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED",
         "--add-opens=java.base/java.lang=ALL-UNNAMED",
@@ -104,7 +103,7 @@ graalvmNative {
             buildArgs.add("-H:+ReportUnsupportedElementsAtRuntime")
             buildArgs.add("-H:+ReportExceptionStackTraces")
 
-            imageName.set("58H-server")
+            imageName.set("mystravastats")
         }
 
         named("test") {
@@ -123,12 +122,17 @@ graalvmNative {
             buildArgs.add("-H:ReflectionConfigurationFiles=${path}reflect-config.json")
             buildArgs.add("-H:ResourceConfigurationFiles=${path}resource-config.json")
 
-            imageName.set("58H-test-server")
+            imageName.set("mystravastats-test")
         }
     }
 
     tasks.withType<Test>().configureEach {
-        useJUnitPlatform()
+
+        useJUnitPlatform {
+            failFast = true
+        }
+        maxParallelForks = Runtime.getRuntime().availableProcessors()
+
         testLogging {
             events("passed", "skipped", "failed")
         }

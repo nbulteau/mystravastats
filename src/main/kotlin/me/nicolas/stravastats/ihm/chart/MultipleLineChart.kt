@@ -47,6 +47,13 @@ internal class MultipleLineChart(
             "2021" to Color.CRIMSON,
             "2022" to Color.DARKGREEN,
             "2023" to Color.GREY,
+            "2024" to Color.HOTPINK,
+            "2025" to Color.LIGHTBLUE,
+            "2026" to Color.LIGHTGREEN,
+            "2027" to Color.LIGHTPINK,
+            "2028" to Color.LIGHTSALMON,
+            "2029" to Color.LIGHTSEAGREEN,
+            "2030" to Color.LIGHTSKYBLUE,
         )
     }
 
@@ -60,7 +67,7 @@ internal class MultipleLineChart(
 
 
     init {
-        assert(seriesList.isNotEmpty()) {"Need at least one Series"}
+        assert(seriesList.isNotEmpty()) { "Need at least one Series" }
 
         // find upper bound of all series
         var upperBound = 0
@@ -385,7 +392,12 @@ internal class MultipleLineChart(
             val valueLabel = Label(": ${yValueForChart.toInt()} km")
 
             // make series name bold when mouse is near given chart's line
-            if (isMouseNearLine(yValueForChart, yValueUnderMouse, abs(yValueLower.toDouble() - yValueUpper.toDouble()))) {
+            if (isMouseNearLine(
+                    yValueForChart,
+                    yValueUnderMouse,
+                    abs(yValueLower.toDouble() - yValueUpper.toDouble())
+                )
+            ) {
                 seriesNameLabel.font = Font.font("Arial", FontWeight.EXTRA_BOLD, 15.0)
                 valueLabel.font = Font.font("Arial", FontWeight.EXTRA_BOLD, 15.0)
             } else {
