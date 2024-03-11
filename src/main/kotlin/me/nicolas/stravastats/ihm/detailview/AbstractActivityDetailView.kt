@@ -32,6 +32,7 @@ import me.nicolas.stravastats.utils.inDateTimeFormatter
 import me.nicolas.stravastats.utils.timeFormatter
 import tornadofx.*
 import java.time.LocalDateTime
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.round
 import kotlin.math.roundToInt
@@ -40,7 +41,7 @@ import kotlin.math.roundToInt
 abstract class AbstractActivityDetailView(
     protected val activity: Activity,
     protected val latitudeLongitudesList: List<List<Double>>,
-    protected val distancesList: List<Double>,
+    protected val xAxis: List<Double>,
     protected val altitudesList: List<Double>,
     private val powersList: List<Int>,
     private val segmentEfforts: List<SegmentEffort>
@@ -94,11 +95,11 @@ abstract class AbstractActivityDetailView(
         if (latitudeLongitudesList.isNotEmpty()) {
             val minAltitude = max(round(altitudesList.minOf { it } - 10), 0.0)
             val maxAltitude = round(altitudesList.maxOf { it } + 20)
-            val maxDistance = distancesList.maxOf { it } / 1000
+            val maxXAxis = xAxis.maxOf { it } / 1000
 
-            val xAxis = NumberAxis(0.0, maxDistance, 1.0)
+            val xAxis = NumberAxis(0.0, maxXAxis, 1.0)
             val yAxis = NumberAxis(minAltitude, maxAltitude, 10.0)
-            if (maxDistance > 30.0) {
+            if (maxXAxis > 30.0) {
                 xAxis.tickUnit = 10.0
             }
             if (maxAltitude - minAltitude > 500.0) {
@@ -111,7 +112,7 @@ abstract class AbstractActivityDetailView(
             }
 
             areaChart = areachart("Altitude", xAxis, yAxis) {
-                val data = distancesList //.windowed(1, 10).flatten()
+                val data = this@AbstractActivityDetailView.xAxis //.windowed(1, 10).flatten()
                     .zip(altitudesList) { distance, altitude ->
                         XYChart.Data<Number, Number>(distance / 1000, altitude)
                     }.toObservable()
@@ -128,11 +129,11 @@ abstract class AbstractActivityDetailView(
         if (powersList.isNotEmpty()) {
             val minPower = max(powersList.minOf { it } - 10, 0).toDouble()
             val maxPower = powersList.maxOf { it }.toDouble() + 20.0
-            val maxDistance = distancesList.maxOf { it } / 1000
+            val maxXAxis = xAxis.maxOf { it } / 60
 
-            val xAxis = NumberAxis(0.0, maxDistance, 1.0)
+            val xAxis = NumberAxis(0.0, maxXAxis, 1.0)
             val yAxis = NumberAxis(minPower, maxPower, 10.0)
-            if (maxDistance > 30.0) {
+            if (maxXAxis > 60.0) {
                 xAxis.tickUnit = 10.0
             }
             if (maxPower - minPower > 400.0) {
@@ -145,9 +146,9 @@ abstract class AbstractActivityDetailView(
             }
 
             areaChart = areachart("Power", xAxis, yAxis) {
-                val data = distancesList //.windowed(1, 10).flatten()
+                val data = this@AbstractActivityDetailView.xAxis //.windowed(1, 10).flatten()
                     .zip(powersList) { distance, power ->
-                        XYChart.Data<Number, Number>(distance / 1000, power)
+                        XYChart.Data<Number, Number>(abs(distance / 60), power)
                     }.toObservable()
 
                 this.isAlternativeRowFillVisible = false
@@ -171,7 +172,7 @@ abstract class AbstractActivityDetailView(
                         }
                     }).setColor(Color.BLUE).setWidth(5)
 
-                val xyChartSeries = XYChart.Series(distancesList
+                val xyChartSeries = XYChart.Series(xAxis
                     .zip(altitudesList) { distance, altitude ->
                         XYChart.Data<Number, Number>(distance / 1000, altitude)
                     }
@@ -195,7 +196,7 @@ abstract class AbstractActivityDetailView(
                 }
             }).setColor(Color.ORANGE).setWidth(5)
 
-            val xyChartSeries = XYChart.Series(distancesList
+            val xyChartSeries = XYChart.Series(xAxis
                 .zip(altitudesList) { distance, altitude ->
                     XYChart.Data<Number, Number>(distance / 1000, altitude)
                 }

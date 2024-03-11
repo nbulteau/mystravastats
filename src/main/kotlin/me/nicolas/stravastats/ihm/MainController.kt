@@ -440,7 +440,7 @@ class MainController(private val clientId: String, private val activities: Obser
                     ActivityDetailView(
                         activity,
                         activity.stream?.latitudeLongitude?.data!!,
-                        activity.stream?.distance?.data!!,
+                        activity.stream?.time?.data!!.map { it.toDouble() },
                         activity.stream?.altitude?.data ?: emptyList(),
                         activity.stream?.watts?.data ?: emptyList(),
                         segmentEfforts

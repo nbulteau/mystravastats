@@ -42,7 +42,7 @@ class ActivityWithGradientDetailView(
                             null
                         }
                     }).setColor(Color.BLUE).setWidth(5)
-                val xyChartSeries = XYChart.Series(distancesList //.windowed(1, 10).flatten()
+                val xyChartSeries = XYChart.Series(xAxis //.windowed(1, 10).flatten()
                     .zip(altitudesList) { distance, altitude ->
                         XYChart.Data<Number, Number>(distance / 1000, altitude)
                     }
