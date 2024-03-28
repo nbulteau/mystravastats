@@ -22,8 +22,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.16.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.0")
 
     implementation("org.slf4j:slf4j-nop:2.0.9")
     implementation("io.javalin:javalin:6.1.3")

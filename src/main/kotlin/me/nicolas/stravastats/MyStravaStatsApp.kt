@@ -12,6 +12,8 @@ import tornadofx.launch
 import java.awt.Taskbar
 import java.util.*
 import javax.swing.ImageIcon
+import javax.swing.SwingUtilities
+import javax.swing.UIManager
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.reflect.KClass
@@ -81,6 +83,10 @@ class MyStravaStatsApp : App() {
 
 fun main(args: Array<String>) {
     removeJavaFxInfoMessage()
+    // Hack for macOS to avoid Assertion Failure
+    SwingUtilities.invokeLater {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
+    }
     launch<MyStravaStatsApp>(args)
 }
 
