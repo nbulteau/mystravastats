@@ -40,7 +40,7 @@ data class SegmentEffort(
     val startDateLocal: String,
     @JsonProperty("start_index")
     val startIndex: Int,
-    val visibility: String
+    val visibility: String?
 ) {
     fun getFormattedSpeed(type: String): String {
         return if (type == Run) {
