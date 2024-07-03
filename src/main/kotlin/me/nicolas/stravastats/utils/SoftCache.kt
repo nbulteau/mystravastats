@@ -20,7 +20,7 @@ class SoftCache<K, V : Any> : GenericCache<K, V> {
 
     private val referenceQueue = ReferenceQueue<Any>()
 
-    private class SoftEntry<K, V> constructor(val key: K, value: V, referenceQueue: ReferenceQueue<Any>)
+    private class SoftEntry<K, V>(val key: K, value: V, referenceQueue: ReferenceQueue<Any>)
         : SoftReference<Any>(value, referenceQueue)
 
     override fun set(key: K, value: V) {

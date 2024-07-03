@@ -46,8 +46,7 @@ data class Point(var latitude: Double = Double.NaN, var longitude: Double = Doub
         } else {
             val dLat = Math.toRadians(point.latitude - latitude)
             val dLon = Math.toRadians(point.longitude - longitude)
-            val temp = sin(dLat / 2) * sin(dLat / 2)
-            +cos(Math.toRadians(latitude)) * cos(Math.toRadians(point.latitude)) * sin(dLon / 2) * sin(dLon / 2)
+            val temp = sin(dLat / 2) * sin(dLat / 2) + cos(Math.toRadians(latitude)) * cos(Math.toRadians(point.latitude)) * sin(dLon / 2) * sin(dLon / 2)
             val a = 2 * atan2(sqrt(temp), sqrt(1 - temp))
 
             EARTH_RADIUS * a * 1000

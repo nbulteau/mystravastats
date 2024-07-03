@@ -6,8 +6,8 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.9.23"
-    id("org.graalvm.buildtools.native") version "0.10.1"
+    kotlin("jvm") version "2.0.0"
+    id("org.graalvm.buildtools.native") version "0.10.2"
     id("org.openjfx.javafxplugin") version "0.1.0"
     id("com.github.ben-manes.versions") version "0.51.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
@@ -26,7 +26,7 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.0")
 
     implementation("org.slf4j:slf4j-nop:2.0.9")
-    implementation("io.javalin:javalin:6.1.3")
+    implementation("io.javalin:javalin:6.1.6")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     implementation("com.sothawo:mapjfx:3.1.0")

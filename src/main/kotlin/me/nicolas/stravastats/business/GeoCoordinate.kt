@@ -8,8 +8,8 @@ import kotlin.math.*
 data class GeoCoordinate(val latitude: Double, val longitude: Double) {
 
     companion object {
-        private const val equatorialEarthRadius = 6378.1370
-        private const val d2r = Math.PI / 180.0
+        private const val EQUATORIAL_EARTH_RADIUS = 6378.1370
+        private const val D2R = Math.PI / 180.0
     }
 
     /**
@@ -21,12 +21,12 @@ data class GeoCoordinate(val latitude: Double, val longitude: Double) {
      * Calculate the distance (in kilometers) between two points on Earth using their latitude and longitude.
      */
     fun haversineInKM(lat2: Double, long2: Double): Double {
-        val long = (long2 - longitude) * d2r
-        val lat = (lat2 - latitude) * d2r
-        val a = sin(lat / 2.0).pow(2.0) + (cos(latitude * d2r) * cos(lat2 * d2r) * sin(long / 2.0).pow(2.0))
+        val long = (long2 - longitude) * D2R
+        val lat = (lat2 - latitude) * D2R
+        val a = sin(lat / 2.0).pow(2.0) + (cos(latitude * D2R) * cos(lat2 * D2R) * sin(long / 2.0).pow(2.0))
         val c = 2.0 * atan2(sqrt(a), sqrt(1.0 - a))
 
-        return equatorialEarthRadius * c
+        return EQUATORIAL_EARTH_RADIUS * c
     }
 
     /**
