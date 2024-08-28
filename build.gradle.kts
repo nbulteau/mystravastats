@@ -6,7 +6,7 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "2.0.0"
+    kotlin("jvm") version "2.0.20"
     id("org.graalvm.buildtools.native") version "0.10.2"
     id("org.openjfx.javafxplugin") version "0.1.0"
     id("com.github.ben-manes.versions") version "0.51.0"
@@ -22,11 +22,11 @@ repositories {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2")
 
     implementation("org.slf4j:slf4j-nop:2.0.9")
-    implementation("io.javalin:javalin:6.1.6")
+    implementation("io.javalin:javalin:6.3.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     implementation("com.sothawo:mapjfx:3.1.0")
@@ -77,9 +77,9 @@ tasks.jar {
 }
 
 tasks.compileKotlin {
-    kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn"
-        jvmTarget = "21"
+    compilerOptions {
+        //freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn"
+        //jvmTarget = "21"
         moduleName = "mystravastats"
     }
 }
