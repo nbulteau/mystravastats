@@ -44,11 +44,7 @@ internal class SplashScreenView : View("MyStravaStatistics") {
                 StravaCacheLoadActivitiesTask(clientId)
             } else {
                 val download: String = userData["download"] as String
-                if (download == "all") {
-                    StravaLoadActivitiesTask(clientId, clientSecret, true)
-                } else {
-                    StravaLoadActivitiesTask(clientId, clientSecret, false)
-                }
+                StravaLoadActivitiesTask(clientId, clientSecret, allYears = download == "all")
             }
         }
 
